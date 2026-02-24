@@ -1,0 +1,2 @@
+# Static files directory for authenticated users
+# 認証されたユーザーが利用できる静的ファイルはこのディレクトリに配置してください

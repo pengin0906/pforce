@@ -1,0 +1,79 @@
+apiName: Campaign
+label: キャンペーン
+pluralLabel: キャンペーン
+description: マーケティングキャンペーンの管理
+fields:
+  - apiName: Name
+    label: キャンペーン名
+    type: Text
+    length: 80
+    required: true
+  - apiName: Type
+    label: 種別
+    type: Picklist
+    values:
+      - カンファレンス
+      - Webセミナー
+      - メール
+      - 広告
+      - パートナー
+      - その他
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    values:
+      - 計画中
+      - 進行中
+      - 完了
+      - 中止
+  - apiName: StartDate
+    label: 開始日
+    type: Date
+  - apiName: EndDate
+    label: 終了日
+    type: Date
+  - apiName: ExpectedRevenue
+    label: 期待収益
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: BudgetedCost
+    label: 予算コスト
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: ActualCost
+    label: 実績コスト
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: ExpectedResponse
+    label: 期待レスポンス率
+    type: Percent
+    precision: 18
+    scale: 0
+  - apiName: NumberSent
+    label: 送信数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: IsActive
+    label: 有効
+    type: Checkbox
+    defaultValue: true
+  - apiName: ParentId
+    label: 親キャンペーン
+    type: Lookup
+    referenceTo: Campaign
+    relationshipName: ChildCampaigns
+    relationshipLabel: 子キャンペーン
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedCampaigns

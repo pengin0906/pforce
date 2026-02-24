@@ -1,0 +1,52 @@
+apiName: Contract
+label: 契約
+pluralLabel: 契約
+description: 取引先との契約管理
+fields:
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Contracts
+    relationshipLabel: 契約
+    required: true
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - ドラフト
+      - 承認プロセス中
+      - 有効
+      - 終了
+  - apiName: StartDate
+    label: 契約開始日
+    type: Date
+  - apiName: EndDate
+    label: 契約終了日
+    type: Date
+  - apiName: ContractTerm
+    label: 契約期間（月）
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: OwnerExpirationNotice
+    label: 所有者への期限通知
+    type: Picklist
+    values:
+      - 15日前
+      - 30日前
+      - 45日前
+      - 60日前
+      - 90日前
+      - 120日前
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedContracts

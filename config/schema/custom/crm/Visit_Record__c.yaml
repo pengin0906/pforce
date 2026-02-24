@@ -1,0 +1,99 @@
+apiName: Visit_Record__c
+label: 訪問記録
+pluralLabel: 訪問記録
+description: ドクター訪問の記録・ネクストアクション管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: false
+enableReports: true
+nameField:
+  apiName: Name
+  label: 訪問記録番号
+  type: AutoNumber
+  displayFormat: VR-{0000}
+fields:
+  - apiName: Doctor__c
+    label: ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+    relationshipName: Visit_Records
+    relationshipLabel: 訪問記録
+    deleteConstraint: SetNull
+  - apiName: Visit_Date__c
+    label: 訪問日
+    type: Date
+    required: true
+  - apiName: Visit_Purpose__c
+    label: 訪問目的
+    type: Picklist
+    required: true
+    values:
+      - 新規紹介
+      - フォローアップ
+      - 検査結果説明
+      - 学術情報提供
+      - 共同研究打合せ
+      - クレーム対応
+      - 関係構築
+  - apiName: Meeting_Result__c
+    label: 面談結果
+    type: Picklist
+    values:
+      - 好感触
+      - 継続検討
+      - 保留
+      - 不採用
+  - apiName: Materials_Provided__c
+    label: 提供資料
+    type: MultiselectPicklist
+    values:
+      - GenMine概要
+      - 症例レポート
+      - 解析フロー資料
+      - 学術論文
+      - 価格表
+      - 導入事例集
+    visibleLines: 4
+  - apiName: Next_Action__c
+    label: ネクストアクション
+    type: Text
+    length: 255
+  - apiName: Next_Visit_Date__c
+    label: 次回訪問予定日
+    type: Date
+  - apiName: Meeting_Duration__c
+    label: 面談時間（分）
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Meeting_Note__c
+    label: 面談メモ
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: Medical_Institution__c
+    label: 訪問先医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: Visit_Records
+    relationshipLabel: 訪問記録
+    deleteConstraint: SetNull
+  - apiName: Checkin_Latitude__c
+    label: チェックイン緯度
+    type: Number
+    precision: 10
+    scale: 7
+  - apiName: Checkin_Longitude__c
+    label: チェックイン経度
+    type: Number
+    precision: 11
+    scale: 7
+  - apiName: Checkin_Time__c
+    label: チェックイン時刻
+    type: DateTime
+  - apiName: Location_Accuracy__c
+    label: 位置精度(m)
+    type: Number
+    precision: 10
+    scale: 2

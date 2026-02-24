@@ -1,0 +1,48 @@
+apiName: QuoteLineItem
+label: 見積品目
+pluralLabel: 見積品目
+description: 見積書の品目明細
+fields:
+  - apiName: QuoteId
+    label: 見積
+    type: Lookup
+    referenceTo: Quote
+    relationshipName: QuoteLineItems
+    relationshipLabel: 見積品目
+  - apiName: Product2Id
+    label: 商品
+    type: Lookup
+    referenceTo: Product2
+    relationshipName: QuoteLineItems
+    relationshipLabel: 見積品目
+  - apiName: PricebookEntryId
+    label: 価格表エントリ
+    type: Lookup
+    referenceTo: PricebookEntry
+    relationshipName: QuoteLineItems
+  - apiName: Quantity
+    label: 数量
+    type: Number
+    precision: 18
+    scale: 2
+    required: true
+  - apiName: UnitPrice
+    label: 単価
+    type: Currency
+    precision: 18
+    scale: 0
+    required: true
+  - apiName: TotalPrice
+    label: 合計価格
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Discount
+    label: 割引率
+    type: Percent
+    precision: 18
+    scale: 2
+  - apiName: Description
+    label: 説明
+    type: Text
+    length: 255

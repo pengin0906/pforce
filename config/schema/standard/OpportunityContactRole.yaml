@@ -1,0 +1,30 @@
+apiName: OpportunityContactRole
+label: 商談取引先責任者の役割
+pluralLabel: 商談取引先責任者の役割
+description: 商談における取引先責任者の役割管理
+fields:
+  - apiName: OpportunityId
+    label: 商談
+    type: Lookup
+    referenceTo: Opportunity
+    relationshipName: OpportunityContactRoles
+    relationshipLabel: 商談取引先責任者の役割
+  - apiName: ContactId
+    label: 取引先責任者
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: OpportunityContactRoles
+    relationshipLabel: 商談取引先責任者の役割
+  - apiName: Role
+    label: 役割
+    type: Picklist
+    values:
+      - 意思決定者
+      - 評価者
+      - 経済的購入者
+      - 技術的購入者
+      - その他
+  - apiName: IsPrimary
+    label: 主担当者
+    type: Checkbox
+    defaultValue: false

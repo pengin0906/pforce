@@ -1,0 +1,56 @@
+dashboard:
+  title: Pforce ダッシュボード
+  widgets:
+    - type: pipeline
+      object: Account
+      field: Type
+      title: 取引先 種別パイプライン
+    - type: pipeline
+      object: Opportunity
+      field: StageName
+      title: 商談パイプライン（標準）
+    - type: pipeline
+      object: Case
+      field: Status
+      title: ケース ステータスパイプライン
+    - type: pipeline
+      object: Lead
+      field: Status
+      title: リード ステータスパイプライン
+    - type: pipeline
+      object: Doctor__c
+      field: Relationship_Level__c
+      title: ドクター関係構築パイプライン
+    - type: pipeline
+      object: Pharma_Opportunity__c
+      field: Phase__c
+      title: 製薬商談パイプライン
+    - type: pipeline
+      object: Visit_Record__c
+      field: Meeting_Result__c
+      title: 直近の訪問結果
+    - type: pipeline
+      object: Genomic_Project__c
+      field: Status__c
+      title: 解析プロジェクト進捗
+    - type: pipeline
+      object: MA_Activity__c
+      field: Status__c
+      title: MA活動ステータス
+    - type: pipeline
+      object: Seminar__c
+      field: Progress_Status__c
+      title: 勉強会・講演会進行状況
+    - type: pipeline
+      object: Specimen__c
+      field: Specimen_Status__c
+      title: 検体処理パイプライン
+    - type: count
+      object: Doctor__c
+      title: 管理ドクター数
+    - type: count
+      object: Specimen__c
+      title: 管理検体数
+    - type: count
+      object: Lab__c
+      title: 稼働ラボ数

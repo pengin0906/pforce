@@ -1,0 +1,138 @@
+apiName: Lead
+label: リード
+pluralLabel: リード
+description: 見込み顧客の管理
+fields:
+  - apiName: FirstName
+    label: 名
+    type: Text
+    length: 40
+  - apiName: LastName
+    label: 姓
+    type: Text
+    length: 80
+    required: true
+  - apiName: Company
+    label: 会社名
+    type: Text
+    length: 255
+    required: true
+  - apiName: Title
+    label: 役職
+    type: Text
+    length: 128
+  - apiName: Email
+    label: メール
+    type: Email
+  - apiName: Phone
+    label: 電話
+    type: Phone
+  - apiName: MobilePhone
+    label: 携帯電話
+    type: Phone
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - 新規
+      - 連絡済
+      - 適格
+      - 不適格
+      - 転換済
+  - apiName: Industry
+    label: 業種
+    type: Picklist
+    values:
+      - 農業
+      - アパレル
+      - 銀行
+      - バイオテクノロジー
+      - 化学
+      - 通信
+      - 建設
+      - コンサルティング
+      - 教育
+      - 電子機器
+      - エネルギー
+      - エンジニアリング
+      - エンターテインメント
+      - 環境
+      - 金融
+      - 飲食
+      - 政府機関
+      - ヘルスケア
+      - ホスピタリティ
+      - 保険
+      - 機械
+      - 製造
+      - メディア
+      - 非営利
+      - その他
+      - レクリエーション
+      - 小売
+      - 運輸
+      - テクノロジー
+      - 通信
+      - 公益事業
+  - apiName: LeadSource
+    label: リードソース
+    type: Picklist
+    values:
+      - ウェブ
+      - 電話
+      - パートナー
+      - 展示会
+      - 広告
+      - 紹介
+      - 学会
+      - その他
+  - apiName: Street
+    label: 町名・番地
+    type: Text
+    length: 255
+  - apiName: City
+    label: 市区郡
+    type: Text
+    length: 40
+  - apiName: State
+    label: 都道府県
+    type: Text
+    length: 80
+  - apiName: PostalCode
+    label: 郵便番号
+    type: Text
+    length: 20
+  - apiName: Country
+    label: 国
+    type: Text
+    length: 80
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: ConvertedAccountId
+    label: 転換済み取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: ConvertedLeads
+  - apiName: ConvertedContactId
+    label: 転換済み取引先責任者
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: ConvertedLeads
+  - apiName: ConvertedOpportunityId
+    label: 転換済み商談
+    type: Lookup
+    referenceTo: Opportunity
+    relationshipName: ConvertedLeads
+  - apiName: IsConverted
+    label: 転換済み
+    type: Checkbox
+    defaultValue: false
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedLeads

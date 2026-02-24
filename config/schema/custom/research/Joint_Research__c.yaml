@@ -1,0 +1,56 @@
+apiName: Joint_Research__c
+label: 共同研究
+pluralLabel: 共同研究
+description: 製薬企業・大学との共同研究プロジェクト管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: 研究テーマ
+  type: Text
+  length: 255
+fields:
+  - apiName: Pharma_Company__c
+    label: 製薬企業名
+    type: Text
+    length: 120
+  - apiName: Principal_Investigator__c
+    label: 責任研究者
+    type: Text
+    length: 80
+  - apiName: Start_Date__c
+    label: 研究期間開始
+    type: Date
+  - apiName: End_Date__c
+    label: 研究期間終了
+    type: Date
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    required: true
+    values:
+      - 企画中
+      - 倫理審査
+      - データ準備
+      - 解析実施中
+      - 論文執筆
+      - 完了
+  - apiName: Budget__c
+    label: 研究費
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: IRB_Approval_Date__c
+    label: IRB承認日
+    type: Date
+    inlineHelpText: 倫理審査委員会承認日
+  - apiName: Related_Opportunity__c
+    label: 関連商談
+    type: Lookup
+    referenceTo: Pharma_Opportunity__c
+    relationshipName: Joint_Researches
+    relationshipLabel: 共同研究
+    deleteConstraint: SetNull

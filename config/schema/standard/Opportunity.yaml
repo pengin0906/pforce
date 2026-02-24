@@ -1,0 +1,96 @@
+apiName: Opportunity
+label: 商談
+pluralLabel: 商談
+description: 営業商談の管理
+fields:
+  - apiName: Name
+    label: 商談名
+    type: Text
+    length: 120
+    required: true
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Opportunities
+    relationshipLabel: 商談
+  - apiName: Amount
+    label: 金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: CloseDate
+    label: 完了予定日
+    type: Date
+    required: true
+  - apiName: StageName
+    label: フェーズ
+    type: Picklist
+    required: true
+    values:
+      - 見込み調査
+      - 適格性評価
+      - ニーズ分析
+      - 提案/見積
+      - 交渉/レビュー
+      - 成立
+      - 不成立
+  - apiName: Probability
+    label: 確度
+    type: Percent
+    precision: 18
+    scale: 0
+  - apiName: Type
+    label: 種別
+    type: Picklist
+    values:
+      - 新規
+      - 既存
+      - 更新
+  - apiName: LeadSource
+    label: リードソース
+    type: Picklist
+    values:
+      - ウェブ
+      - 電話
+      - パートナー
+      - 展示会
+      - 広告
+      - 紹介
+      - 学会
+      - その他
+  - apiName: NextStep
+    label: 次のステップ
+    type: Text
+    length: 255
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedOpportunities
+  - apiName: CampaignId
+    label: キャンペーン
+    type: Lookup
+    referenceTo: Campaign
+    relationshipName: Opportunities
+    relationshipLabel: 商談
+  - apiName: Pricebook2Id
+    label: 価格表
+    type: Lookup
+    referenceTo: Pricebook2
+    relationshipName: Opportunities
+    relationshipLabel: 商談
+  - apiName: ForecastCategory
+    label: 売上予測カテゴリ
+    type: Picklist
+    values:
+      - パイプライン
+      - 最良ケース
+      - コミット
+      - クローズ
+      - 除外

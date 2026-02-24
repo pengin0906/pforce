@@ -1,0 +1,117 @@
+apiName: MA_Activity__c
+label: MA活動管理
+pluralLabel: MA活動管理
+description: メディカルアフェアーズの活動管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: 活動名
+  type: Text
+  length: 120
+fields:
+  - apiName: Activity_Type__c
+    label: 活動種別
+    type: Picklist
+    required: true
+    values:
+      - 学術講演会
+      - アドバイザリーボード
+      - 文献レビュー提供
+      - メディカルインフォメーション対応
+      - KOL面談
+      - 学会ブース運営
+      - 院内勉強会
+      - リアルワールドデータ提供
+      - パブリケーションプラン
+  - apiName: Doctor__c
+    label: 対象ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+    relationshipName: MA_Activities
+    relationshipLabel: MA活動
+    deleteConstraint: SetNull
+  - apiName: Medical_Institution__c
+    label: 対象医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: MA_Activities
+    relationshipLabel: MA活動
+    deleteConstraint: SetNull
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    required: true
+    values:
+      - 企画中
+      - 社内承認待ち
+      - 準備中
+      - 実施済
+      - フォロー中
+      - 完了
+  - apiName: Evidence_Level__c
+    label: エビデンスレベル
+    type: Picklist
+    values:
+      - フェーズIII
+      - フェーズII
+      - リアルワールド
+      - ケーススタディ
+      - エキスパートオピニオン
+  - apiName: Related_Cancer__c
+    label: 関連がん種
+    type: MultiselectPicklist
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+    visibleLines: 4
+  - apiName: Related_Product__c
+    label: 関連プロダクト
+    type: MultiselectPicklist
+    values:
+      - GenMine検査
+      - Tempus xT
+      - Tempus xF（リキッドバイオプシー）
+      - Tempus Lens
+      - Tempus Explore
+      - AIアルゴリズム
+    visibleLines: 4
+  - apiName: Compliance_Check__c
+    label: コンプライアンス確認
+    type: Picklist
+    required: true
+    values:
+      - 未確認
+      - 確認中
+      - 承認済
+      - 差し戻し
+  - apiName: Activity_Date__c
+    label: 実施日
+    type: Date
+  - apiName: Participant_Count__c
+    label: 参加者数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Budget__c
+    label: 予算
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Assigned_MSL__c
+    label: 担当MSL
+    type: Text
+    length: 80
+  - apiName: Feedback__c
+    label: 成果・フィードバック
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5

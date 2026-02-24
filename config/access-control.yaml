@@ -1,0 +1,1336 @@
+# Salesforce-Compatible Access Control Configuration
+# Organization-Wide Defaults, Profiles, Permission Sets, Role Hierarchy, Field-Level Security
+# Pforce CRM システム
+
+organizationSettings:
+  name: Pforce
+  defaultLocale: ja_JP
+  currency: JPY
+  defaultCurrencyIsoCode: JPY
+
+# Role Hierarchy (top to bottom)
+# 上から下への階層構造：上位の役割は下位の役割のレコードへのアクセス可能
+roleHierarchy:
+  - apiName: CEO
+    label: 代表取締役
+    description: 組織全体の責任者
+    parentRole: null
+  - apiName: VP_Sales
+    label: 営業本部長
+    description: 営業組織を統括する幹部
+    parentRole: CEO
+  - apiName: VP_Medical
+    label: メディカル本部長
+    description: メディカル部門を統括する幹部
+    parentRole: CEO
+  - apiName: VP_Lab
+    label: ラボ統括部長
+    description: ラボ運営を統括する幹部
+    parentRole: CEO
+  - apiName: Sales_Manager
+    label: 営業マネージャー
+    description: 営業チームを管理する
+    parentRole: VP_Sales
+  - apiName: Sales_Rep
+    label: 営業担当
+    description: 営業活動を実行する
+    parentRole: Sales_Manager
+  - apiName: MSL_Manager
+    label: MSLマネージャー
+    description: MSLチームを管理する
+    parentRole: VP_Medical
+  - apiName: MSL
+    label: MSL (Medical Science Liaison)
+    description: 医療機関との科学的連携を行う
+    parentRole: MSL_Manager
+  - apiName: Lab_Director
+    label: ラボディレクター
+    description: ラボ運営を統括する
+    parentRole: VP_Lab
+  - apiName: Lab_Technician
+    label: ラボ技術者
+    description: ラボの日常業務を実行する
+    parentRole: Lab_Director
+
+# Profiles with object-level permissions
+# 各プロフィールのオブジェクト権限を定義
+profiles:
+  - apiName: System_Admin
+    label: システム管理者
+    description: 全権限を持つ管理者。すべてのオブジェクト・フィールドへのアクセス権限を保有
+    objectPermissions:
+      - object: "*"
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: true
+        modifyAllRecords: true
+        description: すべてのオブジェクトに対する完全なアクセス権限
+
+  - apiName: Sales_Rep
+    label: 営業担当
+    description: 営業活動に必要な権限を持つロール。顧客・案件・訪問記録など営業関連オブジェクトを操作可能
+    objectPermissions:
+      # --- Standard Objects ---
+      - object: Account
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先の作成・閲覧・編集可能、削除不可
+
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先責任者の作成・閲覧・編集可能、削除不可
+
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: リードの作成・閲覧・編集可能、削除不可
+
+      - object: Opportunity
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談の作成・閲覧・編集可能、削除不可
+
+      - object: OpportunityLineItem
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談品目の作成・閲覧・編集可能、削除不可
+
+      - object: OpportunityContactRole
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談取引先責任者ロールの作成・閲覧・編集可能、削除不可
+
+      - object: Campaign
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンは閲覧のみ
+
+      - object: CampaignMember
+        allowCreate: true
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンメンバーの作成・閲覧可能、編集・削除不可
+
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ToDo の完全管理権限
+
+      - object: Event
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 行動の完全管理権限
+
+      - object: Quote
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積の作成・閲覧・編集可能、削除不可
+
+      - object: QuoteLineItem
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積品目の作成・閲覧・編集可能、削除不可
+
+      - object: Product2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商品は閲覧のみ
+
+      - object: Pricebook2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表は閲覧のみ
+
+      - object: PricebookEntry
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表エントリは閲覧のみ
+
+      - object: Contract
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 契約は閲覧のみ
+
+      - object: Order
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文は閲覧のみ
+
+      - object: OrderItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文品目は閲覧のみ
+
+      - object: Case
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ケースの作成・閲覧・編集可能、削除不可
+
+      - object: User
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ユーザーは閲覧のみ
+
+      - object: Note
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: メモの完全管理権限
+
+      - object: ContentDocument
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: コンテンツドキュメントの作成・閲覧・編集可能、削除不可
+
+      # --- Custom Objects ---
+      - object: Medical_Institution__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医療機関情報の閲覧・編集可能、削除不可
+
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医師情報の作成・編集可能
+
+      - object: Visit_Record__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 訪問記録の完全管理権限
+
+      - object: Pharma_Opportunity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医薬品営業機会の管理
+
+      - object: Genomic_Project__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ゲノムプロジェクトは閲覧のみ
+
+      - object: Specimen__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 検体情報は閲覧のみ
+
+      - object: MA_Activity__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: MA活動は閲覧のみ
+
+      - object: Seminar__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: セミナー情報は閲覧のみ
+
+      - object: Lab__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ラボ情報は閲覧のみ
+
+      - object: Joint_Research__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 共同研究は閲覧のみ
+
+      # --- Dreamhouse Objects ---
+      - object: Broker__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: ブローカーの閲覧・編集可能
+
+      - object: Property__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: 物件の閲覧・編集可能
+
+  - apiName: MSL
+    label: MSL (Medical Science Liaison)
+    description: メディカルサイエンスリエゾン向けの権限。医師・MA活動・セミナー等の医学情報関連業務に特化
+    objectPermissions:
+      # --- Standard Objects ---
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先は閲覧のみ
+
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先責任者の作成・閲覧・編集可能、削除不可
+
+      - object: Lead
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: リードは閲覧のみ
+
+      - object: Opportunity
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談は閲覧のみ
+
+      - object: OpportunityLineItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談品目は閲覧のみ
+
+      - object: OpportunityContactRole
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談取引先責任者ロールは閲覧のみ
+
+      - object: Campaign
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンの作成・閲覧・編集可能、削除不可
+
+      - object: CampaignMember
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンメンバーの作成・閲覧・編集可能、削除不可
+
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ToDo の完全管理権限
+
+      - object: Event
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 行動の完全管理権限
+
+      - object: Quote
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積は閲覧のみ
+
+      - object: QuoteLineItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積品目は閲覧のみ
+
+      - object: Product2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商品は閲覧のみ
+
+      - object: Pricebook2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表は閲覧のみ
+
+      - object: PricebookEntry
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表エントリは閲覧のみ
+
+      - object: Contract
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 契約は閲覧のみ
+
+      - object: Order
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文は閲覧のみ
+
+      - object: OrderItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文品目は閲覧のみ
+
+      - object: Case
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ケースの作成・閲覧・編集可能、削除不可
+
+      - object: User
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ユーザーは閲覧のみ
+
+      - object: Note
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: メモの完全管理権限
+
+      - object: ContentDocument
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: コンテンツドキュメントの作成・閲覧・編集可能、削除不可
+
+      # --- Custom Objects ---
+      - object: Medical_Institution__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医療機関情報は閲覧のみ
+
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医師情報の作成・編集可能
+
+      - object: MA_Activity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: MA活動の完全管理権限
+
+      - object: Seminar__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: セミナーの作成・編集可能
+
+      - object: Visit_Record__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 訪問記録の作成・編集可能
+
+      - object: Pharma_Opportunity__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医薬品営業機会は閲覧のみ
+
+      - object: Specimen__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 検体情報は閲覧のみ
+
+      - object: Joint_Research__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 共同研究の作成・編集可能
+
+      # --- Dreamhouse Objects ---
+      - object: Broker__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: ブローカーは閲覧のみ
+
+      - object: Property__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: 物件は閲覧のみ
+
+  - apiName: Lab_Manager
+    label: ラボ管理者
+    description: ラボ運営に必要な権限を持つロール。検体・ラボ・ゲノムプロジェクト関連オブジェクトを管理
+    objectPermissions:
+      # --- Standard Objects ---
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先は閲覧のみ
+
+      - object: Contact
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 取引先責任者は閲覧のみ
+
+      - object: Lead
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: リードは閲覧のみ
+
+      - object: Opportunity
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談は閲覧のみ
+
+      - object: OpportunityLineItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談品目は閲覧のみ
+
+      - object: OpportunityContactRole
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商談取引先責任者ロールは閲覧のみ
+
+      - object: Campaign
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンは閲覧のみ
+
+      - object: CampaignMember
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: キャンペーンメンバーは閲覧のみ
+
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ToDo の完全管理権限
+
+      - object: Event
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 行動の完全管理権限
+
+      - object: Quote
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積は閲覧のみ
+
+      - object: QuoteLineItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 見積品目は閲覧のみ
+
+      - object: Product2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 商品は閲覧のみ
+
+      - object: Pricebook2
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表は閲覧のみ
+
+      - object: PricebookEntry
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 価格表エントリは閲覧のみ
+
+      - object: Contract
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 契約は閲覧のみ
+
+      - object: Order
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文は閲覧のみ
+
+      - object: OrderItem
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 注文品目は閲覧のみ
+
+      - object: Case
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ケースの作成・閲覧・編集可能、削除不可
+
+      - object: User
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ユーザーは閲覧のみ
+
+      - object: Note
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: メモの完全管理権限
+
+      - object: ContentDocument
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: コンテンツドキュメントは閲覧のみ
+
+      # --- Custom Objects ---
+      - object: Specimen__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: true
+        description: 検体の完全な管理権限（全レコード表示）
+
+      - object: Lab__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: true
+        description: ラボ情報の完全な管理権限（全レコード表示）
+
+      - object: Genomic_Project__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: ゲノムプロジェクトの作成・編集可能
+
+      - object: Medical_Institution__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医療機関情報は閲覧のみ
+
+      - object: Doctor__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医師情報は閲覧のみ
+
+      - object: Visit_Record__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 訪問記録は閲覧のみ
+
+      - object: Pharma_Opportunity__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: 医薬品営業機会は閲覧のみ
+
+      # --- Dreamhouse Objects ---
+      - object: Broker__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: ブローカーは閲覧のみ
+
+      - object: Property__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: true
+        modifyAllRecords: false
+        description: 物件は閲覧のみ
+
+  - apiName: Read_Only
+    label: 閲覧のみ
+    description: すべてのオブジェクトに対して閲覧権限のみを持つロール。データの作成・編集・削除は不可
+    objectPermissions:
+      - object: "*"
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+        viewAllRecords: false
+        modifyAllRecords: false
+        description: すべてのオブジェクトに対する閲覧のみアクセス
+
+# Field-Level Security (FLS)
+# プロフィール毎にフィールドの表示可否・編集可否を制御
+fieldLevelSecurity:
+  - profile: Sales_Rep
+    object: Pharma_Opportunity__c
+    description: 営業担当は金額情報と営業成否理由の閲覧・編集が可能
+    fields:
+      - field: Amount__c
+        label: 営業金額
+        visible: true
+        readOnly: false
+        description: 案件金額
+
+      - field: Loss_Reason__c
+        label: 失注理由
+        visible: true
+        readOnly: false
+        description: 失注した理由
+
+      - field: Win_Reason__c
+        label: 受注理由
+        visible: true
+        readOnly: false
+        description: 受注した理由
+
+      - field: Internal_Notes__c
+        label: 内部メモ
+        visible: true
+        readOnly: true
+        description: 営業関連の内部メモ（読み取り専用）
+
+  - profile: MSL
+    object: Pharma_Opportunity__c
+    description: MSLは金額情報など営業機密を非表示
+    fields:
+      - field: Amount__c
+        label: 営業金額
+        visible: false
+        readOnly: true
+        description: 金額情報は非表示
+
+      - field: Loss_Reason__c
+        label: 失注理由
+        visible: false
+        readOnly: true
+        description: 営業成否理由は非表示
+
+      - field: Win_Reason__c
+        label: 受注理由
+        visible: false
+        readOnly: true
+        description: 営業成否理由は非表示
+
+      - field: Internal_Notes__c
+        label: 内部メモ
+        visible: false
+        readOnly: true
+        description: 営業内部メモは非表示
+
+  - profile: Lab_Manager
+    object: Pharma_Opportunity__c
+    description: ラボ管理者は営業機密関連フィールドを非表示
+    fields:
+      - field: Amount__c
+        label: 営業金額
+        visible: false
+        readOnly: true
+        description: 金額情報は非表示
+
+      - field: Loss_Reason__c
+        label: 失注理由
+        visible: false
+        readOnly: true
+        description: 営業成否理由は非表示
+
+      - field: Internal_Notes__c
+        label: 内部メモ
+        visible: false
+        readOnly: true
+        description: 営業内部メモは非表示
+
+  - profile: MSL
+    object: Doctor__c
+    description: MSLは医師の機密情報へのアクセスを制限
+    fields:
+      - field: Salary_Info__c
+        label: 給与情報
+        visible: false
+        readOnly: true
+        description: 個人情報として非表示
+
+      - field: Personal_Notes__c
+        label: 個人メモ
+        visible: false
+        readOnly: true
+        description: プライベート情報は非表示
+
+# Sharing Rules
+# 条件ベースのデータ共有ルール
+sharingRules:
+  - apiName: Sales_Share_Tokyo_Institutions
+    object: Medical_Institution__c
+    type: criteria
+    description: 東京の医療機関は全営業に読み取り共有
+    criteria:
+      field: Prefecture__c
+      operator: equals
+      value: 東京都
+    sharedTo: Sales_Rep
+    accessLevel: Read
+
+  - apiName: Sales_Share_Osaka_Institutions
+    object: Medical_Institution__c
+    type: criteria
+    description: 大阪の医療機関は関西営業に読み取り共有
+    criteria:
+      field: Prefecture__c
+      operator: equals
+      value: 大阪府
+    sharedTo: Sales_Rep
+    accessLevel: Read
+
+  - apiName: Lab_Share_Specimens
+    object: Specimen__c
+    type: criteria
+    description: すべての検体情報はラボ管理者に読み取り・編集共有
+    criteria:
+      field: Status__c
+      operator: notEquals
+      value: Archived
+    sharedTo: Lab_Manager
+    accessLevel: ReadWrite
+
+# Organization-Wide Defaults (OWD)
+# 各オブジェクトのデフォルト共有設定
+organizationWideDefaults:
+  # --- Standard Objects ---
+  - object: Account
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 取引先は個人所有型で非共有がデフォルト
+
+  - object: Contact
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 取引先責任者は親レコード（取引先）によるアクセス制御
+
+  - object: Lead
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: リードは個人所有型で非共有がデフォルト
+
+  - object: Opportunity
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 商談は個人所有型で非共有がデフォルト
+
+  - object: OpportunityLineItem
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 商談品目は親レコード（商談）によるアクセス制御
+
+  - object: OpportunityContactRole
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 商談取引先責任者ロールは親レコード（商談）によるアクセス制御
+
+  - object: Campaign
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: キャンペーンは内部公開、外部は非公開
+
+  - object: CampaignMember
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: キャンペーンメンバーは親レコード（キャンペーン）によるアクセス制御
+
+  - object: Case
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: ケースは個人所有型で非共有がデフォルト
+
+  - object: Task
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: ToDo は役割階層によるアクセス制御
+
+  - object: Event
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 行動は役割階層によるアクセス制御
+
+  - object: Product2
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: 商品は内部公開、外部は非公開
+
+  - object: Pricebook2
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: 価格表は内部公開、外部は非公開
+
+  - object: PricebookEntry
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: 価格表エントリは内部公開、外部は非公開
+
+  - object: Quote
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 見積は個人所有型で非共有がデフォルト
+
+  - object: QuoteLineItem
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 見積品目は親レコード（見積）によるアクセス制御
+
+  - object: Contract
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 契約は個人所有型で非共有がデフォルト
+
+  - object: Order
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 注文は個人所有型で非共有がデフォルト
+
+  - object: OrderItem
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 注文品目は親レコード（注文）によるアクセス制御
+
+  - object: User
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: ユーザーは内部公開、外部は非公開
+
+  - object: Note
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: メモは親レコードによるアクセス制御
+
+  - object: ContentDocument
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: コンテンツドキュメントは役割階層によるアクセス制御
+
+  # --- Custom Objects ---
+  - object: Medical_Institution__c
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 医療機関は個人所有型で非共有がデフォルト（共有ルールで個別共有）
+
+  - object: Doctor__c
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 医師情報は個人所有型で非共有がデフォルト
+
+  - object: Visit_Record__c
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: 訪問記録は役割階層によるアクセス制御
+
+  - object: Pharma_Opportunity__c
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 営業機会は個人所有型で非共有がデフォルト
+
+  - object: Specimen__c
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: 検体情報は内部公開、外部は非公開
+
+  - object: Lab__c
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: ラボ情報は内部公開
+
+  - object: Genomic_Project__c
+    defaultInternalAccess: Controlled
+    defaultExternalAccess: Private
+    description: ゲノムプロジェクトは役割階層によるアクセス制御
+
+  - object: Joint_Research__c
+    defaultInternalAccess: Private
+    defaultExternalAccess: Private
+    description: 共同研究は個人所有型で非共有がデフォルト
+
+  # --- Dreamhouse Objects ---
+  - object: Broker__c
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: ブローカーは内部公開
+
+  - object: Property__c
+    defaultInternalAccess: Public
+    defaultExternalAccess: Private
+    description: 物件は内部公開
+
+# Default Profile Assignment Rules
+# メールアドレスとドメインに基づくプロフィール自動割り当て
+profileAssignment:
+  defaultProfile: Read_Only
+  description: デフォルトは閲覧のみ権限
+
+  domainRules:
+    - domain: softbank.co.jp
+      defaultProfile: Sales_Rep
+      description: SoftBank ドメインのユーザーはデフォルトで営業担当権限
+
+    - domain: tempus.com
+      defaultProfile: Lab_Manager
+      description: TEMPUS ドメインのユーザーはデフォルトでラボ管理者権限
+
+    - domain: admin.sbgroup.jp
+      defaultProfile: System_Admin
+      description: 管理ドメインのユーザーは管理者権限
+
+  emailRules:
+    - pattern: "admin@*"
+      profile: System_Admin
+      description: adminで始まるメールアドレスはシステム管理者権限
+
+    - pattern: "msl*@*"
+      profile: MSL
+      description: mslで始まるメールアドレスはMSL権限
+
+    - pattern: "lab*@*"
+      profile: Lab_Manager
+      description: labで始まるメールアドレスはラボ管理者権限
+
+    - pattern: "director@*"
+      profile: Lab_Director
+      description: director で始まるメールアドレスはラボディレクター権限
+
+# Permission Sets
+# ユーザーに対する追加的な権限セット
+permissionSets:
+  - apiName: Can_Export_Data
+    label: データエクスポート権限
+    description: CRMデータをCSVエクスポートできる権限
+    assignedEmails: []
+
+  - apiName: Can_Manage_Users
+    label: ユーザー管理権限
+    description: ユーザー管理機能へのアクセス権限
+    assignedEmails:
+      - admin@softbank.co.jp
+
+  - apiName: Can_Create_Reports
+    label: レポート作成権限
+    description: カスタムレポートを作成・管理できる権限
+    assignedEmails: []
+
+  - apiName: Can_Access_Audit
+    label: 監査ログアクセス権限
+    description: システムの監査ログを閲覧できる権限
+    assignedEmails:
+      - admin@softbank.co.jp

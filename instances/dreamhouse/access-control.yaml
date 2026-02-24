@@ -1,0 +1,58 @@
+organizationSettings:
+  name: DreamHouse Realty
+  defaultLocale: en_US
+  currency: USD
+
+profiles:
+  - apiName: System_Admin
+    label: System Administrator
+    description: Full access to all objects
+    objectPermissions:
+      - object: '*'
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: true
+        modifyAllRecords: true
+
+  - apiName: Broker
+    label: Broker
+    description: Broker profile
+    objectPermissions:
+      - object: Broker__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Property__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Account
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+
+  - apiName: Read_Only
+    label: Read Only
+    description: Read-only access
+    objectPermissions:
+      - object: '*'
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+
+profileAssignment:
+  defaultProfile: System_Admin
+
+permissionSets: []
+fieldLevelSecurity: []

@@ -1,0 +1,33 @@
+apiName: ContentDocument
+label: コンテンツドキュメント
+pluralLabel: コンテンツドキュメント
+description: ファイル・ドキュメントの管理
+fields:
+  - apiName: Title
+    label: タイトル
+    type: Text
+    length: 255
+    required: true
+  - apiName: FileType
+    label: ファイルタイプ
+    type: Text
+    length: 20
+  - apiName: ContentSize
+    label: ファイルサイズ
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedContentDocuments
+  - apiName: LatestPublishedVersionId
+    label: 最新公開バージョン
+    type: Text
+    length: 18

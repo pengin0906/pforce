@@ -1,0 +1,3148 @@
+# ================================================================
+# Pforce - Salesforce Compatible CRM Platform
+# ================================================================
+# このYAMLはSalesforce DX (SFDX) メタデータ仕様に準拠しています
+# sf project deploy start でデプロイ可能な XML に変換できます
+# ================================================================
+
+apiVersion: "62.0"
+
+# ================================================================
+# Standard Objects (Salesforce標準オブジェクト)
+# ================================================================
+standardObjects:
+
+  # --------------------------------------------------
+  # 取引先
+  # --------------------------------------------------
+  - apiName: Account
+    label: 取引先
+    pluralLabel: 取引先
+    description: 取引先企業・組織の管理
+    fields:
+      - apiName: Name
+        label: 取引先名
+        type: Text
+        length: 255
+        required: true
+      - apiName: Industry
+        label: 業種
+        type: Picklist
+        values:
+          - 農業
+          - アパレル
+          - 銀行
+          - バイオテクノロジー
+          - 化学
+          - 通信
+          - 建設
+          - コンサルティング
+          - 教育
+          - 電子機器
+          - エネルギー
+          - エンジニアリング
+          - エンターテインメント
+          - 環境
+          - 金融
+          - 飲食
+          - 政府機関
+          - ヘルスケア
+          - ホスピタリティ
+          - 保険
+          - 機械
+          - 製造
+          - メディア
+          - 非営利
+          - その他
+          - レクリエーション
+          - 小売
+          - 運輸
+          - テクノロジー
+          - 通信
+          - 公益事業
+      - apiName: Type
+        label: 種別
+        type: Picklist
+        values:
+          - 顧客
+          - 見込み客
+          - パートナー
+          - 競合他社
+          - その他
+      - apiName: Phone
+        label: 電話
+        type: Phone
+      - apiName: Fax
+        label: Fax
+        type: Fax
+      - apiName: Website
+        label: Webサイト
+        type: Url
+      - apiName: BillingStreet
+        label: 請求先（町名・番地）
+        type: Text
+        length: 255
+      - apiName: BillingCity
+        label: 請求先（市区郡）
+        type: Text
+        length: 40
+      - apiName: BillingState
+        label: 請求先（都道府県）
+        type: Text
+        length: 80
+      - apiName: BillingPostalCode
+        label: 請求先（郵便番号）
+        type: Text
+        length: 20
+      - apiName: BillingCountry
+        label: 請求先（国）
+        type: Text
+        length: 80
+      - apiName: ShippingStreet
+        label: 納入先（町名・番地）
+        type: Text
+        length: 255
+      - apiName: ShippingCity
+        label: 納入先（市区郡）
+        type: Text
+        length: 40
+      - apiName: ShippingState
+        label: 納入先（都道府県）
+        type: Text
+        length: 80
+      - apiName: ShippingPostalCode
+        label: 納入先（郵便番号）
+        type: Text
+        length: 20
+      - apiName: ShippingCountry
+        label: 納入先（国）
+        type: Text
+        length: 80
+      - apiName: NumberOfEmployees
+        label: 従業員数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: AnnualRevenue
+        label: 年間売上
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedAccounts
+      - apiName: ParentId
+        label: 親取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: ChildAccounts
+        relationshipLabel: 子取引先
+
+  # --------------------------------------------------
+  # 取引先責任者
+  # --------------------------------------------------
+  - apiName: Contact
+    label: 取引先責任者
+    pluralLabel: 取引先責任者
+    description: 取引先の担当者・連絡先の管理
+    fields:
+      - apiName: FirstName
+        label: 名
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: 姓
+        type: Text
+        length: 80
+        required: true
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Contacts
+        relationshipLabel: 取引先責任者
+      - apiName: Title
+        label: 役職
+        type: Text
+        length: 128
+      - apiName: Department
+        label: 部門
+        type: Text
+        length: 80
+      - apiName: Email
+        label: メール
+        type: Email
+      - apiName: Phone
+        label: 電話
+        type: Phone
+      - apiName: MobilePhone
+        label: 携帯電話
+        type: Phone
+      - apiName: MailingStreet
+        label: 郵送先（町名・番地）
+        type: Text
+        length: 255
+      - apiName: MailingCity
+        label: 郵送先（市区郡）
+        type: Text
+        length: 40
+      - apiName: MailingState
+        label: 郵送先（都道府県）
+        type: Text
+        length: 80
+      - apiName: MailingPostalCode
+        label: 郵送先（郵便番号）
+        type: Text
+        length: 20
+      - apiName: MailingCountry
+        label: 郵送先（国）
+        type: Text
+        length: 80
+      - apiName: Birthdate
+        label: 誕生日
+        type: Date
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedContacts
+      - apiName: ReportsToId
+        label: 上司
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: DirectReports
+        relationshipLabel: 部下
+
+  # --------------------------------------------------
+  # リード
+  # --------------------------------------------------
+  - apiName: Lead
+    label: リード
+    pluralLabel: リード
+    description: 見込み顧客の管理
+    fields:
+      - apiName: FirstName
+        label: 名
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: 姓
+        type: Text
+        length: 80
+        required: true
+      - apiName: Company
+        label: 会社名
+        type: Text
+        length: 255
+        required: true
+      - apiName: Title
+        label: 役職
+        type: Text
+        length: 128
+      - apiName: Email
+        label: メール
+        type: Email
+      - apiName: Phone
+        label: 電話
+        type: Phone
+      - apiName: MobilePhone
+        label: 携帯電話
+        type: Phone
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - 新規
+          - 連絡済
+          - 適格
+          - 不適格
+          - 転換済
+      - apiName: Industry
+        label: 業種
+        type: Picklist
+        values:
+          - 農業
+          - アパレル
+          - 銀行
+          - バイオテクノロジー
+          - 化学
+          - 通信
+          - 建設
+          - コンサルティング
+          - 教育
+          - 電子機器
+          - エネルギー
+          - エンジニアリング
+          - エンターテインメント
+          - 環境
+          - 金融
+          - 飲食
+          - 政府機関
+          - ヘルスケア
+          - ホスピタリティ
+          - 保険
+          - 機械
+          - 製造
+          - メディア
+          - 非営利
+          - その他
+          - レクリエーション
+          - 小売
+          - 運輸
+          - テクノロジー
+          - 通信
+          - 公益事業
+      - apiName: LeadSource
+        label: リードソース
+        type: Picklist
+        values:
+          - ウェブ
+          - 電話
+          - パートナー
+          - 展示会
+          - 広告
+          - 紹介
+          - 学会
+          - その他
+      - apiName: Street
+        label: 町名・番地
+        type: Text
+        length: 255
+      - apiName: City
+        label: 市区郡
+        type: Text
+        length: 40
+      - apiName: State
+        label: 都道府県
+        type: Text
+        length: 80
+      - apiName: PostalCode
+        label: 郵便番号
+        type: Text
+        length: 20
+      - apiName: Country
+        label: 国
+        type: Text
+        length: 80
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: ConvertedAccountId
+        label: 転換済み取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: ConvertedLeads
+      - apiName: ConvertedContactId
+        label: 転換済み取引先責任者
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: ConvertedLeads
+      - apiName: ConvertedOpportunityId
+        label: 転換済み商談
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipName: ConvertedLeads
+      - apiName: IsConverted
+        label: 転換済み
+        type: Checkbox
+        defaultValue: false
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedLeads
+
+  # --------------------------------------------------
+  # 商談
+  # --------------------------------------------------
+  - apiName: Opportunity
+    label: 商談
+    pluralLabel: 商談
+    description: 営業商談の管理
+    fields:
+      - apiName: Name
+        label: 商談名
+        type: Text
+        length: 120
+        required: true
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Opportunities
+        relationshipLabel: 商談
+      - apiName: Amount
+        label: 金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: CloseDate
+        label: 完了予定日
+        type: Date
+        required: true
+      - apiName: StageName
+        label: フェーズ
+        type: Picklist
+        required: true
+        values:
+          - 見込み調査
+          - 適格性評価
+          - ニーズ分析
+          - 提案/見積
+          - 交渉/レビュー
+          - 成立
+          - 不成立
+      - apiName: Probability
+        label: 確度
+        type: Percent
+        precision: 18
+        scale: 0
+      - apiName: Type
+        label: 種別
+        type: Picklist
+        values:
+          - 新規
+          - 既存
+          - 更新
+      - apiName: LeadSource
+        label: リードソース
+        type: Picklist
+        values:
+          - ウェブ
+          - 電話
+          - パートナー
+          - 展示会
+          - 広告
+          - 紹介
+          - 学会
+          - その他
+      - apiName: NextStep
+        label: 次のステップ
+        type: Text
+        length: 255
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedOpportunities
+      - apiName: CampaignId
+        label: キャンペーン
+        type: Lookup
+        referenceTo: Campaign
+        relationshipName: Opportunities
+        relationshipLabel: 商談
+      - apiName: Pricebook2Id
+        label: 価格表
+        type: Lookup
+        referenceTo: Pricebook2
+        relationshipName: Opportunities
+        relationshipLabel: 商談
+      - apiName: ForecastCategory
+        label: 売上予測カテゴリ
+        type: Picklist
+        values:
+          - パイプライン
+          - 最良ケース
+          - コミット
+          - クローズ
+          - 除外
+
+  # --------------------------------------------------
+  # 商談商品
+  # --------------------------------------------------
+  - apiName: OpportunityLineItem
+    label: 商談商品
+    pluralLabel: 商談商品
+    description: 商談に紐づく商品明細
+    fields:
+      - apiName: OpportunityId
+        label: 商談
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipName: OpportunityLineItems
+        relationshipLabel: 商談商品
+        required: true
+      - apiName: PricebookEntryId
+        label: 価格表エントリ
+        type: Lookup
+        referenceTo: PricebookEntry
+        relationshipName: OpportunityLineItems
+      - apiName: Product2Id
+        label: 商品
+        type: Lookup
+        referenceTo: Product2
+        relationshipName: OpportunityLineItems
+      - apiName: Quantity
+        label: 数量
+        type: Number
+        precision: 18
+        scale: 2
+        required: true
+      - apiName: UnitPrice
+        label: 単価
+        type: Currency
+        precision: 18
+        scale: 0
+        required: true
+      - apiName: TotalPrice
+        label: 合計価格
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: Text
+        length: 255
+      - apiName: ServiceDate
+        label: サービス日
+        type: Date
+
+  # --------------------------------------------------
+  # 商談取引先責任者の役割
+  # --------------------------------------------------
+  - apiName: OpportunityContactRole
+    label: 商談取引先責任者の役割
+    pluralLabel: 商談取引先責任者の役割
+    description: 商談における取引先責任者の役割管理
+    fields:
+      - apiName: OpportunityId
+        label: 商談
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipName: OpportunityContactRoles
+        relationshipLabel: 商談取引先責任者の役割
+      - apiName: ContactId
+        label: 取引先責任者
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: OpportunityContactRoles
+        relationshipLabel: 商談取引先責任者の役割
+      - apiName: Role
+        label: 役割
+        type: Picklist
+        values:
+          - 意思決定者
+          - 評価者
+          - 経済的購入者
+          - 技術的購入者
+          - その他
+      - apiName: IsPrimary
+        label: 主担当者
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # キャンペーン
+  # --------------------------------------------------
+  - apiName: Campaign
+    label: キャンペーン
+    pluralLabel: キャンペーン
+    description: マーケティングキャンペーンの管理
+    fields:
+      - apiName: Name
+        label: キャンペーン名
+        type: Text
+        length: 80
+        required: true
+      - apiName: Type
+        label: 種別
+        type: Picklist
+        values:
+          - カンファレンス
+          - Webセミナー
+          - メール
+          - 広告
+          - パートナー
+          - その他
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        values:
+          - 計画中
+          - 進行中
+          - 完了
+          - 中止
+      - apiName: StartDate
+        label: 開始日
+        type: Date
+      - apiName: EndDate
+        label: 終了日
+        type: Date
+      - apiName: ExpectedRevenue
+        label: 期待収益
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: BudgetedCost
+        label: 予算コスト
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: ActualCost
+        label: 実績コスト
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: ExpectedResponse
+        label: 期待レスポンス率
+        type: Percent
+        precision: 18
+        scale: 0
+      - apiName: NumberSent
+        label: 送信数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: IsActive
+        label: 有効
+        type: Checkbox
+        defaultValue: true
+      - apiName: ParentId
+        label: 親キャンペーン
+        type: Lookup
+        referenceTo: Campaign
+        relationshipName: ChildCampaigns
+        relationshipLabel: 子キャンペーン
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedCampaigns
+
+  # --------------------------------------------------
+  # キャンペーンメンバー
+  # --------------------------------------------------
+  - apiName: CampaignMember
+    label: キャンペーンメンバー
+    pluralLabel: キャンペーンメンバー
+    description: キャンペーンに関連する連絡先・リードの管理
+    fields:
+      - apiName: CampaignId
+        label: キャンペーン
+        type: Lookup
+        referenceTo: Campaign
+        relationshipName: CampaignMembers
+        relationshipLabel: キャンペーンメンバー
+      - apiName: ContactId
+        label: 取引先責任者
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: CampaignMembers
+        relationshipLabel: キャンペーンメンバー
+      - apiName: LeadId
+        label: リード
+        type: Lookup
+        referenceTo: Lead
+        relationshipName: CampaignMembers
+        relationshipLabel: キャンペーンメンバー
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        values:
+          - 送信済
+          - 応答済
+          - 出席
+          - 欠席
+
+  # --------------------------------------------------
+  # ケース
+  # --------------------------------------------------
+  - apiName: Case
+    label: ケース
+    pluralLabel: ケース
+    description: カスタマーサポート・問い合わせの管理
+    fields:
+      - apiName: Subject
+        label: 件名
+        type: Text
+        length: 255
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - 新規
+          - 対応中
+          - エスカレーション
+          - 解決済
+          - クローズ
+      - apiName: Priority
+        label: 優先度
+        type: Picklist
+        values:
+          - 高
+          - 中
+          - 低
+      - apiName: Origin
+        label: 発生源
+        type: Picklist
+        values:
+          - 電話
+          - メール
+          - ウェブ
+      - apiName: Type
+        label: 種別
+        type: Picklist
+        values:
+          - 問題
+          - 機能要求
+          - 質問
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Cases
+        relationshipLabel: ケース
+      - apiName: ContactId
+        label: 取引先責任者
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: Cases
+        relationshipLabel: ケース
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedCases
+      - apiName: Reason
+        label: 原因
+        type: Picklist
+        values:
+          - ユーザーの操作ミス
+          - 機能の不具合
+          - 設定の問題
+          - その他
+      - apiName: IsClosed
+        label: クローズ済み
+        type: Checkbox
+        defaultValue: false
+      - apiName: IsEscalated
+        label: エスカレーション済み
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # ToDo
+  # --------------------------------------------------
+  - apiName: Task
+    label: ToDo
+    pluralLabel: ToDo
+    description: ToDoタスクの管理
+    fields:
+      - apiName: Subject
+        label: 件名
+        type: Text
+        length: 255
+      - apiName: Description
+        label: コメント
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - 未着手
+          - 進行中
+          - 完了
+          - 待機中
+          - 延期
+      - apiName: Priority
+        label: 優先度
+        type: Picklist
+        values:
+          - 高
+          - 中
+          - 低
+      - apiName: ActivityDate
+        label: 期日
+        type: Date
+      - apiName: WhoId
+        label: 名前
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: Tasks
+        relationshipLabel: ToDo
+      - apiName: WhatId
+        label: 関連先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Tasks
+        relationshipLabel: ToDo
+      - apiName: OwnerId
+        label: 任命先
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedTasks
+      - apiName: IsHighPriority
+        label: 重要フラグ
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # 行動
+  # --------------------------------------------------
+  - apiName: Event
+    label: 行動
+    pluralLabel: 行動
+    description: カレンダー行動・会議の管理
+    fields:
+      - apiName: Subject
+        label: 件名
+        type: Text
+        length: 255
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: StartDateTime
+        label: 開始日時
+        type: DateTime
+        required: true
+      - apiName: EndDateTime
+        label: 終了日時
+        type: DateTime
+        required: true
+      - apiName: Location
+        label: 場所
+        type: Text
+        length: 255
+      - apiName: IsAllDayEvent
+        label: 終日イベント
+        type: Checkbox
+        defaultValue: false
+      - apiName: WhoId
+        label: 名前
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: Events
+        relationshipLabel: 行動
+      - apiName: WhatId
+        label: 関連先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Events
+        relationshipLabel: 行動
+      - apiName: OwnerId
+        label: 任命先
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedEvents
+
+  # --------------------------------------------------
+  # 商品
+  # --------------------------------------------------
+  - apiName: Product2
+    label: 商品
+    pluralLabel: 商品
+    description: 販売商品の管理
+    fields:
+      - apiName: Name
+        label: 商品名
+        type: Text
+        length: 255
+        required: true
+      - apiName: ProductCode
+        label: 商品コード
+        type: Text
+        length: 255
+      - apiName: Description
+        label: 商品説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: IsActive
+        label: 有効
+        type: Checkbox
+        defaultValue: true
+      - apiName: Family
+        label: 商品ファミリ
+        type: Picklist
+        values:
+          - ハードウェア
+          - ソフトウェア
+          - サービス
+          - サブスクリプション
+
+  # --------------------------------------------------
+  # 価格表
+  # --------------------------------------------------
+  - apiName: Pricebook2
+    label: 価格表
+    pluralLabel: 価格表
+    description: 商品価格表の管理
+    fields:
+      - apiName: Name
+        label: 価格表名
+        type: Text
+        length: 255
+        required: true
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: IsActive
+        label: 有効
+        type: Checkbox
+        defaultValue: true
+      - apiName: IsStandard
+        label: 標準価格表
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # 価格表エントリ
+  # --------------------------------------------------
+  - apiName: PricebookEntry
+    label: 価格表エントリ
+    pluralLabel: 価格表エントリ
+    description: 価格表と商品の関連付け
+    fields:
+      - apiName: Pricebook2Id
+        label: 価格表
+        type: Lookup
+        referenceTo: Pricebook2
+        relationshipName: PricebookEntries
+        relationshipLabel: 価格表エントリ
+      - apiName: Product2Id
+        label: 商品
+        type: Lookup
+        referenceTo: Product2
+        relationshipName: PricebookEntries
+        relationshipLabel: 価格表エントリ
+      - apiName: UnitPrice
+        label: 表示価格
+        type: Currency
+        precision: 18
+        scale: 0
+        required: true
+      - apiName: IsActive
+        label: 有効
+        type: Checkbox
+        defaultValue: true
+      - apiName: UseStandardPrice
+        label: 標準価格を使用
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # 見積
+  # --------------------------------------------------
+  - apiName: Quote
+    label: 見積
+    pluralLabel: 見積
+    description: 商談に関連する見積書の管理
+    fields:
+      - apiName: Name
+        label: 見積名
+        type: Text
+        length: 255
+        required: true
+      - apiName: OpportunityId
+        label: 商談
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipName: Quotes
+        relationshipLabel: 見積
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - ドラフト
+          - 承認待ち
+          - 承認済
+          - 送付済
+          - 受諾
+          - 拒否
+      - apiName: ExpirationDate
+        label: 有効期限
+        type: Date
+      - apiName: Subtotal
+        label: 小計
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: TotalPrice
+        label: 合計金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Discount
+        label: 割引率
+        type: Percent
+        precision: 18
+        scale: 2
+      - apiName: Tax
+        label: 税額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: GrandTotal
+        label: 総計
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: ContactId
+        label: 取引先責任者
+        type: Lookup
+        referenceTo: Contact
+        relationshipName: Quotes
+        relationshipLabel: 見積
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Quotes
+        relationshipLabel: 見積
+
+  # --------------------------------------------------
+  # 見積品目
+  # --------------------------------------------------
+  - apiName: QuoteLineItem
+    label: 見積品目
+    pluralLabel: 見積品目
+    description: 見積書の品目明細
+    fields:
+      - apiName: QuoteId
+        label: 見積
+        type: Lookup
+        referenceTo: Quote
+        relationshipName: QuoteLineItems
+        relationshipLabel: 見積品目
+      - apiName: Product2Id
+        label: 商品
+        type: Lookup
+        referenceTo: Product2
+        relationshipName: QuoteLineItems
+        relationshipLabel: 見積品目
+      - apiName: PricebookEntryId
+        label: 価格表エントリ
+        type: Lookup
+        referenceTo: PricebookEntry
+        relationshipName: QuoteLineItems
+      - apiName: Quantity
+        label: 数量
+        type: Number
+        precision: 18
+        scale: 2
+        required: true
+      - apiName: UnitPrice
+        label: 単価
+        type: Currency
+        precision: 18
+        scale: 0
+        required: true
+      - apiName: TotalPrice
+        label: 合計価格
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Discount
+        label: 割引率
+        type: Percent
+        precision: 18
+        scale: 2
+      - apiName: Description
+        label: 説明
+        type: Text
+        length: 255
+
+  # --------------------------------------------------
+  # 契約
+  # --------------------------------------------------
+  - apiName: Contract
+    label: 契約
+    pluralLabel: 契約
+    description: 取引先との契約管理
+    fields:
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Contracts
+        relationshipLabel: 契約
+        required: true
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - ドラフト
+          - 承認プロセス中
+          - 有効
+          - 終了
+      - apiName: StartDate
+        label: 契約開始日
+        type: Date
+      - apiName: EndDate
+        label: 契約終了日
+        type: Date
+      - apiName: ContractTerm
+        label: 契約期間（月）
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: OwnerExpirationNotice
+        label: 所有者への期限通知
+        type: Picklist
+        values:
+          - 15日前
+          - 30日前
+          - 45日前
+          - 60日前
+          - 90日前
+          - 120日前
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedContracts
+
+  # --------------------------------------------------
+  # 注文
+  # --------------------------------------------------
+  - apiName: Order
+    label: 注文
+    pluralLabel: 注文
+    description: 受注・注文の管理
+    fields:
+      - apiName: AccountId
+        label: 取引先
+        type: Lookup
+        referenceTo: Account
+        relationshipName: Orders
+        relationshipLabel: 注文
+        required: true
+      - apiName: ContractId
+        label: 契約
+        type: Lookup
+        referenceTo: Contract
+        relationshipName: Orders
+        relationshipLabel: 注文
+      - apiName: EffectiveDate
+        label: 注文開始日
+        type: Date
+        required: true
+      - apiName: Status
+        label: 状況
+        type: Picklist
+        required: true
+        values:
+          - ドラフト
+          - 有効
+          - 完了
+          - キャンセル
+      - apiName: TotalAmount
+        label: 合計金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OrderNumber
+        label: 注文番号
+        type: Text
+        length: 30
+      - apiName: Pricebook2Id
+        label: 価格表
+        type: Lookup
+        referenceTo: Pricebook2
+        relationshipName: Orders
+        relationshipLabel: 注文
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedOrders
+
+  # --------------------------------------------------
+  # 注文品目
+  # --------------------------------------------------
+  - apiName: OrderItem
+    label: 注文品目
+    pluralLabel: 注文品目
+    description: 注文の品目明細
+    fields:
+      - apiName: OrderId
+        label: 注文
+        type: Lookup
+        referenceTo: Order
+        relationshipName: OrderItems
+        relationshipLabel: 注文品目
+        required: true
+      - apiName: Product2Id
+        label: 商品
+        type: Lookup
+        referenceTo: Product2
+        relationshipName: OrderItems
+        relationshipLabel: 注文品目
+      - apiName: PricebookEntryId
+        label: 価格表エントリ
+        type: Lookup
+        referenceTo: PricebookEntry
+        relationshipName: OrderItems
+      - apiName: Quantity
+        label: 数量
+        type: Number
+        precision: 18
+        scale: 2
+        required: true
+      - apiName: UnitPrice
+        label: 単価
+        type: Currency
+        precision: 18
+        scale: 0
+        required: true
+      - apiName: TotalPrice
+        label: 合計価格
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: Text
+        length: 255
+
+  # --------------------------------------------------
+  # ユーザ
+  # --------------------------------------------------
+  - apiName: User
+    label: ユーザ
+    pluralLabel: ユーザ
+    description: システムユーザの管理
+    fields:
+      - apiName: Username
+        label: ユーザ名
+        type: Text
+        length: 80
+        required: true
+        unique: true
+      - apiName: FirstName
+        label: 名
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: 姓
+        type: Text
+        length: 80
+        required: true
+      - apiName: Email
+        label: メール
+        type: Email
+        required: true
+      - apiName: Phone
+        label: 電話
+        type: Phone
+      - apiName: Title
+        label: 役職
+        type: Text
+        length: 128
+      - apiName: Department
+        label: 部門
+        type: Text
+        length: 80
+      - apiName: IsActive
+        label: 有効
+        type: Checkbox
+        defaultValue: true
+      - apiName: ProfileId
+        label: プロファイル
+        type: Text
+        length: 18
+      - apiName: UserRoleId
+        label: ロール
+        type: Text
+        length: 18
+      - apiName: ManagerId
+        label: マネージャ
+        type: Lookup
+        referenceTo: User
+        relationshipName: DirectReports
+        relationshipLabel: 部下
+      - apiName: Alias
+        label: 別名
+        type: Text
+        length: 8
+      - apiName: CommunityNickname
+        label: コミュニティニックネーム
+        type: Text
+        length: 40
+
+  # --------------------------------------------------
+  # メモ
+  # --------------------------------------------------
+  - apiName: Note
+    label: メモ
+    pluralLabel: メモ
+    description: レコードに関連するメモの管理
+    fields:
+      - apiName: Title
+        label: タイトル
+        type: Text
+        length: 80
+        required: true
+      - apiName: Body
+        label: 本文
+        type: LongTextArea
+        length: 32768
+        visibleLines: 10
+      - apiName: ParentId
+        label: 親レコード
+        type: Text
+        length: 18
+      - apiName: IsPrivate
+        label: 非公開
+        type: Checkbox
+        defaultValue: false
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedNotes
+
+  # --------------------------------------------------
+  # コンテンツドキュメント
+  # --------------------------------------------------
+  - apiName: ContentDocument
+    label: コンテンツドキュメント
+    pluralLabel: コンテンツドキュメント
+    description: ファイル・ドキュメントの管理
+    fields:
+      - apiName: Title
+        label: タイトル
+        type: Text
+        length: 255
+        required: true
+      - apiName: FileType
+        label: ファイルタイプ
+        type: Text
+        length: 20
+      - apiName: ContentSize
+        label: ファイルサイズ
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Description
+        label: 説明
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+        relationshipName: OwnedContentDocuments
+      - apiName: LatestPublishedVersionId
+        label: 最新公開バージョン
+        type: Text
+        length: 18
+
+# ================================================================
+# Custom Objects (カスタムオブジェクト)
+# ================================================================
+objects:
+
+  # --------------------------------------------------
+  # 提携医療機関
+  # --------------------------------------------------
+  - apiName: Medical_Institution__c
+    label: 提携医療機関
+    pluralLabel: 提携医療機関
+    description: SB TEMPUS提携医療機関の管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 病院名
+      type: Text
+      length: 80
+    fields:
+      - apiName: Facility_Type__c
+        label: 施設種別
+        type: Picklist
+        required: false
+        values:
+          - 大学病院
+          - がん拠点病院
+          - 一般病院
+          - クリニック
+      - apiName: Adapter_Status__c
+        label: アダプター導入状況
+        type: Picklist
+        required: false
+        values:
+          - 未導入
+          - 導入中
+          - 導入完了
+      - apiName: Contact_Person__c
+        label: 担当者名
+        type: Text
+        length: 80
+      - apiName: Prefecture__c
+        label: 都道府県
+        type: Text
+        length: 40
+      - apiName: Contract_Start_Date__c
+        label: 契約開始日
+        type: Date
+      - apiName: Phone__c
+        label: 電話番号
+        type: Phone
+      - apiName: Email__c
+        label: メールアドレス
+        type: Email
+      - apiName: Website__c
+        label: Webサイト
+        type: Url
+      - apiName: Bed_Count__c
+        label: 病床数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Note__c
+        label: 備考
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Latitude__c
+        label: 緯度
+        type: Number
+        precision: 10
+        scale: 7
+      - apiName: Longitude__c
+        label: 経度
+        type: Number
+        precision: 11
+        scale: 7
+    validationRules:
+      - apiName: Require_Prefecture
+        active: true
+        description: 都道府県は必須
+        errorConditionFormula: "ISBLANK(Prefecture__c)"
+        errorMessage: 都道府県を入力してください
+    recordTypes:
+      - apiName: University_Hospital
+        label: 大学病院
+        description: 大学附属病院
+        active: true
+      - apiName: Cancer_Center
+        label: がん拠点病院
+        description: がん診療連携拠点病院
+        active: true
+      - apiName: General
+        label: 一般病院・クリニック
+        description: 一般病院およびクリニック
+        active: true
+
+  # --------------------------------------------------
+  # ゲノム解析案件
+  # --------------------------------------------------
+  - apiName: Genomic_Project__c
+    label: ゲノム解析案件
+    pluralLabel: ゲノム解析案件
+    description: ゲノム解析プロジェクトの進捗管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: プロジェクト名
+      type: Text
+      length: 80
+    fields:
+      - apiName: Medical_Institution__c
+        label: 医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: Genomic_Projects
+        relationshipLabel: ゲノム解析案件
+        deleteConstraint: SetNull
+      - apiName: Cancer_Type__c
+        label: がん種
+        type: Picklist
+        required: true
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+      - apiName: Data_Modality__c
+        label: データ種別
+        type: MultiselectPicklist
+        values:
+          - ゲノム
+          - 臨床
+          - 画像
+          - 病理
+        visibleLines: 4
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        required: true
+        values:
+          - 検体待ち
+          - 解析中
+          - レポート作成中
+          - レポート完了
+          - 納品済
+      - apiName: Report_Due_Date__c
+        label: 報告予定日
+        type: Date
+      - apiName: Sample_Count__c
+        label: サンプル数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: TAT_Days__c
+        label: TAT（日数）
+        type: Number
+        precision: 18
+        scale: 0
+        inlineHelpText: ターンアラウンドタイム（受領からレポート発行まで）
+      - apiName: Is_Urgent__c
+        label: 緊急案件
+        type: Checkbox
+        defaultValue: false
+
+  # --------------------------------------------------
+  # 製薬商談
+  # --------------------------------------------------
+  - apiName: Pharma_Opportunity__c
+    label: 製薬商談
+    pluralLabel: 製薬商談
+    description: 製薬企業向けデータ提供・共同研究の商談管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 商談名
+      type: Text
+      length: 120
+    fields:
+      - apiName: Pharma_Company__c
+        label: 製薬企業名
+        type: Text
+        length: 120
+        required: true
+      - apiName: Amount__c
+        label: 金額
+        type: Currency
+        precision: 18
+        scale: 0
+        inlineHelpText: 万円単位で入力
+      - apiName: Phase__c
+        label: フェーズ
+        type: Picklist
+        required: true
+        values:
+          - リード
+          - ヒアリング
+          - 提案
+          - セキュリティ審査
+          - 契約交渉
+          - 成約
+          - 失注
+      - apiName: Service_Type__c
+        label: サービス種別
+        type: Picklist
+        values:
+          - Tempus Lens
+          - Tempus Explore
+          - カスタム解析
+          - 共同研究
+      - apiName: Target_Cancer__c
+        label: 対象がん種
+        type: MultiselectPicklist
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+        visibleLines: 4
+      - apiName: Compliance_Status__c
+        label: コンプライアンス
+        type: Picklist
+        values:
+          - 未着手
+          - 審査中
+          - 承認済
+          - 要修正
+      - apiName: Expected_Close_Date__c
+        label: 予想成約日
+        type: Date
+      - apiName: Owner_Name__c
+        label: 担当営業
+        type: Text
+        length: 80
+      - apiName: Probability__c
+        label: 確度
+        type: Percent
+        precision: 18
+        scale: 0
+      - apiName: Win_Reason__c
+        label: 受注理由
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Loss_Reason__c
+        label: 失注理由
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+    validationRules:
+      - apiName: Require_Close_Date_After_Proposal
+        active: true
+        description: 提案以降は成約予定日が必須
+        errorConditionFormula: "AND(NOT(ISPICKVAL(Phase__c,'リード')),NOT(ISPICKVAL(Phase__c,'ヒアリング')),ISBLANK(Expected_Close_Date__c))"
+        errorMessage: 提案フェーズ以降は予想成約日を入力してください
+      - apiName: Require_Loss_Reason
+        active: true
+        description: 失注時は理由が必須
+        errorConditionFormula: "AND(ISPICKVAL(Phase__c,'失注'),ISBLANK(Loss_Reason__c))"
+        errorMessage: 失注理由を入力してください
+
+  # --------------------------------------------------
+  # ドクター管理
+  # --------------------------------------------------
+  - apiName: Doctor__c
+    label: ドクター管理
+    pluralLabel: ドクター管理
+    description: 個別ドクターの関係構築・営業活動管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: ドクター名
+      type: Text
+      length: 80
+    fields:
+      - apiName: Medical_Institution__c
+        label: 所属医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: Doctors
+        relationshipLabel: 所属ドクター
+        deleteConstraint: SetNull
+      - apiName: Department__c
+        label: 診療科
+        type: Picklist
+        values:
+          - 腫瘍内科
+          - 呼吸器内科
+          - 消化器内科
+          - 乳腺外科
+          - 病理診断科
+          - 遺伝診療科
+          - 外科
+          - その他
+      - apiName: Title__c
+        label: 役職
+        type: Picklist
+        values:
+          - 教授
+          - 准教授
+          - 講師
+          - 助教
+          - 部長
+          - 医長
+          - 医員
+      - apiName: Specialty_Cancer__c
+        label: 専門がん種
+        type: MultiselectPicklist
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+        visibleLines: 4
+      - apiName: Relationship_Level__c
+        label: 関係構築度
+        type: Picklist
+        required: true
+        values:
+          - 未接触
+          - 初回面談済
+          - 関心あり
+          - 検討中
+          - 推進者
+          - ファン（KOL）
+      - apiName: Genomic_Interest__c
+        label: ゲノム検査への関心
+        type: Picklist
+        values:
+          - 非常に高い
+          - やや高い
+          - 普通
+          - 低い
+          - 不明
+      - apiName: Last_Visit_Date__c
+        label: 直近訪問日
+        type: Date
+      - apiName: Next_Action_Date__c
+        label: 次回アクション予定日
+        type: Date
+      - apiName: Visit_Count__c
+        label: 訪問回数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Referred_Specimen_Count__c
+        label: 紹介検体数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Conference_History__c
+        label: 学会発表歴
+        type: MultiselectPicklist
+        values:
+          - ASCO
+          - ESMO
+          - JSMO
+          - AACR
+          - 日本癌学会
+          - 日本臨床腫瘍学会
+        visibleLines: 4
+      - apiName: Email__c
+        label: メールアドレス
+        type: Email
+      - apiName: Phone__c
+        label: 電話番号
+        type: Phone
+      - apiName: Contact_Note__c
+        label: 連絡先メモ
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Assigned_MR__c
+        label: 担当MR
+        type: Text
+        length: 80
+      - apiName: Is_KOL__c
+        label: KOLフラグ
+        type: Checkbox
+        defaultValue: false
+        inlineHelpText: Key Opinion Leaderの場合チェック
+      - apiName: KOL_Score__c
+        label: KOLスコア
+        type: Number
+        precision: 18
+        scale: 0
+        inlineHelpText: "0-100のスコアリング（学会発表数×10 + 論文数×5 + 検体紹介数×2）"
+    validationRules:
+      - apiName: Require_Institution
+        active: true
+        description: 所属医療機関は必須
+        errorConditionFormula: "ISBLANK(Medical_Institution__c)"
+        errorMessage: 所属医療機関を選択してください
+
+  # --------------------------------------------------
+  # 訪問記録
+  # --------------------------------------------------
+  - apiName: Visit_Record__c
+    label: 訪問記録
+    pluralLabel: 訪問記録
+    description: ドクター訪問の記録・ネクストアクション管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: false
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 訪問記録番号
+      type: AutoNumber
+      displayFormat: "VR-{0000}"
+    fields:
+      - apiName: Doctor__c
+        label: ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+        relationshipName: Visit_Records
+        relationshipLabel: 訪問記録
+        deleteConstraint: SetNull
+      - apiName: Visit_Date__c
+        label: 訪問日
+        type: Date
+        required: true
+      - apiName: Visit_Purpose__c
+        label: 訪問目的
+        type: Picklist
+        required: true
+        values:
+          - 新規紹介
+          - フォローアップ
+          - 検査結果説明
+          - 学術情報提供
+          - 共同研究打合せ
+          - クレーム対応
+          - 関係構築
+      - apiName: Meeting_Result__c
+        label: 面談結果
+        type: Picklist
+        values:
+          - 好感触
+          - 継続検討
+          - 保留
+          - 不採用
+      - apiName: Materials_Provided__c
+        label: 提供資料
+        type: MultiselectPicklist
+        values:
+          - GenMine概要
+          - 症例レポート
+          - 解析フロー資料
+          - 学術論文
+          - 価格表
+          - 導入事例集
+        visibleLines: 4
+      - apiName: Next_Action__c
+        label: ネクストアクション
+        type: Text
+        length: 255
+      - apiName: Next_Visit_Date__c
+        label: 次回訪問予定日
+        type: Date
+      - apiName: Meeting_Duration__c
+        label: 面談時間（分）
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Meeting_Note__c
+        label: 面談メモ
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Medical_Institution__c
+        label: 訪問先医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: Visit_Records
+        relationshipLabel: 訪問記録
+        deleteConstraint: SetNull
+      - apiName: Checkin_Latitude__c
+        label: チェックイン緯度
+        type: Number
+        precision: 10
+        scale: 7
+      - apiName: Checkin_Longitude__c
+        label: チェックイン経度
+        type: Number
+        precision: 11
+        scale: 7
+      - apiName: Checkin_Time__c
+        label: チェックイン時刻
+        type: DateTime
+      - apiName: Location_Accuracy__c
+        label: 位置精度(m)
+        type: Number
+        precision: 10
+        scale: 2
+
+  # --------------------------------------------------
+  # MA活動管理
+  # --------------------------------------------------
+  - apiName: MA_Activity__c
+    label: MA活動管理
+    pluralLabel: MA活動管理
+    description: メディカルアフェアーズの活動管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 活動名
+      type: Text
+      length: 120
+    fields:
+      - apiName: Activity_Type__c
+        label: 活動種別
+        type: Picklist
+        required: true
+        values:
+          - 学術講演会
+          - アドバイザリーボード
+          - 文献レビュー提供
+          - メディカルインフォメーション対応
+          - KOL面談
+          - 学会ブース運営
+          - 院内勉強会
+          - リアルワールドデータ提供
+          - パブリケーションプラン
+      - apiName: Doctor__c
+        label: 対象ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+        relationshipName: MA_Activities
+        relationshipLabel: MA活動
+        deleteConstraint: SetNull
+      - apiName: Medical_Institution__c
+        label: 対象医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: MA_Activities
+        relationshipLabel: MA活動
+        deleteConstraint: SetNull
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        required: true
+        values:
+          - 企画中
+          - 社内承認待ち
+          - 準備中
+          - 実施済
+          - フォロー中
+          - 完了
+      - apiName: Evidence_Level__c
+        label: エビデンスレベル
+        type: Picklist
+        values:
+          - フェーズIII
+          - フェーズII
+          - リアルワールド
+          - ケーススタディ
+          - エキスパートオピニオン
+      - apiName: Related_Cancer__c
+        label: 関連がん種
+        type: MultiselectPicklist
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+        visibleLines: 4
+      - apiName: Related_Product__c
+        label: 関連プロダクト
+        type: MultiselectPicklist
+        values:
+          - GenMine検査
+          - Tempus xT
+          - Tempus xF（リキッドバイオプシー）
+          - Tempus Lens
+          - Tempus Explore
+          - AIアルゴリズム
+        visibleLines: 4
+      - apiName: Compliance_Check__c
+        label: コンプライアンス確認
+        type: Picklist
+        required: true
+        values:
+          - 未確認
+          - 確認中
+          - 承認済
+          - 差し戻し
+      - apiName: Activity_Date__c
+        label: 実施日
+        type: Date
+      - apiName: Participant_Count__c
+        label: 参加者数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Budget__c
+        label: 予算
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Assigned_MSL__c
+        label: 担当MSL
+        type: Text
+        length: 80
+      - apiName: Feedback__c
+        label: 成果・フィードバック
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+
+  # --------------------------------------------------
+  # 勉強会・講演会
+  # --------------------------------------------------
+  - apiName: Seminar__c
+    label: 勉強会・講演会
+    pluralLabel: 勉強会・講演会
+    description: 学術イベント・勉強会の企画から実施後フォローまで管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: イベント名
+      type: Text
+      length: 120
+    fields:
+      - apiName: Event_Format__c
+        label: 開催形式
+        type: Picklist
+        required: true
+        values:
+          - 院内勉強会
+          - Web講演会
+          - 地域連携セミナー
+          - 学術講演会
+          - ハンズオンセミナー
+          - ランチョンセミナー
+      - apiName: Speaker_Doctor__c
+        label: 講師ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+        relationshipName: Seminars_As_Speaker
+        relationshipLabel: 講師担当セミナー
+        deleteConstraint: SetNull
+      - apiName: Speaker_Title__c
+        label: 講師肩書・所属
+        type: Text
+        length: 255
+      - apiName: Presentation_Title__c
+        label: 演題
+        type: Text
+        length: 255
+      - apiName: Host_Institution__c
+        label: 開催医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: Hosted_Seminars
+        relationshipLabel: 開催セミナー
+        deleteConstraint: SetNull
+      - apiName: Event_Date__c
+        label: 開催日
+        type: Date
+        required: true
+      - apiName: Progress_Status__c
+        label: 進行ステータス
+        type: Picklist
+        required: true
+        values:
+          - 企画立案
+          - 講師打診中
+          - 講師確定
+          - 会場・日程調整中
+          - 案内配信済
+          - 開催済
+          - 報告書作成中
+          - 完了
+      - apiName: Target_Cancer__c
+        label: 対象がん種
+        type: MultiselectPicklist
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+          - 横断的
+        visibleLines: 4
+      - apiName: Target_Audience__c
+        label: 想定参加者
+        type: MultiselectPicklist
+        values:
+          - 腫瘍内科医
+          - 外科医
+          - 病理医
+          - 看護師
+          - 薬剤師
+          - CRC（治験コーディネーター）
+          - 製薬企業
+        visibleLines: 4
+      - apiName: Attendee_Count__c
+        label: 参加人数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Speaker_Fee__c
+        label: 講師謝金
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Operation_Cost__c
+        label: 運営費
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Total_Cost__c
+        label: 総コスト
+        type: Formula
+        formulaReturnType: Currency
+        formula: "Speaker_Fee__c + Operation_Cost__c"
+        inlineHelpText: 講師謝金 + 運営費の自動計算
+      - apiName: Compliance_Approval__c
+        label: コンプライアンス承認
+        type: Picklist
+        required: true
+        values:
+          - 未申請
+          - 申請中
+          - 承認済
+          - 却下
+      - apiName: Organizer__c
+        label: 担当者
+        type: Text
+        length: 80
+      - apiName: Post_Event_Note__c
+        label: 開催後の反響・メモ
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Venue__c
+        label: 会場名
+        type: Text
+        length: 255
+      - apiName: Venue_Address__c
+        label: 会場住所
+        type: Text
+        length: 255
+      - apiName: Venue_Latitude__c
+        label: 会場緯度
+        type: Number
+        precision: 10
+        scale: 7
+      - apiName: Venue_Longitude__c
+        label: 会場経度
+        type: Number
+        precision: 11
+        scale: 7
+    validationRules:
+      - apiName: Require_Compliance_Before_Execution
+        active: true
+        description: 開催済み以降はコンプライアンス承認が必要
+        errorConditionFormula: "AND(OR(ISPICKVAL(Progress_Status__c,'開催済'),ISPICKVAL(Progress_Status__c,'報告書作成中'),ISPICKVAL(Progress_Status__c,'完了')),NOT(ISPICKVAL(Compliance_Approval__c,'承認済')))"
+        errorMessage: 開催にはコンプライアンス承認が必要です
+
+  # --------------------------------------------------
+  # 検体管理
+  # --------------------------------------------------
+  - apiName: Specimen__c
+    label: 検体管理
+    pluralLabel: 検体管理
+    description: 検体の受領からレポート発行までのトラッキング
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 検体ID
+      type: AutoNumber
+      displayFormat: "SP-{00000}"
+    fields:
+      - apiName: Patient_ID__c
+        label: 患者ID（匿名化）
+        type: Text
+        length: 40
+        required: true
+        externalId: true
+        unique: true
+      - apiName: Source_Institution__c
+        label: 提出元医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+        relationshipName: Specimens
+        relationshipLabel: 提出検体
+        deleteConstraint: Restrict
+      - apiName: Referring_Doctor__c
+        label: 紹介ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+        relationshipName: Referred_Specimens
+        relationshipLabel: 紹介検体
+        deleteConstraint: SetNull
+      - apiName: Cancer_Type__c
+        label: がん種
+        type: Picklist
+        required: true
+        values:
+          - 肺がん
+          - 乳がん
+          - 胃がん
+          - 膵がん
+          - 大腸がん
+          - 血液がん
+          - 希少がん
+      - apiName: Specimen_Type__c
+        label: 検体種別
+        type: Picklist
+        required: true
+        values:
+          - FFPE（組織）
+          - 血液（リキッドバイオプシー）
+          - 骨髄
+          - 新鮮凍結組織
+          - 細胞診検体
+      - apiName: Received_Date__c
+        label: 受領日
+        type: Date
+      - apiName: Specimen_Status__c
+        label: 検体ステータス
+        type: Picklist
+        required: true
+        values:
+          - 受領待ち
+          - 受領済
+          - QC中
+          - QC合格
+          - QC不合格
+          - 解析中
+          - 解析完了
+          - レポート発行済
+      - apiName: Analysis_Panel__c
+        label: 解析パネル
+        type: Picklist
+        values:
+          - xT（全エクソーム）
+          - xF（リキッド）
+          - xG（全ゲノム）
+          - xR（RNA）
+          - GenMine標準
+      - apiName: TAT_Target__c
+        label: TAT目標日数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Report_Date__c
+        label: レポート発行日
+        type: Date
+      - apiName: Lab__c
+        label: 担当ラボ
+        type: Lookup
+        referenceTo: Lab__c
+        relationshipName: Specimens
+        relationshipLabel: 処理検体
+        deleteConstraint: SetNull
+      - apiName: Is_Retest__c
+        label: 再検査フラグ
+        type: Checkbox
+        defaultValue: false
+      - apiName: Note__c
+        label: 備考
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # ラボ管理
+  # --------------------------------------------------
+  - apiName: Lab__c
+    label: ラボ管理
+    pluralLabel: ラボ管理
+    description: 解析ラボの稼働・品質管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: false
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: ラボ名
+      type: Text
+      length: 80
+    fields:
+      - apiName: Location__c
+        label: 所在地
+        type: Text
+        length: 120
+      - apiName: Lab_Type__c
+        label: ラボ種別
+        type: Picklist
+        values:
+          - 自社ラボ
+          - 委託ラボ
+          - 提携大学ラボ
+          - 海外ラボ（Tempus本社）
+      - apiName: Supported_Assays__c
+        label: 対応解析
+        type: MultiselectPicklist
+        values:
+          - xT（全エクソーム）
+          - xF（リキッド）
+          - xG（全ゲノム）
+          - xR（RNA）
+          - GenMine標準
+          - 病理AI解析
+        visibleLines: 4
+      - apiName: Operation_Status__c
+        label: 稼働状況
+        type: Picklist
+        values:
+          - 通常稼働
+          - 高負荷
+          - メンテナンス中
+          - 立ち上げ中
+      - apiName: Monthly_Capacity__c
+        label: 月間キャパシティ
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Current_Processing__c
+        label: 現在処理数
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Utilization_Rate__c
+        label: 稼働率
+        type: Formula
+        formulaReturnType: Percent
+        formula: "IF(Monthly_Capacity__c > 0, Current_Processing__c / Monthly_Capacity__c, 0)"
+        inlineHelpText: 現在処理数 / 月間キャパシティ
+      - apiName: Certifications__c
+        label: 品質認証
+        type: MultiselectPicklist
+        values:
+          - CAP認証
+          - CLIA認証
+          - ISO15189
+          - 日本臨床検査技師会認定
+        visibleLines: 4
+      - apiName: Lab_Director__c
+        label: 責任者
+        type: Text
+        length: 80
+      - apiName: Contact_Info__c
+        label: 連絡先
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # 共同研究
+  # --------------------------------------------------
+  - apiName: Joint_Research__c
+    label: 共同研究
+    pluralLabel: 共同研究
+    description: 製薬企業・大学との共同研究プロジェクト管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: 研究テーマ
+      type: Text
+      length: 255
+    fields:
+      - apiName: Pharma_Company__c
+        label: 製薬企業名
+        type: Text
+        length: 120
+      - apiName: Principal_Investigator__c
+        label: 責任研究者
+        type: Text
+        length: 80
+      - apiName: Start_Date__c
+        label: 研究期間開始
+        type: Date
+      - apiName: End_Date__c
+        label: 研究期間終了
+        type: Date
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        required: true
+        values:
+          - 企画中
+          - 倫理審査
+          - データ準備
+          - 解析実施中
+          - 論文執筆
+          - 完了
+      - apiName: Budget__c
+        label: 研究費
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: IRB_Approval_Date__c
+        label: IRB承認日
+        type: Date
+        inlineHelpText: 倫理審査委員会承認日
+      - apiName: Related_Opportunity__c
+        label: 関連商談
+        type: Lookup
+        referenceTo: Pharma_Opportunity__c
+        relationshipName: Joint_Researches
+        relationshipLabel: 共同研究
+        deleteConstraint: SetNull
+
+
+  # --------------------------------------------------
+  # 弁当手配
+  # --------------------------------------------------
+  - apiName: Bento_Order__c
+    label: 弁当手配
+    pluralLabel: 弁当手配
+    description: セミナー・勉強会用の弁当手配管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 注文名
+      type: Text
+      length: 120
+    fields:
+      - apiName: Seminar__c
+        label: 関連セミナー
+        type: Lookup
+        referenceTo: Seminar__c
+      - apiName: Order_Date__c
+        label: 注文日
+        type: Date
+      - apiName: Delivery_Time__c
+        label: 配達時間
+        type: Text
+        length: 40
+      - apiName: Quantity__c
+        label: 数量
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: Menu_Type__c
+        label: メニュー種別
+        type: Picklist
+        values: [幕の内, 松花堂, サンドイッチ, 洋食, 特別食]
+      - apiName: Vendor__c
+        label: 業者名
+        type: Text
+        length: 120
+      - apiName: Amount__c
+        label: 金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [未手配, 手配済, 配達済, キャンセル]
+      - apiName: Notes__c
+        label: 備考
+        type: LongTextArea
+        length: 1000
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # セミナー参加者
+  # --------------------------------------------------
+  - apiName: Seminar_Attendee__c
+    label: セミナー参加者
+    pluralLabel: セミナー参加者
+    description: セミナー・勉強会の参加者登録管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 参加者名
+      type: Text
+      length: 120
+    fields:
+      - apiName: Seminar__c
+        label: セミナー
+        type: Lookup
+        referenceTo: Seminar__c
+      - apiName: Email__c
+        label: メール
+        type: Email
+      - apiName: Affiliation__c
+        label: 所属
+        type: Text
+        length: 255
+      - apiName: Specialty__c
+        label: 専門分野
+        type: Text
+        length: 120
+      - apiName: Registration_Date__c
+        label: 登録日
+        type: Date
+      - apiName: Attendance_Status__c
+        label: 出席状況
+        type: Picklist
+        values: [登録済, 出席, 欠席, キャンセル]
+      - apiName: Notes__c
+        label: 備考
+        type: LongTextArea
+        length: 1000
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # 検査オーダー
+  # --------------------------------------------------
+  - apiName: Testing_Order__c
+    label: 検査オーダー
+    pluralLabel: 検査オーダー
+    description: 遺伝子パネル検査のオーダー管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: オーダー番号
+      type: AutoNumber
+      displayFormat: "TO-{00000}"
+    fields:
+      - apiName: Specimen__c
+        label: 検体
+        type: Lookup
+        referenceTo: Specimen__c
+      - apiName: Doctor__c
+        label: ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+      - apiName: Institution__c
+        label: 医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+      - apiName: Order_Date__c
+        label: オーダー日
+        type: Date
+      - apiName: Panel__c
+        label: パネル
+        type: Text
+        length: 120
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [受付, 検体待ち, 検査中, レビュー中, レポート作成, 完了, キャンセル]
+      - apiName: Priority__c
+        label: 優先度
+        type: Picklist
+        values: [通常, 緊急]
+      - apiName: Reviewer__c
+        label: レビュアー
+        type: Lookup
+        referenceTo: User
+      - apiName: US_Review_Status__c
+        label: US審査状態
+        type: Picklist
+        values: [未送信, US審査中, US承認, US差戻し]
+      - apiName: Report_Date__c
+        label: レポート日
+        type: Date
+      - apiName: TAT_Days__c
+        label: TAT日数
+        type: Number
+        precision: 5
+        scale: 0
+      - apiName: Note__c
+        label: 備考
+        type: LongTextArea
+        length: 1000
+        visibleLines: 3
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+
+  # --------------------------------------------------
+  # 日報
+  # --------------------------------------------------
+  - apiName: Daily_Report__c
+    label: 日報
+    pluralLabel: 日報
+    description: MR/MSL/ラボの日次報告管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 日報番号
+      type: AutoNumber
+      displayFormat: "DR-{0000}"
+    fields:
+      - apiName: Report_Date__c
+        label: 報告日
+        type: Date
+      - apiName: Report_Type__c
+        label: 報告種別
+        type: Picklist
+        values: [MR日報, MSL日報, ラボ日報]
+      - apiName: Visit_Summary__c
+        label: 訪問件数
+        type: Number
+        precision: 5
+        scale: 0
+      - apiName: Key_Activities__c
+        label: 主な活動
+        type: LongTextArea
+        length: 5000
+        visibleLines: 5
+      - apiName: Key_Findings__c
+        label: 主な気づき
+        type: LongTextArea
+        length: 5000
+        visibleLines: 5
+      - apiName: Issues__c
+        label: 課題・問題
+        type: LongTextArea
+        length: 3000
+        visibleLines: 3
+      - apiName: Tomorrow_Plan__c
+        label: 翌日予定
+        type: LongTextArea
+        length: 3000
+        visibleLines: 3
+      - apiName: Approval_Status__c
+        label: 承認状態
+        type: Picklist
+        values: [下書き, 提出済, 承認済, 差戻し]
+      - apiName: Approved_By__c
+        label: 承認者
+        type: Lookup
+        referenceTo: User
+      - apiName: Approval_Date__c
+        label: 承認日
+        type: Date
+      - apiName: Approval_Comment__c
+        label: 承認コメント
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+
+  # --------------------------------------------------
+  # 承認申請
+  # --------------------------------------------------
+  - apiName: Approval_Request__c
+    label: 承認申請
+    pluralLabel: 承認申請
+    description: 各種承認申請の管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 申請名
+      type: Text
+      length: 255
+    fields:
+      - apiName: Request_Type__c
+        label: 申請種別
+        type: Picklist
+        values: [勉強会予算, 製薬商談, 出張申請, 経費精算, MA活動]
+      - apiName: Related_Object__c
+        label: 関連オブジェクト
+        type: Text
+        length: 120
+      - apiName: Related_Record_Id__c
+        label: 関連レコードID
+        type: Text
+        length: 18
+      - apiName: Amount__c
+        label: 金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description__c
+        label: 説明
+        type: LongTextArea
+        length: 5000
+        visibleLines: 5
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [申請中, 承認待ち, 承認済, 差戻し, 却下, 取下げ]
+      - apiName: Priority__c
+        label: 優先度
+        type: Picklist
+        values: [高, 中, 低]
+      - apiName: Requested_By__c
+        label: 申請者
+        type: Lookup
+        referenceTo: User
+      - apiName: Approver__c
+        label: 承認者
+        type: Lookup
+        referenceTo: User
+      - apiName: Submitted_Date__c
+        label: 申請日
+        type: Date
+      - apiName: Approved_Date__c
+        label: 承認日
+        type: Date
+      - apiName: Approver_Comment__c
+        label: 承認者コメント
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # 経費精算
+  # --------------------------------------------------
+  - apiName: Expense_Report__c
+    label: 経費精算
+    pluralLabel: 経費精算
+    description: 経費精算の申請・承認管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 経費番号
+      type: AutoNumber
+      displayFormat: "EX-{0000}"
+    fields:
+      - apiName: Report_Date__c
+        label: 報告日
+        type: Date
+      - apiName: Expense_Type__c
+        label: 経費種別
+        type: Picklist
+        values: [交通費, 勉強会経費, 学会参加費, 会議費, 消耗品, 宿泊費, その他]
+      - apiName: Amount__c
+        label: 金額
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Description__c
+        label: 説明
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+      - apiName: Related_Visit__c
+        label: 関連訪問
+        type: Lookup
+        referenceTo: Visit_Record__c
+      - apiName: Related_Seminar__c
+        label: 関連勉強会
+        type: Lookup
+        referenceTo: Seminar__c
+      - apiName: Receipt_Attached__c
+        label: 領収書添付
+        type: Checkbox
+        defaultValue: false
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [下書き, 申請中, 承認済, 差戻し, 支払済]
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+
+  # --------------------------------------------------
+  # 競合情報
+  # --------------------------------------------------
+  - apiName: Competitive_Intel__c
+    label: 競合情報
+    pluralLabel: 競合情報
+    description: 競合企業・製品の情報管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: 情報名
+      type: Text
+      length: 255
+    fields:
+      - apiName: Competitor__c
+        label: 競合企業/製品
+        type: Text
+        length: 255
+      - apiName: Intel_Type__c
+        label: 情報種別
+        type: Picklist
+        values: [規制動向, 採用動向, 価格情報, 学会発表, 人事異動, その他]
+      - apiName: Source__c
+        label: 情報源
+        type: Text
+        length: 255
+      - apiName: Date__c
+        label: 日付
+        type: Date
+      - apiName: Summary__c
+        label: 概要
+        type: LongTextArea
+        length: 5000
+        visibleLines: 5
+      - apiName: Impact__c
+        label: 影響度
+        type: Picklist
+        values: [高, 中, 低]
+      - apiName: Action_Required__c
+        label: 必要アクション
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+
+  # --------------------------------------------------
+  # 訪問ターゲット
+  # --------------------------------------------------
+  - apiName: Visit_Target__c
+    label: 訪問ターゲット
+    pluralLabel: 訪問ターゲット
+    description: 訪問目標と達成状況の管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: ターゲット名
+      type: Text
+      length: 255
+    fields:
+      - apiName: Target_Month__c
+        label: 対象月
+        type: Text
+        length: 7
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+      - apiName: Doctor__c
+        label: ドクター
+        type: Lookup
+        referenceTo: Doctor__c
+      - apiName: Institution__c
+        label: 医療機関
+        type: Lookup
+        referenceTo: Medical_Institution__c
+      - apiName: Target_Visits__c
+        label: 目標訪問数
+        type: Number
+        precision: 5
+        scale: 0
+      - apiName: Actual_Visits__c
+        label: 実績訪問数
+        type: Number
+        precision: 5
+        scale: 0
+      - apiName: Visit_Purpose__c
+        label: 訪問目的
+        type: Picklist
+        values: [定期訪問, 新規開拓, フォローアップ, 情報提供, 説明会, 検体回収, その他]
+      - apiName: Priority__c
+        label: 優先度
+        type: Picklist
+        values: ["A（最優先）", "B（重要）", "C（通常）", "D（低）"]
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [未着手, 進行中, 達成, 未達, 中止]
+      - apiName: Achievement_Rate__c
+        label: 達成率
+        type: Percent
+        precision: 5
+        scale: 0
+      - apiName: Last_Visit_Date__c
+        label: 最終訪問日
+        type: Date
+      - apiName: Next_Visit_Date__c
+        label: 次回訪問予定
+        type: Date
+      - apiName: Note__c
+        label: 備考
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+
+  # --------------------------------------------------
+  # ワークフローインスタンス
+  # --------------------------------------------------
+  - apiName: Workflow_Instance__c
+    label: ワークフロー
+    pluralLabel: ワークフロー
+    description: ワークフローインスタンスの管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: ワークフロー名
+      type: Text
+      length: 255
+    fields:
+      - apiName: Workflow_Type__c
+        label: ワークフロー種別
+        type: Picklist
+        values: [引き継ぎ, 検査オーダー, 経費承認, 勉強会開催, 商談承認, PMDA申請]
+      - apiName: Status__c
+        label: ステータス
+        type: Picklist
+        values: [未開始, 進行中, 承認待ち, 完了, 中止, 差戻し]
+      - apiName: Current_Step__c
+        label: 現在ステップ
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: Total_Steps__c
+        label: 総ステップ数
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: Priority__c
+        label: 優先度
+        type: Picklist
+        values: [緊急, 高, 中, 低]
+      - apiName: Requested_By__c
+        label: 申請者
+        type: Lookup
+        referenceTo: User
+      - apiName: Current_Assignee__c
+        label: 現在の担当者
+        type: Lookup
+        referenceTo: User
+      - apiName: Start_Date__c
+        label: 開始日
+        type: Date
+      - apiName: Due_Date__c
+        label: 期限日
+        type: Date
+      - apiName: Completed_Date__c
+        label: 完了日
+        type: Date
+      - apiName: Related_Record__c
+        label: 関連レコード
+        type: Text
+        length: 255
+      - apiName: Description__c
+        label: 説明
+        type: LongTextArea
+        length: 3000
+        visibleLines: 3
+      - apiName: OwnerId
+        label: 所有者
+        type: Lookup
+        referenceTo: User
+
+
+# ================================================================
+# Permission Sets
+# ================================================================
+permissionSets:
+  - apiName: Pforce_Sales
+    label: Pforce 営業担当
+    description: 営業担当者向け権限セット
+    objectPermissions:
+      - object: Account
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Opportunity
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Medical_Institution__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Visit_Record__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Pharma_Opportunity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Specimen__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+
+  - apiName: Pforce_MSL
+    label: Pforce MSL
+    description: MSL（メディカルサイエンスリエゾン）向け権限セット
+    objectPermissions:
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Medical_Institution__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: MA_Activity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Seminar__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+
+  - apiName: Pforce_Lab_Manager
+    label: Pforce ラボ管理者
+    description: ラボ管理者向け権限セット
+    objectPermissions:
+      - object: Specimen__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Lab__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Genomic_Project__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+
+# ================================================================
+# Dashboard
+# ================================================================
+dashboard:
+  title: Pforce ダッシュボード
+  widgets:
+    - type: pipeline
+      object: Account
+      field: Type
+      title: 取引先 種別パイプライン
+    - type: pipeline
+      object: Opportunity
+      field: StageName
+      title: 商談パイプライン（標準）
+    - type: pipeline
+      object: Case
+      field: Status
+      title: ケース ステータスパイプライン
+    - type: pipeline
+      object: Lead
+      field: Status
+      title: リード ステータスパイプライン
+    - type: pipeline
+      object: Doctor__c
+      field: Relationship_Level__c
+      title: ドクター関係構築パイプライン
+    - type: pipeline
+      object: Pharma_Opportunity__c
+      field: Phase__c
+      title: 製薬商談パイプライン
+    - type: pipeline
+      object: Visit_Record__c
+      field: Meeting_Result__c
+      title: 直近の訪問結果
+    - type: pipeline
+      object: Genomic_Project__c
+      field: Status__c
+      title: 解析プロジェクト進捗
+    - type: pipeline
+      object: MA_Activity__c
+      field: Status__c
+      title: MA活動ステータス
+    - type: pipeline
+      object: Seminar__c
+      field: Progress_Status__c
+      title: 勉強会・講演会進行状況
+    - type: pipeline
+      object: Specimen__c
+      field: Specimen_Status__c
+      title: 検体処理パイプライン
+    - type: count
+      object: Doctor__c
+      title: 管理ドクター数
+    - type: count
+      object: Specimen__c
+      title: 管理検体数
+    - type: count
+      object: Lab__c
+      title: 稼働ラボ数

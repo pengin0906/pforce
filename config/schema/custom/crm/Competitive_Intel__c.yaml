@@ -1,0 +1,54 @@
+apiName: Competitive_Intel__c
+label: 競合情報
+pluralLabel: 競合情報
+description: 競合企業・製品の情報管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 情報名
+  type: Text
+  length: 255
+fields:
+  - apiName: Competitor__c
+    label: 競合企業/製品
+    type: Text
+    length: 255
+  - apiName: Intel_Type__c
+    label: 情報種別
+    type: Picklist
+    values:
+      - 規制動向
+      - 採用動向
+      - 価格情報
+      - 学会発表
+      - 人事異動
+      - その他
+  - apiName: Source__c
+    label: 情報源
+    type: Text
+    length: 255
+  - apiName: Date__c
+    label: 日付
+    type: Date
+  - apiName: Summary__c
+    label: 概要
+    type: LongTextArea
+    length: 5000
+    visibleLines: 5
+  - apiName: Impact__c
+    label: 影響度
+    type: Picklist
+    values:
+      - 高
+      - 中
+      - 低
+  - apiName: Action_Required__c
+    label: 必要アクション
+    type: LongTextArea
+    length: 2000
+    visibleLines: 3
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User

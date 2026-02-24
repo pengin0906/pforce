@@ -1,0 +1,153 @@
+apiName: Seminar__c
+label: 勉強会・講演会
+pluralLabel: 勉強会・講演会
+description: 学術イベント・勉強会の企画から実施後フォローまで管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: イベント名
+  type: Text
+  length: 120
+fields:
+  - apiName: Event_Format__c
+    label: 開催形式
+    type: Picklist
+    required: true
+    values:
+      - 院内勉強会
+      - Web講演会
+      - 地域連携セミナー
+      - 学術講演会
+      - ハンズオンセミナー
+      - ランチョンセミナー
+  - apiName: Speaker_Doctor__c
+    label: 講師ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+    relationshipName: Seminars_As_Speaker
+    relationshipLabel: 講師担当セミナー
+    deleteConstraint: SetNull
+  - apiName: Speaker_Title__c
+    label: 講師肩書・所属
+    type: Text
+    length: 255
+  - apiName: Presentation_Title__c
+    label: 演題
+    type: Text
+    length: 255
+  - apiName: Host_Institution__c
+    label: 開催医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: Hosted_Seminars
+    relationshipLabel: 開催セミナー
+    deleteConstraint: SetNull
+  - apiName: Event_Date__c
+    label: 開催日
+    type: Date
+    required: true
+  - apiName: Progress_Status__c
+    label: 進行ステータス
+    type: Picklist
+    required: true
+    values:
+      - 企画立案
+      - 講師打診中
+      - 講師確定
+      - 会場・日程調整中
+      - 案内配信済
+      - 開催済
+      - 報告書作成中
+      - 完了
+  - apiName: Target_Cancer__c
+    label: 対象がん種
+    type: MultiselectPicklist
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+      - 横断的
+    visibleLines: 4
+  - apiName: Target_Audience__c
+    label: 想定参加者
+    type: MultiselectPicklist
+    values:
+      - 腫瘍内科医
+      - 外科医
+      - 病理医
+      - 看護師
+      - 薬剤師
+      - CRC（治験コーディネーター）
+      - 製薬企業
+    visibleLines: 4
+  - apiName: Attendee_Count__c
+    label: 参加人数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Speaker_Fee__c
+    label: 講師謝金
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Operation_Cost__c
+    label: 運営費
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Total_Cost__c
+    label: 総コスト
+    type: Formula
+    formulaReturnType: Currency
+    formula: Speaker_Fee__c + Operation_Cost__c
+    inlineHelpText: 講師謝金 + 運営費の自動計算
+  - apiName: Compliance_Approval__c
+    label: コンプライアンス承認
+    type: Picklist
+    required: true
+    values:
+      - 未申請
+      - 申請中
+      - 承認済
+      - 却下
+  - apiName: Organizer__c
+    label: 担当者
+    type: Text
+    length: 80
+  - apiName: Post_Event_Note__c
+    label: 開催後の反響・メモ
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: Venue__c
+    label: 会場名
+    type: Text
+    length: 255
+  - apiName: Venue_Address__c
+    label: 会場住所
+    type: Text
+    length: 255
+  - apiName: Venue_Latitude__c
+    label: 会場緯度
+    type: Number
+    precision: 10
+    scale: 7
+  - apiName: Venue_Longitude__c
+    label: 会場経度
+    type: Number
+    precision: 11
+    scale: 7
+validationRules:
+  - apiName: Require_Compliance_Before_Execution
+    active: true
+    description: 開催済み以降はコンプライアンス承認が必要
+    errorConditionFormula: AND(OR(ISPICKVAL(Progress_Status__c,'開催済'),ISPICKVAL(Progress_Status__c,'報告書作成中'),ISPICKVAL(Progress_Status__c,'完了')),NOT(ISPICKVAL(Compliance_Approval__c,'承認済')))
+    errorMessage: 開催にはコンプライアンス承認が必要です

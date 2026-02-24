@@ -1,0 +1,80 @@
+apiName: Lab__c
+label: ラボ管理
+pluralLabel: ラボ管理
+description: 解析ラボの稼働・品質管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: false
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: ラボ名
+  type: Text
+  length: 80
+fields:
+  - apiName: Location__c
+    label: 所在地
+    type: Text
+    length: 120
+  - apiName: Lab_Type__c
+    label: ラボ種別
+    type: Picklist
+    values:
+      - 自社ラボ
+      - 委託ラボ
+      - 提携大学ラボ
+      - 海外ラボ（Tempus本社）
+  - apiName: Supported_Assays__c
+    label: 対応解析
+    type: MultiselectPicklist
+    values:
+      - xT（全エクソーム）
+      - xF（リキッド）
+      - xG（全ゲノム）
+      - xR（RNA）
+      - GenMine標準
+      - 病理AI解析
+    visibleLines: 4
+  - apiName: Operation_Status__c
+    label: 稼働状況
+    type: Picklist
+    values:
+      - 通常稼働
+      - 高負荷
+      - メンテナンス中
+      - 立ち上げ中
+  - apiName: Monthly_Capacity__c
+    label: 月間キャパシティ
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Current_Processing__c
+    label: 現在処理数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Utilization_Rate__c
+    label: 稼働率
+    type: Formula
+    formulaReturnType: Percent
+    formula: IF(Monthly_Capacity__c > 0, Current_Processing__c / Monthly_Capacity__c, 0)
+    inlineHelpText: 現在処理数 / 月間キャパシティ
+  - apiName: Certifications__c
+    label: 品質認証
+    type: MultiselectPicklist
+    values:
+      - CAP認証
+      - CLIA認証
+      - ISO15189
+      - 日本臨床検査技師会認定
+    visibleLines: 4
+  - apiName: Lab_Director__c
+    label: 責任者
+    type: Text
+    length: 80
+  - apiName: Contact_Info__c
+    label: 連絡先
+    type: LongTextArea
+    length: 32768
+    visibleLines: 3

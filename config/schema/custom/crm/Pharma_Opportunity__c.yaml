@@ -1,0 +1,99 @@
+apiName: Pharma_Opportunity__c
+label: 製薬商談
+pluralLabel: 製薬商談
+description: 製薬企業向けデータ提供・共同研究の商談管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: 商談名
+  type: Text
+  length: 120
+fields:
+  - apiName: Pharma_Company__c
+    label: 製薬企業名
+    type: Text
+    length: 120
+    required: true
+  - apiName: Amount__c
+    label: 金額
+    type: Currency
+    precision: 18
+    scale: 0
+    inlineHelpText: 万円単位で入力
+  - apiName: Phase__c
+    label: フェーズ
+    type: Picklist
+    required: true
+    values:
+      - リード
+      - ヒアリング
+      - 提案
+      - セキュリティ審査
+      - 契約交渉
+      - 成約
+      - 失注
+  - apiName: Service_Type__c
+    label: サービス種別
+    type: Picklist
+    values:
+      - Tempus Lens
+      - Tempus Explore
+      - カスタム解析
+      - 共同研究
+  - apiName: Target_Cancer__c
+    label: 対象がん種
+    type: MultiselectPicklist
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+    visibleLines: 4
+  - apiName: Compliance_Status__c
+    label: コンプライアンス
+    type: Picklist
+    values:
+      - 未着手
+      - 審査中
+      - 承認済
+      - 要修正
+  - apiName: Expected_Close_Date__c
+    label: 予想成約日
+    type: Date
+  - apiName: Owner_Name__c
+    label: 担当営業
+    type: Text
+    length: 80
+  - apiName: Probability__c
+    label: 確度
+    type: Percent
+    precision: 18
+    scale: 0
+  - apiName: Win_Reason__c
+    label: 受注理由
+    type: LongTextArea
+    length: 32768
+    visibleLines: 3
+  - apiName: Loss_Reason__c
+    label: 失注理由
+    type: LongTextArea
+    length: 32768
+    visibleLines: 3
+validationRules:
+  - apiName: Require_Close_Date_After_Proposal
+    active: true
+    description: 提案以降は成約予定日が必須
+    errorConditionFormula: AND(NOT(ISPICKVAL(Phase__c,'リード')),NOT(ISPICKVAL(Phase__c,'ヒアリング')),ISBLANK(Expected_Close_Date__c))
+    errorMessage: 提案フェーズ以降は予想成約日を入力してください
+  - apiName: Require_Loss_Reason
+    active: true
+    description: 失注時は理由が必須
+    errorConditionFormula: AND(ISPICKVAL(Phase__c,'失注'),ISBLANK(Loss_Reason__c))
+    errorMessage: 失注理由を入力してください

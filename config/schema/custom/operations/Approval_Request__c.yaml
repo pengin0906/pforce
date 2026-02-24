@@ -1,0 +1,75 @@
+apiName: Approval_Request__c
+label: 承認申請
+pluralLabel: 承認申請
+description: 各種承認申請の管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 申請名
+  type: Text
+  length: 255
+fields:
+  - apiName: Request_Type__c
+    label: 申請種別
+    type: Picklist
+    values:
+      - 勉強会予算
+      - 製薬商談
+      - 出張申請
+      - 経費精算
+      - MA活動
+  - apiName: Related_Object__c
+    label: 関連オブジェクト
+    type: Text
+    length: 120
+  - apiName: Related_Record_Id__c
+    label: 関連レコードID
+    type: Text
+    length: 18
+  - apiName: Amount__c
+    label: 金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description__c
+    label: 説明
+    type: LongTextArea
+    length: 5000
+    visibleLines: 5
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 申請中
+      - 承認待ち
+      - 承認済
+      - 差戻し
+      - 却下
+      - 取下げ
+  - apiName: Priority__c
+    label: 優先度
+    type: Picklist
+    values:
+      - 高
+      - 中
+      - 低
+  - apiName: Requested_By__c
+    label: 申請者
+    type: Lookup
+    referenceTo: User
+  - apiName: Approver__c
+    label: 承認者
+    type: Lookup
+    referenceTo: User
+  - apiName: Submitted_Date__c
+    label: 申請日
+    type: Date
+  - apiName: Approved_Date__c
+    label: 承認日
+    type: Date
+  - apiName: Approver_Comment__c
+    label: 承認者コメント
+    type: LongTextArea
+    length: 2000
+    visibleLines: 3

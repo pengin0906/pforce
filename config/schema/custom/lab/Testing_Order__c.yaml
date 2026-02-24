@@ -1,0 +1,77 @@
+apiName: Testing_Order__c
+label: 検査オーダー
+pluralLabel: 検査オーダー
+description: 遺伝子パネル検査のオーダー管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: オーダー番号
+  type: AutoNumber
+  displayFormat: TO-{00000}
+fields:
+  - apiName: Specimen__c
+    label: 検体
+    type: Lookup
+    referenceTo: Specimen__c
+  - apiName: Doctor__c
+    label: ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+  - apiName: Institution__c
+    label: 医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+  - apiName: Order_Date__c
+    label: オーダー日
+    type: Date
+  - apiName: Panel__c
+    label: パネル
+    type: Text
+    length: 120
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 受付
+      - 検体待ち
+      - 検査中
+      - レビュー中
+      - レポート作成
+      - 完了
+      - キャンセル
+  - apiName: Priority__c
+    label: 優先度
+    type: Picklist
+    values:
+      - 通常
+      - 緊急
+  - apiName: Reviewer__c
+    label: レビュアー
+    type: Lookup
+    referenceTo: User
+  - apiName: US_Review_Status__c
+    label: US審査状態
+    type: Picklist
+    values:
+      - 未送信
+      - US審査中
+      - US承認
+      - US差戻し
+  - apiName: Report_Date__c
+    label: レポート日
+    type: Date
+  - apiName: TAT_Days__c
+    label: TAT日数
+    type: Number
+    precision: 5
+    scale: 0
+  - apiName: Note__c
+    label: 備考
+    type: LongTextArea
+    length: 1000
+    visibleLines: 3
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User

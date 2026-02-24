@@ -1,0 +1,61 @@
+apiName: Expense_Report__c
+label: 経費精算
+pluralLabel: 経費精算
+description: 経費精算の申請・承認管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 経費番号
+  type: AutoNumber
+  displayFormat: EX-{0000}
+fields:
+  - apiName: Report_Date__c
+    label: 報告日
+    type: Date
+  - apiName: Expense_Type__c
+    label: 経費種別
+    type: Picklist
+    values:
+      - 交通費
+      - 勉強会経費
+      - 学会参加費
+      - 会議費
+      - 消耗品
+      - 宿泊費
+      - その他
+  - apiName: Amount__c
+    label: 金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description__c
+    label: 説明
+    type: LongTextArea
+    length: 2000
+    visibleLines: 3
+  - apiName: Related_Visit__c
+    label: 関連訪問
+    type: Lookup
+    referenceTo: Visit_Record__c
+  - apiName: Related_Seminar__c
+    label: 関連勉強会
+    type: Lookup
+    referenceTo: Seminar__c
+  - apiName: Receipt_Attached__c
+    label: 領収書添付
+    type: Checkbox
+    defaultValue: false
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 下書き
+      - 申請中
+      - 承認済
+      - 差戻し
+      - 支払済
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User

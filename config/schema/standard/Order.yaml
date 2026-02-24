@@ -1,0 +1,56 @@
+apiName: Order
+label: 注文
+pluralLabel: 注文
+description: 受注・注文の管理
+fields:
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Orders
+    relationshipLabel: 注文
+    required: true
+  - apiName: ContractId
+    label: 契約
+    type: Lookup
+    referenceTo: Contract
+    relationshipName: Orders
+    relationshipLabel: 注文
+  - apiName: EffectiveDate
+    label: 注文開始日
+    type: Date
+    required: true
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - ドラフト
+      - 有効
+      - 完了
+      - キャンセル
+  - apiName: TotalAmount
+    label: 合計金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OrderNumber
+    label: 注文番号
+    type: Text
+    length: 30
+  - apiName: Pricebook2Id
+    label: 価格表
+    type: Lookup
+    referenceTo: Pricebook2
+    relationshipName: Orders
+    relationshipLabel: 注文
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedOrders

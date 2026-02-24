@@ -1,0 +1,31 @@
+apiName: PricebookEntry
+label: 価格表エントリ
+pluralLabel: 価格表エントリ
+description: 価格表と商品の関連付け
+fields:
+  - apiName: Pricebook2Id
+    label: 価格表
+    type: Lookup
+    referenceTo: Pricebook2
+    relationshipName: PricebookEntries
+    relationshipLabel: 価格表エントリ
+  - apiName: Product2Id
+    label: 商品
+    type: Lookup
+    referenceTo: Product2
+    relationshipName: PricebookEntries
+    relationshipLabel: 価格表エントリ
+  - apiName: UnitPrice
+    label: 表示価格
+    type: Currency
+    precision: 18
+    scale: 0
+    required: true
+  - apiName: IsActive
+    label: 有効
+    type: Checkbox
+    defaultValue: true
+  - apiName: UseStandardPrice
+    label: 標準価格を使用
+    type: Checkbox
+    defaultValue: false

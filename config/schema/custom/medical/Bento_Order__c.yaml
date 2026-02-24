@@ -1,0 +1,59 @@
+apiName: Bento_Order__c
+label: 弁当手配
+pluralLabel: 弁当手配
+description: セミナー・勉強会用の弁当手配管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 注文名
+  type: Text
+  length: 120
+fields:
+  - apiName: Seminar__c
+    label: 関連セミナー
+    type: Lookup
+    referenceTo: Seminar__c
+  - apiName: Order_Date__c
+    label: 注文日
+    type: Date
+  - apiName: Delivery_Time__c
+    label: 配達時間
+    type: Text
+    length: 40
+  - apiName: Quantity__c
+    label: 数量
+    type: Number
+    precision: 8
+    scale: 0
+  - apiName: Menu_Type__c
+    label: メニュー種別
+    type: Picklist
+    values:
+      - 幕の内
+      - 松花堂
+      - サンドイッチ
+      - 洋食
+      - 特別食
+  - apiName: Vendor__c
+    label: 業者名
+    type: Text
+    length: 120
+  - apiName: Amount__c
+    label: 金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 未手配
+      - 手配済
+      - 配達済
+      - キャンセル
+  - apiName: Notes__c
+    label: 備考
+    type: LongTextArea
+    length: 1000
+    visibleLines: 3

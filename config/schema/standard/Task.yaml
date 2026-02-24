@@ -1,0 +1,55 @@
+apiName: Task
+label: ToDo
+pluralLabel: ToDo
+description: ToDoタスクの管理
+fields:
+  - apiName: Subject
+    label: 件名
+    type: Text
+    length: 255
+  - apiName: Description
+    label: コメント
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - 未着手
+      - 進行中
+      - 完了
+      - 待機中
+      - 延期
+  - apiName: Priority
+    label: 優先度
+    type: Picklist
+    values:
+      - 高
+      - 中
+      - 低
+  - apiName: ActivityDate
+    label: 期日
+    type: Date
+  - apiName: WhoId
+    label: 名前
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: Tasks
+    relationshipLabel: ToDo
+  - apiName: WhatId
+    label: 関連先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Tasks
+    relationshipLabel: ToDo
+  - apiName: OwnerId
+    label: 任命先
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedTasks
+  - apiName: IsHighPriority
+    label: 重要フラグ
+    type: Checkbox
+    defaultValue: false

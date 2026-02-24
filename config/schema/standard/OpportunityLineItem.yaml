@@ -1,0 +1,46 @@
+apiName: OpportunityLineItem
+label: 商談商品
+pluralLabel: 商談商品
+description: 商談に紐づく商品明細
+fields:
+  - apiName: OpportunityId
+    label: 商談
+    type: Lookup
+    referenceTo: Opportunity
+    relationshipName: OpportunityLineItems
+    relationshipLabel: 商談商品
+    required: true
+  - apiName: PricebookEntryId
+    label: 価格表エントリ
+    type: Lookup
+    referenceTo: PricebookEntry
+    relationshipName: OpportunityLineItems
+  - apiName: Product2Id
+    label: 商品
+    type: Lookup
+    referenceTo: Product2
+    relationshipName: OpportunityLineItems
+  - apiName: Quantity
+    label: 数量
+    type: Number
+    precision: 18
+    scale: 2
+    required: true
+  - apiName: UnitPrice
+    label: 単価
+    type: Currency
+    precision: 18
+    scale: 0
+    required: true
+  - apiName: TotalPrice
+    label: 合計価格
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: Text
+    length: 255
+  - apiName: ServiceDate
+    label: サービス日
+    type: Date

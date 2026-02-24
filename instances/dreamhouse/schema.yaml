@@ -1,0 +1,246 @@
+apiVersion: '62.0'
+
+standardObjects:
+  - apiName: Account
+    label: Account
+    pluralLabel: Accounts
+    description: Standard Account object
+    fields:
+      - apiName: Name
+        label: Account Name
+        type: Text
+        length: 255
+      - apiName: Phone
+        label: Phone
+        type: Phone
+      - apiName: Website
+        label: Website
+        type: Url
+      - apiName: Industry
+        label: Industry
+        type: Picklist
+        values: [Real Estate, Technology, Finance, Other]
+      - apiName: Type
+        label: Type
+        type: Picklist
+        values: [Customer, Prospect, Partner, Other]
+
+  - apiName: Contact
+    label: Contact
+    pluralLabel: Contacts
+    description: Standard Contact object
+    fields:
+      - apiName: FirstName
+        label: First Name
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: Last Name
+        type: Text
+        length: 80
+      - apiName: Email
+        label: Email
+        type: Email
+      - apiName: Phone
+        label: Phone
+        type: Phone
+      - apiName: AccountId
+        label: Account
+        type: Lookup
+        referenceTo: Account
+
+  - apiName: User
+    label: User
+    pluralLabel: Users
+    description: Standard User object
+    fields:
+      - apiName: Username
+        label: Username
+        type: Text
+        length: 80
+      - apiName: LastName
+        label: Last Name
+        type: Text
+        length: 80
+      - apiName: FirstName
+        label: First Name
+        type: Text
+        length: 40
+      - apiName: Email
+        label: Email
+        type: Email
+      - apiName: IsActive
+        label: Active
+        type: Checkbox
+        defaultValue: true
+
+objects:
+  - apiName: Broker__c
+    label: Broker
+    pluralLabel: Brokers
+    description: Real estate broker
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: false
+    enableHistory: false
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: Broker Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Broker_Id__c
+        label: Broker Id
+        type: Number
+        externalId: true
+        precision: 18
+        scale: 0
+      - apiName: Email__c
+        label: Email
+        type: Email
+      - apiName: Mobile_Phone__c
+        label: Mobile Phone
+        type: Phone
+      - apiName: Phone__c
+        label: Phone
+        type: Phone
+      - apiName: Picture__c
+        label: Picture
+        type: Url
+      - apiName: Title__c
+        label: Title
+        type: Text
+        length: 30
+
+  - apiName: Property__c
+    label: Property
+    pluralLabel: Properties
+    description: Real estate property listing
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    enableActivities: true
+    enableHistory: true
+    enableReports: true
+    nameField:
+      apiName: Name
+      label: Property Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Address__c
+        label: Address
+        type: Text
+        length: 100
+      - apiName: Assessed_Value__c
+        label: Assessed Value
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: Baths__c
+        label: Baths
+        type: Number
+        precision: 2
+        scale: 0
+      - apiName: Beds__c
+        label: Beds
+        type: Number
+        precision: 2
+        scale: 0
+      - apiName: Broker__c
+        label: Broker
+        type: Lookup
+        referenceTo: Broker__c
+        relationshipLabel: Properties
+        relationshipName: Properties
+        deleteConstraint: SetNull
+      - apiName: City__c
+        label: City
+        type: Text
+        length: 50
+      - apiName: Date_Agreement__c
+        label: Date Agreement
+        type: Date
+      - apiName: Date_Closed__c
+        label: Date Closed
+        type: Date
+      - apiName: Date_Contracted__c
+        label: Date Contracted
+        type: Date
+      - apiName: Date_Listed__c
+        label: Date Listed
+        type: Date
+      - apiName: Date_Pre_Market__c
+        label: Date Pre Market
+        type: Date
+      - apiName: Days_On_Market__c
+        label: Days On Market
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Description__c
+        label: Description
+        type: LongTextArea
+        length: 500
+        visibleLines: 3
+      - apiName: Picture__c
+        label: Picture
+        type: Url
+      - apiName: Price_Sold__c
+        label: Price Sold
+        type: Currency
+        precision: 8
+        scale: 0
+      - apiName: Price__c
+        label: Asking Price
+        type: Currency
+        precision: 8
+        scale: 0
+      - apiName: State__c
+        label: State
+        type: Text
+        length: 20
+      - apiName: Status__c
+        label: Status
+        type: Picklist
+        values:
+          - Contracted
+          - Pre Market
+          - Available
+          - Under Agreement
+          - Closed
+      - apiName: Tags__c
+        label: Tags
+        type: Text
+        length: 255
+      - apiName: Thumbnail__c
+        label: Thumbnail
+        type: Url
+      - apiName: Zip__c
+        label: Zip
+        type: Text
+        length: 10
+      - apiName: Latitude__c
+        label: Latitude
+        type: Number
+        precision: 10
+        scale: 7
+      - apiName: Longitude__c
+        label: Longitude
+        type: Number
+        precision: 10
+        scale: 7
+
+dashboard:
+  title: DreamHouse Dashboard
+  widgets:
+    - type: pipeline
+      object: Property__c
+      field: Status__c
+      title: Property Pipeline
+    - type: count
+      object: Property__c
+      title: Total Properties
+    - type: count
+      object: Broker__c
+      title: Total Brokers

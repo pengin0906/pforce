@@ -1,0 +1,61 @@
+apiName: User
+label: ユーザ
+pluralLabel: ユーザ
+description: システムユーザの管理
+fields:
+  - apiName: Username
+    label: ユーザ名
+    type: Text
+    length: 80
+    required: true
+    unique: true
+  - apiName: FirstName
+    label: 名
+    type: Text
+    length: 40
+  - apiName: LastName
+    label: 姓
+    type: Text
+    length: 80
+    required: true
+  - apiName: Email
+    label: メール
+    type: Email
+    required: true
+  - apiName: Phone
+    label: 電話
+    type: Phone
+  - apiName: Title
+    label: 役職
+    type: Text
+    length: 128
+  - apiName: Department
+    label: 部門
+    type: Text
+    length: 80
+  - apiName: IsActive
+    label: 有効
+    type: Checkbox
+    defaultValue: true
+  - apiName: ProfileId
+    label: プロファイル
+    type: Text
+    length: 18
+  - apiName: UserRoleId
+    label: ロール
+    type: Text
+    length: 18
+  - apiName: ManagerId
+    label: マネージャ
+    type: Lookup
+    referenceTo: User
+    relationshipName: DirectReports
+    relationshipLabel: 部下
+  - apiName: Alias
+    label: 別名
+    type: Text
+    length: 8
+  - apiName: CommunityNickname
+    label: コミュニティニックネーム
+    type: Text
+    length: 40

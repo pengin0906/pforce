@@ -1,0 +1,103 @@
+permissionSets:
+  - apiName: Pforce_Sales
+    label: Pforce 営業担当
+    description: 営業担当者向け権限セット
+    objectPermissions:
+      - object: Account
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Opportunity
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Medical_Institution__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Visit_Record__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Pharma_Opportunity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Specimen__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+  - apiName: Pforce_MSL
+    label: Pforce MSL
+    description: MSL（メディカルサイエンスリエゾン）向け権限セット
+    objectPermissions:
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Medical_Institution__c
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Doctor__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: MA_Activity__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Seminar__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+  - apiName: Pforce_Lab_Manager
+    label: Pforce ラボ管理者
+    description: ラボ管理者向け権限セット
+    objectPermissions:
+      - object: Specimen__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Lab__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Genomic_Project__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false

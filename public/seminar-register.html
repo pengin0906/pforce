@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>genmine セミナー参加登録</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif; background:#f5f7fa; color:#333; line-height:1.6; }
+
+    /* Header */
+    .header { background:linear-gradient(135deg,#1a237e 0%,#283593 50%,#3949ab 100%); color:#fff; padding:24px 0; text-align:center; }
+    .header h1 { font-size:1.8rem; font-weight:700; letter-spacing:1px; }
+    .header p { font-size:0.95rem; opacity:0.85; margin-top:6px; }
+    .header-logo { font-size:2rem; margin-bottom:8px; }
+
+    /* Container */
+    .container { max-width:900px; margin:0 auto; padding:24px 16px; }
+
+    /* Seminar Card */
+    .seminar-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); margin-bottom:20px; overflow:hidden; transition:box-shadow 0.2s; }
+    .seminar-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.12); }
+    .seminar-card-header { padding:20px 24px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:16px; }
+    .seminar-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:600; color:#fff; white-space:nowrap; }
+    .badge-web { background:#1565c0; }
+    .badge-inhouse { background:#2e7d32; }
+    .badge-handson { background:#e65100; }
+    .badge-regional { background:#6a1b9a; }
+    .badge-luncheon { background:#00838f; }
+    .badge-academic { background:#c62828; }
+    .badge-hybrid { background:#37474f; }
+    .seminar-title { font-size:1.1rem; font-weight:600; color:#1a237e; flex:1; }
+    .seminar-card-body { padding:20px 24px; }
+    .seminar-meta { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; margin-bottom:16px; }
+    .meta-item { display:flex; align-items:center; gap:8px; font-size:0.9rem; }
+    .meta-icon { font-size:1.1rem; width:24px; text-align:center; }
+    .meta-label { color:#666; }
+    .meta-value { font-weight:500; }
+    .seminar-desc { font-size:0.88rem; color:#555; background:#f8f9fa; border-radius:8px; padding:16px; margin-top:12px; white-space:pre-line; max-height:200px; overflow-y:auto; }
+    .seminar-status { display:flex; align-items:center; gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid #eee; }
+    .status-tag { padding:4px 10px; border-radius:4px; font-size:0.8rem; font-weight:600; }
+    .status-open { background:#e8f5e9; color:#2e7d32; }
+    .status-closed { background:#fce4ec; color:#c62828; }
+    .status-full { background:#fff3e0; color:#e65100; }
+    .capacity-bar { flex:1; height:8px; background:#e0e0e0; border-radius:4px; overflow:hidden; }
+    .capacity-fill { height:100%; border-radius:4px; transition:width 0.3s; }
+    .capacity-text { font-size:0.8rem; color:#666; white-space:nowrap; }
+    .register-btn { display:inline-block; margin-top:16px; padding:10px 28px; background:#1a237e; color:#fff; border:none; border-radius:8px; font-size:0.95rem; font-weight:600; cursor:pointer; transition:background 0.2s; text-decoration:none; }
+    .register-btn:hover { background:#283593; }
+    .register-btn:disabled, .register-btn.disabled { background:#bdbdbd; cursor:not-allowed; }
+
+    /* Registration Form Modal */
+    .modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; }
+    .modal-overlay.active { display:flex; }
+    .modal { background:#fff; border-radius:12px; padding:32px; max-width:560px; width:90%; max-height:90vh; overflow-y:auto; position:relative; }
+    .modal h2 { font-size:1.3rem; color:#1a237e; margin-bottom:8px; }
+    .modal h3 { font-size:0.95rem; color:#666; margin-bottom:24px; font-weight:400; }
+    .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#999; }
+    .form-group { margin-bottom:20px; }
+    .form-group label { display:block; font-size:0.9rem; font-weight:600; margin-bottom:6px; color:#333; }
+    .form-group label .required { color:#c62828; margin-left:4px; }
+    .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:8px; font-size:0.95rem; font-family:inherit; transition:border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:#1a237e; box-shadow:0 0 0 3px rgba(26,35,126,0.1); }
+    .checkbox-group { display:flex; align-items:center; gap:10px; }
+    .checkbox-group input[type="checkbox"] { width:20px; height:20px; accent-color:#1a237e; }
+    .checkbox-group label { font-weight:400; margin-bottom:0; }
+    .form-submit { width:100%; padding:12px; background:#1a237e; color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
+    .form-submit:hover { background:#283593; }
+    .form-note { font-size:0.8rem; color:#999; margin-top:8px; }
+
+    /* Success Message */
+    .success-msg { display:none; text-align:center; padding:40px 20px; }
+    .success-msg.active { display:block; }
+    .success-icon { font-size:4rem; margin-bottom:16px; }
+    .success-msg h2 { color:#2e7d32; margin-bottom:12px; }
+    .success-msg p { color:#666; }
+
+    /* Section Title */
+    .section-title { font-size:1.3rem; font-weight:700; color:#1a237e; margin:32px 0 16px; padding-bottom:8px; border-bottom:2px solid #1a237e; }
+
+    /* Footer */
+    .footer { text-align:center; padding:32px 16px; color:#999; font-size:0.85rem; border-top:1px solid #eee; margin-top:40px; }
+    .footer a { color:#1a237e; text-decoration:none; }
+
+    /* Responsive */
+    @media (max-width:600px) {
+      .header h1 { font-size:1.3rem; }
+      .seminar-card-header { flex-direction:column; align-items:flex-start; gap:8px; }
+      .seminar-meta { grid-template-columns:1fr; }
+      .modal { padding:24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🧬</div>
+  <h1>genmine セミナー・勉強会</h1>
+  <p>参加登録ポータル ─ がんゲノム医療の最新知見を学ぶ</p>
+</div>
+
+<div class="container">
+  <h2 class="section-title">開催予定セミナー</h2>
+  <div id="upcoming-seminars"></div>
+
+  <h2 class="section-title">過去のセミナー</h2>
+  <div id="past-seminars"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="registration-modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="form-container">
+      <h2>参加登録</h2>
+      <h3 id="modal-seminar-name"></h3>
+      <form id="registration-form" onsubmit="submitRegistration(event)">
+        <input type="hidden" id="form-seminar-id">
+        <div class="form-group">
+          <label>お名前<span class="required">*</span></label>
+          <input type="text" id="form-name" required placeholder="例: 山田 太郎">
+        </div>
+        <div class="form-group">
+          <label>ご所属施設<span class="required">*</span></label>
+          <input type="text" id="form-institution" required placeholder="例: 東京大学医学部附属病院">
+        </div>
+        <div class="form-group">
+          <label>診療科・部門</label>
+          <select id="form-department">
+            <option value="">選択してください</option>
+            <option value="腫瘍内科">腫瘍内科</option>
+            <option value="呼吸器科">呼吸器科</option>
+            <option value="消化器科">消化器科</option>
+            <option value="外科">外科</option>
+            <option value="血液内科">血液内科</option>
+            <option value="病理科">病理科</option>
+            <option value="遺伝診療科">遺伝診療科</option>
+            <option value="婦人科">婦人科</option>
+            <option value="泌尿器科">泌尿器科</option>
+            <option value="小児科">小児科</option>
+            <option value="薬剤部">薬剤部</option>
+            <option value="検査部">検査部</option>
+            <option value="研究所">研究所</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>メールアドレス<span class="required">*</span></label>
+          <input type="email" id="form-email" required placeholder="例: yamada@hospital.ac.jp">
+        </div>
+        <div class="form-group">
+          <label>電話番号</label>
+          <input type="tel" id="form-phone" placeholder="例: 03-1234-5678">
+        </div>
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="form-bento">
+            <label for="form-bento">弁当を希望する（ランチョン・院内勉強会の場合）</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>備考・ご質問</label>
+          <textarea id="form-note" rows="3" placeholder="講師への質問や特記事項がございましたらご記入ください"></textarea>
+        </div>
+        <button type="submit" class="form-submit">参加登録する</button>
+        <p class="form-note">※ 個人情報は本セミナーの運営目的のみに使用いたします。</p>
+      </form>
+    </div>
+    <div class="success-msg" id="success-msg">
+      <div class="success-icon">✅</div>
+      <h2>登録が完了しました</h2>
+      <p>ご登録ありがとうございます。<br>確認メールをお送りしましたのでご確認ください。</p>
+      <p style="margin-top:16px;"><button class="register-btn" onclick="closeModal()">閉じる</button></p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>&copy; 2026 genmine株式会社 | <a href="https://genmine.co.jp" target="_blank">genmine.co.jp</a></p>
+  <p style="margin-top:4px;">お問い合わせ: <a href="mailto:seminar@genmine.co.jp">seminar@genmine.co.jp</a></p>
+</div>
+
+<script>
+// Seminar data (embedded for standalone operation)
+const SEMINARS = [
+  {
+    id:'SM001',
+    name:'genmine TOP ゲノム医療最新動向セミナー ─ EGFR変異陽性NSCLCにおけるCGP検査の役割',
+    format:'Web講演会',
+    speaker:'佐藤隆 教授（東京大学 腫瘍内科）',
+    date:'2026-03-10',
+    time:'14:00-16:00',
+    venue:'オンライン（Zoom Webinar）',
+    capacity:200,
+    attendees:85,
+    status:'集客中',
+    description:'1. EGFR-TKI耐性獲得後のgenmine TOP活用事例（佐藤教授・東大腫瘍内科）\n2. genmine TOPで検出された希少融合遺伝子（ROS1, NTRK, RET）に基づく治療選択\n3. Q&Aセッション：エキスパートパネル（東大・がんセンター・慶應）\n\n対象：腫瘍内科医、呼吸器科医、病理医\n共催：日本肺癌学会 東京支部'
+  },
+  {
+    id:'SM002',
+    name:'肺がんプレシジョン・メディシン勉強会 ─ Osimertinib耐性後の治療戦略',
+    format:'院内勉強会',
+    speaker:'田村美咲 准教授（国立がん研究センター 呼吸器科）',
+    date:'2026-02-25',
+    time:'12:00-13:00',
+    venue:'国立がん研究センター中央病院 講堂',
+    capacity:50,
+    attendees:42,
+    status:'準備完了',
+    description:'1. Osimertinib（タグリッソ）後のC797S変異検出とgenmine TOPの有用性\n2. 症例提示：genmine TOPで検出されたMET増幅に基づくカプマチニブ投与例\n3. 当院でのgenmine TOP運用フロー改善提案\n\n対象：がんセンター呼吸器科・腫瘍内科スタッフ\n弁当：築地すし鮮 幕の内弁当（要事前申込）'
+  },
+  {
+    id:'SM004',
+    name:'がん遺伝子パネル検査の臨床活用 ─ エキスパートパネル運営の実際と課題',
+    format:'地域セミナー',
+    speaker:'油谷不二夫 教授（東京大学 医科学研究所）',
+    date:'2026-03-20',
+    time:'15:00-17:00',
+    venue:'東京大学 医科学研究所 講堂（東京都港区白金台4-6-1）',
+    capacity:80,
+    attendees:0,
+    status:'企画中',
+    description:'1. 油谷先生 基調講演：「genmine TOPで見えてくる腫瘍の分子プロファイル ─ 網羅的ゲノム解析がもたらす治療パラダイムシフト」\n2. パネルディスカッション：エキスパートパネルの運営課題\n  - 二次的所見（germline findings）の取り扱い\n  - 推奨治療が保険適用外の場合の患者説明\n  - C-CATへのデータ登録運用\n3. genmine TOP vs FoundationOne CDx：324遺伝子パネルの臨床比較\n\n対象：がんゲノム医療中核・拠点病院の腫瘍内科医、遺伝カウンセラー\n共催：日本癌治療学会'
+  },
+  {
+    id:'SM005',
+    name:'大阪地区 ゲノム医療ランチョンセミナー ─ 消化器がんにおけるgenmine TOP活用',
+    format:'ランチョンセミナー',
+    speaker:'中村大介 医長（大阪大学 消化器科）',
+    date:'2026-03-15',
+    time:'12:00-13:00',
+    venue:'大阪大学医学部附属病院 カンファレンスルーム（大阪府吹田市山田丘2-15）',
+    capacity:40,
+    attendees:0,
+    status:'講師調整中',
+    description:'1. 中村医長 講演：「大腸がんにおけるRAS/BRAF変異プロファイルとgenmine TOPの活用」\n  - 抗EGFR抗体薬適応判定にgenmine TOPを活用した症例\n  - MSI-H検出によるペムブロリズマブ投与切り替え事例\n2. 質疑応答：阪大でのgenmine TOP導入に向けた実務的課題\n\n対象：阪大病院 消化器内科・外科スタッフ\n弁当：梅田 花いち 特選松花堂弁当（要事前申込）'
+  },
+  {
+    id:'SM006',
+    name:'血液がんゲノム医療 学術講演会 ─ MRD検出と治療モニタリング',
+    format:'学術講演会',
+    speaker:'木村健一 教授（慶應義塾大学 血液内科）',
+    date:'2026-04-05',
+    time:'14:00-17:00',
+    venue:'帝国ホテル東京 孔雀の間（東京都千代田区内幸町1-1-1）',
+    capacity:150,
+    attendees:0,
+    status:'企画中',
+    description:'1. 木村教授 特別講演：「慶應における血液がんgenmine TOP活用 ─ AML/MDSのドライバー変異プロファイリング」\n2. シンポジウム：MRD（微小残存病変）検出におけるgenmine TOPの可能性\n  - cfDNAベースのMRDモニタリング\n  - フローサイトメトリーとの比較検証\n3. 製薬企業との共同研究事例紹介（第一三共・中外製薬）\n\n対象：血液内科医、移植医、臨床検査医\n共催：日本血液学会\n協賛：第一三共株式会社、中外製薬株式会社'
+  },
+  {
+    id:'SM003',
+    name:'リキッドバイオプシー ハンズオンセミナー ─ cfDNA抽出から解析レポート読解まで',
+    format:'ハンズオン',
+    speaker:'高橋恵理 准教授（国立がん研究センター 病理科）',
+    date:'2026-01-20',
+    time:'10:00-17:00',
+    venue:'genmine 東京オフィス ラボ棟',
+    capacity:30,
+    attendees:28,
+    status:'完了',
+    satisfaction:92,
+    description:'午前：cfDNA抽出実習（Streck採血管の正しい取り扱い、QC基準）\n午後：genmine TOPリキッドバイオプシーレポートの読解演習\n  - VAF（Variant Allele Frequency）の解釈\n  - TMB/MSI-Hの臨床的意義\n  - 実症例でのレポート読解ワークショップ\n\n対象：病理医、検査技師、CRC\n修了証：日本臨床検査医学会 認定単位 2単位\n参加者満足度：92%'
+  }
+];
+
+const FORMAT_BADGE = {
+  'Web講演会':'badge-web',
+  '院内勉強会':'badge-inhouse',
+  'ハンズオン':'badge-handson',
+  '地域セミナー':'badge-regional',
+  'ランチョンセミナー':'badge-luncheon',
+  '学術講演会':'badge-academic',
+  'ハイブリッド':'badge-hybrid'
+};
+
+function formatDate(d) {
+  const dt = new Date(d);
+  const y = dt.getFullYear();
+  const m = dt.getMonth()+1;
+  const day = dt.getDate();
+  const week = ['日','月','火','水','木','金','土'][dt.getDay()];
+  return `${y}年${m}月${day}日（${week}）`;
+}
+
+function isUpcoming(s) {
+  return s.status !== '完了' && new Date(s.date) >= new Date('2026-02-23');
+}
+
+function canRegister(s) {
+  return s.status === '集客中' || s.status === '準備完了' || s.status === '企画中' || s.status === '講師調整中';
+}
+
+function renderSeminarCard(s, past) {
+  const pct = s.capacity > 0 ? Math.round((s.attendees/s.capacity)*100) : 0;
+  const isFull = s.attendees >= s.capacity;
+  const fillColor = pct >= 90 ? '#c62828' : pct >= 70 ? '#e65100' : '#2e7d32';
+
+  let statusTag = '';
+  if (past) {
+    statusTag = `<span class="status-tag status-closed">開催済</span>`;
+    if (s.satisfaction) statusTag += ` <span style="font-size:0.85rem;color:#666;">満足度: ${s.satisfaction}%</span>`;
+  } else if (isFull) {
+    statusTag = `<span class="status-tag status-full">満席</span>`;
+  } else {
+    statusTag = `<span class="status-tag status-open">受付中</span>`;
+  }
+
+  return `
+    <div class="seminar-card">
+      <div class="seminar-card-header">
+        <span class="seminar-badge ${FORMAT_BADGE[s.format]||'badge-web'}">${s.format}</span>
+        <span class="seminar-title">${s.name}</span>
+      </div>
+      <div class="seminar-card-body">
+        <div class="seminar-meta">
+          <div class="meta-item"><span class="meta-icon">📅</span><span class="meta-label">日程:</span><span class="meta-value">${formatDate(s.date)}</span></div>
+          <div class="meta-item"><span class="meta-icon">🕐</span><span class="meta-label">時間:</span><span class="meta-value">${s.time}</span></div>
+          <div class="meta-item"><span class="meta-icon">🎤</span><span class="meta-label">講師:</span><span class="meta-value">${s.speaker}</span></div>
+          <div class="meta-item"><span class="meta-icon">📍</span><span class="meta-label">会場:</span><span class="meta-value">${s.venue}</span></div>
+        </div>
+        <div class="seminar-desc">${s.description}</div>
+        <div class="seminar-status">
+          ${statusTag}
+          <div class="capacity-bar"><div class="capacity-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+          <span class="capacity-text">${s.attendees}/${s.capacity}名</span>
+        </div>
+        ${!past && canRegister(s) && !isFull ? `<button class="register-btn" onclick="openModal('${s.id}')">参加登録する</button>` : ''}
+        ${!past && isFull ? `<button class="register-btn disabled" disabled>満席です</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const upcoming = SEMINARS.filter(s => isUpcoming(s));
+  const past = SEMINARS.filter(s => !isUpcoming(s));
+
+  document.getElementById('upcoming-seminars').innerHTML =
+    upcoming.length > 0
+      ? upcoming.map(s => renderSeminarCard(s, false)).join('')
+      : '<p style="color:#999;padding:20px;">現在予定されているセミナーはありません。</p>';
+
+  document.getElementById('past-seminars').innerHTML =
+    past.length > 0
+      ? past.map(s => renderSeminarCard(s, true)).join('')
+      : '<p style="color:#999;padding:20px;">過去のセミナーはありません。</p>';
+}
+
+function openModal(seminarId) {
+  const s = SEMINARS.find(x => x.id === seminarId);
+  if (!s) return;
+  document.getElementById('form-seminar-id').value = seminarId;
+  document.getElementById('modal-seminar-name').textContent = s.name;
+  document.getElementById('form-container').style.display = 'block';
+  document.getElementById('success-msg').classList.remove('active');
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  document.getElementById('registration-form').reset();
+}
+
+function submitRegistration(e) {
+  e.preventDefault();
+  const data = {
+    seminarId: document.getElementById('form-seminar-id').value,
+    name: document.getElementById('form-name').value,
+    institution: document.getElementById('form-institution').value,
+    department: document.getElementById('form-department').value,
+    email: document.getElementById('form-email').value,
+    phone: document.getElementById('form-phone').value,
+    bentoRequired: document.getElementById('form-bento').checked,
+    note: document.getElementById('form-note').value
+  };
+
+  // In production, this would POST to /api/seminar-register
+  console.log('Registration submitted:', data);
+
+  // Show success
+  document.getElementById('form-container').style.display = 'none';
+  document.getElementById('success-msg').classList.add('active');
+
+  // Update attendee count locally
+  const s = SEMINARS.find(x => x.id === data.seminarId);
+  if (s) { s.attendees++; render(); }
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Init
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+apiName: Contact
+label: 取引先責任者
+pluralLabel: 取引先責任者
+description: 取引先の担当者・連絡先の管理
+fields:
+  - apiName: FirstName
+    label: 名
+    type: Text
+    length: 40
+  - apiName: LastName
+    label: 姓
+    type: Text
+    length: 80
+    required: true
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Contacts
+    relationshipLabel: 取引先責任者
+  - apiName: Title
+    label: 役職
+    type: Text
+    length: 128
+  - apiName: Department
+    label: 部門
+    type: Text
+    length: 80
+  - apiName: Email
+    label: メール
+    type: Email
+  - apiName: Phone
+    label: 電話
+    type: Phone
+  - apiName: MobilePhone
+    label: 携帯電話
+    type: Phone
+  - apiName: MailingStreet
+    label: 郵送先（町名・番地）
+    type: Text
+    length: 255
+  - apiName: MailingCity
+    label: 郵送先（市区郡）
+    type: Text
+    length: 40
+  - apiName: MailingState
+    label: 郵送先（都道府県）
+    type: Text
+    length: 80
+  - apiName: MailingPostalCode
+    label: 郵送先（郵便番号）
+    type: Text
+    length: 20
+  - apiName: MailingCountry
+    label: 郵送先（国）
+    type: Text
+    length: 80
+  - apiName: Birthdate
+    label: 誕生日
+    type: Date
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedContacts
+  - apiName: ReportsToId
+    label: 上司
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: DirectReports
+    relationshipLabel: 部下

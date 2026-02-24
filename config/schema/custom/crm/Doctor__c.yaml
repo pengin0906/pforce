@@ -1,0 +1,136 @@
+apiName: Doctor__c
+label: ドクター管理
+pluralLabel: ドクター管理
+description: 個別ドクターの関係構築・営業活動管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: ドクター名
+  type: Text
+  length: 80
+fields:
+  - apiName: Medical_Institution__c
+    label: 所属医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: Doctors
+    relationshipLabel: 所属ドクター
+    deleteConstraint: SetNull
+  - apiName: Department__c
+    label: 診療科
+    type: Picklist
+    values:
+      - 腫瘍内科
+      - 呼吸器内科
+      - 消化器内科
+      - 乳腺外科
+      - 病理診断科
+      - 遺伝診療科
+      - 外科
+      - その他
+  - apiName: Title__c
+    label: 役職
+    type: Picklist
+    values:
+      - 教授
+      - 准教授
+      - 講師
+      - 助教
+      - 部長
+      - 医長
+      - 医員
+  - apiName: Specialty_Cancer__c
+    label: 専門がん種
+    type: MultiselectPicklist
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+    visibleLines: 4
+  - apiName: Relationship_Level__c
+    label: 関係構築度
+    type: Picklist
+    required: true
+    values:
+      - 未接触
+      - 初回面談済
+      - 関心あり
+      - 検討中
+      - 推進者
+      - ファン（KOL）
+  - apiName: Genomic_Interest__c
+    label: ゲノム検査への関心
+    type: Picklist
+    values:
+      - 非常に高い
+      - やや高い
+      - 普通
+      - 低い
+      - 不明
+  - apiName: Last_Visit_Date__c
+    label: 直近訪問日
+    type: Date
+  - apiName: Next_Action_Date__c
+    label: 次回アクション予定日
+    type: Date
+  - apiName: Visit_Count__c
+    label: 訪問回数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Referred_Specimen_Count__c
+    label: 紹介検体数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Conference_History__c
+    label: 学会発表歴
+    type: MultiselectPicklist
+    values:
+      - ASCO
+      - ESMO
+      - JSMO
+      - AACR
+      - 日本癌学会
+      - 日本臨床腫瘍学会
+    visibleLines: 4
+  - apiName: Email__c
+    label: メールアドレス
+    type: Email
+  - apiName: Phone__c
+    label: 電話番号
+    type: Phone
+  - apiName: Contact_Note__c
+    label: 連絡先メモ
+    type: LongTextArea
+    length: 32768
+    visibleLines: 3
+  - apiName: Assigned_MR__c
+    label: 担当MR
+    type: Text
+    length: 80
+  - apiName: Is_KOL__c
+    label: KOLフラグ
+    type: Checkbox
+    defaultValue: false
+    inlineHelpText: Key Opinion Leaderの場合チェック
+  - apiName: KOL_Score__c
+    label: KOLスコア
+    type: Number
+    precision: 18
+    scale: 0
+    inlineHelpText: 0-100のスコアリング（学会発表数×10 + 論文数×5 + 検体紹介数×2）
+validationRules:
+  - apiName: Require_Institution
+    active: true
+    description: 所属医療機関は必須
+    errorConditionFormula: ISBLANK(Medical_Institution__c)
+    errorMessage: 所属医療機関を選択してください

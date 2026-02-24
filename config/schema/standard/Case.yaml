@@ -1,0 +1,78 @@
+apiName: Case
+label: ケース
+pluralLabel: ケース
+description: カスタマーサポート・問い合わせの管理
+fields:
+  - apiName: Subject
+    label: 件名
+    type: Text
+    length: 255
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - 新規
+      - 対応中
+      - エスカレーション
+      - 解決済
+      - クローズ
+  - apiName: Priority
+    label: 優先度
+    type: Picklist
+    values:
+      - 高
+      - 中
+      - 低
+  - apiName: Origin
+    label: 発生源
+    type: Picklist
+    values:
+      - 電話
+      - メール
+      - ウェブ
+  - apiName: Type
+    label: 種別
+    type: Picklist
+    values:
+      - 問題
+      - 機能要求
+      - 質問
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Cases
+    relationshipLabel: ケース
+  - apiName: ContactId
+    label: 取引先責任者
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: Cases
+    relationshipLabel: ケース
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedCases
+  - apiName: Reason
+    label: 原因
+    type: Picklist
+    values:
+      - ユーザーの操作ミス
+      - 機能の不具合
+      - 設定の問題
+      - その他
+  - apiName: IsClosed
+    label: クローズ済み
+    type: Checkbox
+    defaultValue: false
+  - apiName: IsEscalated
+    label: エスカレーション済み
+    type: Checkbox
+    defaultValue: false

@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPSP - Nonprofit Success Pack</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#1B2A4A;--primary-light:#2C3E6B;--primary-dark:#0F1A30;
+  --accent:#E67E22;--accent-light:#F39C12;--accent-dark:#D35400;
+  --success:#27AE60;--danger:#E74C3C;--warning:#F1C40F;--info:#3498DB;
+  --bg:#F5F7FA;--card:#FFFFFF;--border:#E1E5EB;--border-light:#F0F2F5;
+  --text:#2C3E50;--text-secondary:#7F8C8D;--text-light:#BDC3C7;
+  --sidebar-w:260px;--topbar-h:56px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);--shadow-lg:0 4px 16px rgba(0,0,0,0.12);
+  --radius:6px;--radius-lg:10px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+a{color:var(--info);text-decoration:none}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;z-index:100;transition:width .2s}
+.sidebar-brand{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.sidebar-brand .logo{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.sidebar-brand h2{font-size:15px;font-weight:700;letter-spacing:.3px}
+.sidebar-brand small{display:block;font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:8px 0}
+.sidebar-nav::-webkit-scrollbar{width:4px}
+.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.nav-section{padding:4px 0}
+.nav-section-title{padding:10px 20px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35)}
+.nav-item{display:flex;align-items:center;gap:12px;padding:9px 20px;cursor:pointer;font-size:13px;border-left:3px solid transparent;transition:all .15s;color:rgba(255,255,255,.7);position:relative}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;border-left-color:rgba(230,126,34,.4)}
+.nav-item.active{background:rgba(230,126,34,.15);color:#fff;border-left-color:var(--accent);font-weight:600}
+.nav-item .icon{width:20px;text-align:center;font-size:15px;flex-shrink:0}
+.nav-item .badge{position:absolute;right:14px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center}
+.sidebar-footer{padding:12px 20px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:rgba(255,255,255,.3);flex-shrink:0}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:var(--topbar-h);background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-left h1{font-size:17px;font-weight:600;color:var(--primary)}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)}
+.breadcrumb span{cursor:pointer}.breadcrumb span:hover{color:var(--accent)}
+.breadcrumb .sep{color:var(--text-light)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.global-search{position:relative}
+.global-search input{width:280px;padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:20px;font-size:12px;background:var(--bg);transition:all .2s}
+.global-search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,126,34,.1);width:340px;background:#fff}
+.global-search .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-light)}
+.user-pill{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:20px;background:var(--bg);font-size:12px;font-weight:500;cursor:pointer}
+.user-pill:hover{background:var(--border)}
+
+/* Content area */
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--bg)}
+.content::-webkit-scrollbar{width:8px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-header h3{font-size:15px;font-weight:600;color:var(--primary)}
+.card-header .actions{display:flex;gap:8px}
+
+/* Grid */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+
+/* KPI Cards */
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.k-blue::before{background:var(--info)}
+.kpi.k-orange::before{background:var(--accent)}
+.kpi.k-green::before{background:var(--success)}
+.kpi.k-purple::before{background:#9B59B6}
+.kpi .kpi-icon{font-size:24px;margin-bottom:8px}
+.kpi .kpi-value{font-size:28px;font-weight:700;color:var(--primary);margin-bottom:2px}
+.kpi .kpi-label{font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.kpi .kpi-change{font-size:11px;margin-top:6px;font-weight:500}
+.kpi .kpi-change.up{color:var(--success)}
+.kpi .kpi-change.down{color:var(--danger)}
+
+/* Tables */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--bg);border-bottom:2px solid var(--border)}
+th{padding:10px 14px;text-align:left;font-weight:600;font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+th:hover{color:var(--primary)}
+th .sort-arrow{margin-left:4px;font-size:10px;color:var(--text-light)}
+th.sorted .sort-arrow{color:var(--accent)}
+td{padding:10px 14px;border-bottom:1px solid var(--border-light);font-size:13px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:rgba(230,126,34,.04);cursor:pointer}
+.table-actions{display:flex;gap:4px}
+.table-actions button{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;font-size:13px;color:var(--text-secondary)}
+.table-actions button:hover{background:var(--bg);color:var(--primary)}
+.table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.table-toolbar .left{display:flex;gap:8px;align-items:center}
+.table-toolbar .right{display:flex;gap:8px;align-items:center}
+.table-search{padding:7px 12px 7px 32px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;width:240px;background:var(--bg);position:relative}
+.table-search:focus{outline:none;border-color:var(--accent);background:#fff}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-dark);box-shadow:0 2px 8px rgba(230,126,34,.3)}
+.btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border-light)}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#C0392B}
+.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#219A52}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:10px}
+.btn-icon{padding:6px 8px;background:none;border:1px solid var(--border);color:var(--text-secondary)}
+.btn-icon:hover{background:var(--bg);color:var(--primary)}
+
+/* Status badges */
+.badge-status{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-green{background:#E8F8F0;color:#1E8449}
+.badge-blue{background:#EBF5FB;color:#1A5276}
+.badge-orange{background:#FEF5E7;color:#B9770E}
+.badge-red{background:#FDEDEC;color:#922B21}
+.badge-gray{background:#F2F3F4;color:#616A6B}
+.badge-purple{background:#F4ECF7;color:#6C3483}
+
+/* Charts */
+.chart-container{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow)}
+.chart-container h4{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:14px;text-transform:uppercase;letter-spacing:.3px}
+.chart-container canvas{max-height:300px}
+
+/* Pipeline */
+.pipeline-row{display:flex;align-items:center;margin:6px 0;gap:8px}
+.pipeline-label{width:100px;font-size:12px;color:var(--text-secondary);flex-shrink:0;text-align:right}
+.pipeline-bar-wrap{flex:1;background:var(--border-light);border-radius:4px;height:28px;overflow:hidden;position:relative}
+.pipeline-bar{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;min-width:30px;transition:width .5s ease}
+.pipeline-value{font-size:12px;color:var(--text-secondary);width:80px;text-align:right;flex-shrink:0}
+
+/* Donor list */
+.donor-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);gap:12px}
+.donor-row:last-child{border-bottom:none}
+.donor-rank{width:28px;height:28px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-secondary);flex-shrink:0}
+.donor-rank.top3{background:var(--accent);color:#fff}
+.donor-info{flex:1;min-width:0}
+.donor-info .name{font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.donor-info .org{font-size:11px;color:var(--text-secondary)}
+.donor-amount{font-weight:700;color:var(--primary);font-size:14px;flex-shrink:0}
+
+/* Detail view */
+.detail-panel{display:none;position:fixed;top:0;right:0;bottom:0;width:680px;max-width:90vw;background:var(--card);box-shadow:-4px 0 24px rgba(0,0,0,.15);z-index:200;overflow:hidden;flex-direction:column;animation:slideIn .25s ease}
+.detail-panel.open{display:flex}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.detail-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--primary);color:#fff;flex-shrink:0}
+.detail-header h3{font-size:16px;font-weight:600}
+.detail-header .close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;cursor:pointer;padding:4px 8px;border-radius:4px}
+.detail-header .close-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+.detail-body{flex:1;overflow-y:auto;padding:24px}
+.detail-section{margin-bottom:24px}
+.detail-section h4{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field-item label{display:block;font-size:10px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.field-item .field-value{font-size:13px;padding:8px 12px;background:var(--bg);border-radius:var(--radius);min-height:34px;word-break:break-word}
+.detail-actions{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card);border-radius:var(--radius-lg);width:640px;max-width:90vw;max-height:85vh;overflow:hidden;box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--border);background:var(--primary);color:#fff;flex-shrink:0}
+.modal-header h3{font-size:16px;font-weight:600}
+.modal-header .close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:4px}
+.modal-header .close-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+.modal-body{padding:24px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--bg)}
+
+/* Forms */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.form-group label .req{color:var(--danger)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(230,126,34,.1)}
+.form-group textarea{resize:vertical;min-height:80px}
+
+/* Toast */
+.toast-container{position:fixed;top:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius);color:#fff;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);animation:toastIn .3s ease;display:flex;align-items:center;gap:8px;min-width:280px}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+.toast.info{background:var(--info)}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* Loading */
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:60px;flex-direction:column;gap:12px;color:var(--text-secondary);font-size:13px}
+.page-loading{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;z-index:10}
+
+/* Empty state */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-secondary)}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+.empty-state h4{font-size:16px;color:var(--text);margin-bottom:6px}
+.empty-state p{font-size:13px;max-width:400px;margin:0 auto}
+
+/* SOQL Console */
+.soql-area{width:100%;min-height:120px;font-family:'SFMono-Regular','Consolas','Liberation Mono',monospace;font-size:13px;padding:14px;border:2px solid var(--border);border-radius:var(--radius);background:var(--primary-dark);color:#E8E8E8;resize:vertical;line-height:1.6}
+.soql-area:focus{outline:none;border-color:var(--accent)}
+.soql-toolbar{display:flex;gap:8px;align-items:center;margin:12px 0}
+.soql-examples select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:#fff;min-width:240px}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:12px;color:var(--text-secondary)}
+.pagination .page-info{font-weight:500}
+.pagination .page-btns{display:flex;gap:4px}
+.pagination .page-btns button{padding:6px 12px;border:1px solid var(--border);background:#fff;border-radius:var(--radius);cursor:pointer;font-size:12px}
+.pagination .page-btns button:hover{background:var(--bg)}
+.pagination .page-btns button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pagination .page-btns button:disabled{opacity:.4;cursor:not-allowed}
+
+/* Tabs within content */
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px}
+.tab-btn{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+/* Related list */
+.related-list{margin-top:20px}
+.related-list h4{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--primary);margin-bottom:10px}
+.related-list h4 .rl-count{background:var(--bg);color:var(--text-secondary);font-size:10px;padding:2px 8px;border-radius:10px}
+
+/* Responsive */
+@media(max-width:1200px){.g4{grid-template-columns:repeat(2,1fr)}.g5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.sidebar{width:60px}.sidebar .nav-item span:not(.icon),.sidebar .nav-section-title,.sidebar-brand h2,.sidebar-brand small,.sidebar .nav-item .badge,.sidebar-footer{display:none}.sidebar-brand{padding:14px}.sidebar-brand .logo{margin:0 auto}.nav-item{justify-content:center;padding:12px 0}.nav-item .icon{width:auto;font-size:18px}.detail-panel{width:100%}}
+@media(max-width:768px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}.field-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.topbar-right .global-search{display:none}}
+
+/* Detail overlay backdrop */
+.detail-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:199;display:none}
+.detail-backdrop.open{display:block}
+
+/* Scrollbar for detail */
+.detail-body::-webkit-scrollbar{width:6px}
+.detail-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Clickable rows */
+.clickable-row{cursor:pointer}
+.clickable-row:hover td{color:var(--primary)}
+
+/* Event/Campaign cards */
+.event-card{display:flex;gap:14px;padding:12px;border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:8px;transition:all .15s}
+.event-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.event-date-badge{width:50px;flex-shrink:0;text-align:center;padding:6px;background:var(--primary);color:#fff;border-radius:var(--radius)}
+.event-date-badge .month{font-size:10px;text-transform:uppercase;opacity:.8}
+.event-date-badge .day{font-size:20px;font-weight:700;line-height:1.2}
+.event-info{flex:1;min-width:0}
+.event-info .event-title{font-weight:600;font-size:13px;margin-bottom:2px}
+.event-info .event-meta{font-size:11px;color:var(--text-secondary)}
+
+/* Campaign performance */
+.campaign-card{padding:16px;border:1px solid var(--border-light);border-radius:var(--radius);transition:all .15s}
+.campaign-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.campaign-card .c-name{font-weight:600;font-size:13px;margin-bottom:8px}
+.campaign-card .c-stats{display:flex;gap:16px;font-size:11px;color:var(--text-secondary)}
+.campaign-card .c-stat-val{font-weight:700;color:var(--primary);font-size:14px;display:block}
+.campaign-card .c-progress{height:4px;background:var(--border-light);border-radius:2px;margin-top:10px;overflow:hidden}
+.campaign-card .c-progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .5s}
+
+/* Hide sections */
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">NP</div>
+    <div><h2>NPSP</h2><small>Nonprofit Success Pack</small></div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Main</div>
+      <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+        <span class="icon">&#x1F3E0;</span><span>Dashboard</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Constituents</div>
+      <div class="nav-item" onclick="navigate('contacts')" id="nav-contacts">
+        <span class="icon">&#x1F465;</span><span>Contacts</span><span class="badge" id="badge-contacts"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('accounts')" id="nav-accounts">
+        <span class="icon">&#x1F3E2;</span><span>Accounts</span><span class="badge" id="badge-accounts"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('leads')" id="nav-leads">
+        <span class="icon">&#x1F3AF;</span><span>Leads</span><span class="badge" id="badge-leads"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('households')" id="nav-households">
+        <span class="icon">&#x1F3E1;</span><span>Households</span><span class="badge" id="badge-households"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('relationships')" id="nav-relationships">
+        <span class="icon">&#x1F517;</span><span>Relationships</span><span class="badge" id="badge-relationships"></span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Fundraising</div>
+      <div class="nav-item" onclick="navigate('donations')" id="nav-donations">
+        <span class="icon">&#x1F4B5;</span><span>Donations</span><span class="badge" id="badge-donations"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('recurring')" id="nav-recurring">
+        <span class="icon">&#x1F504;</span><span>Recurring Donations</span><span class="badge" id="badge-recurring"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('payments')" id="nav-payments">
+        <span class="icon">&#x1F4B3;</span><span>Payments</span><span class="badge" id="badge-payments"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('campaigns')" id="nav-campaigns">
+        <span class="icon">&#x1F4E3;</span><span>Campaigns</span><span class="badge" id="badge-campaigns"></span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Management</div>
+      <div class="nav-item" onclick="navigate('gau')" id="nav-gau">
+        <span class="icon">&#x1F4CA;</span><span>Fund Accounting</span><span class="badge" id="badge-gau"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('engagements')" id="nav-engagements">
+        <span class="icon">&#x1F4CB;</span><span>Engagement Plans</span><span class="badge" id="badge-engagements"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('levels')" id="nav-levels">
+        <span class="icon">&#x2B50;</span><span>Donor Levels</span><span class="badge" id="badge-levels"></span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Activities</div>
+      <div class="nav-item" onclick="navigate('tasks')" id="nav-tasks">
+        <span class="icon">&#x2705;</span><span>Tasks</span><span class="badge" id="badge-tasks"></span>
+      </div>
+      <div class="nav-item" onclick="navigate('events')" id="nav-events">
+        <span class="icon">&#x1F4C5;</span><span>Events</span><span class="badge" id="badge-events"></span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Analytics</div>
+      <div class="nav-item" onclick="navigate('reports')" id="nav-reports">
+        <span class="icon">&#x1F4CA;</span><span>Reports</span>
+      </div>
+      <div class="nav-item" onclick="navigate('soql')" id="nav-soql">
+        <span class="icon">&#x1F4BB;</span><span>SOQL Console</span>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-footer">Pforce NPSP v1.0</div>
+</div>
+
+<!-- Main Area -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="breadcrumb" id="breadcrumb"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="global-search">
+        <span class="search-icon">&#x1F50D;</span>
+        <input type="text" id="globalSearch" placeholder="Search across all records..." onkeyup="handleGlobalSearch(event)">
+      </div>
+      <div class="user-pill" onclick="checkHealth()">
+        <span>&#x1F464;</span>
+        <span>Admin</span>
+      </div>
+    </div>
+  </div>
+  <div class="content" id="contentArea">
+    <!-- Dynamic content rendered here -->
+  </div>
+</div>
+</div>
+
+<!-- Detail Slide-over Panel -->
+<div class="detail-backdrop" id="detailBackdrop" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <h3 id="detailTitle">Record Detail</h3>
+    <button class="close-btn" onclick="closeDetail()">&#x2715;</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+  <div class="detail-actions" id="detailActions"></div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ============================================================================
+// State Management
+// ============================================================================
+const S = {
+  currentTab: 'dashboard',
+  cache: {},
+  counts: {},
+  schemas: {},
+  sortCol: null,
+  sortDir: 'asc',
+  searchTerm: '',
+  charts: {},
+  soqlHistory: [],
+  pageSize: 25,
+  currentPage: 1
+};
+
+// Object configuration mapping
+const OBJ_CONFIG = {
+  contacts:      { obj: 'Contact', label: 'Contacts', icon: '\u{1F465}', nameField: 'LastName', displayFields: ['FirstName','LastName','Email','Phone','AccountId','Title'] },
+  accounts:      { obj: 'Account', label: 'Accounts/Organizations', icon: '\u{1F3E2}', nameField: 'Name', displayFields: ['Name','Type','Phone','Website','Industry','BillingCity'] },
+  donations:     { obj: 'Opportunity', label: 'Donations', icon: '\u{1F4B5}', nameField: 'Name', displayFields: ['Name','Amount','CloseDate','StageName','Type','Primary_Contact__c'] },
+  leads:         { obj: 'Lead', label: 'Leads', icon: '\u{1F3AF}', nameField: 'LastName', displayFields: ['FirstName','LastName','Company','Email','Phone','Status','LeadSource'] },
+  campaigns:     { obj: 'Campaign', label: 'Campaigns', icon: '\u{1F4E3}', nameField: 'Name', displayFields: ['Name','Type','Status','StartDate','EndDate','BudgetedCost','ExpectedRevenue'] },
+  recurring:     { obj: 'Recurring_Donation__c', label: 'Recurring Donations', icon: '\u{1F504}', nameField: 'Name', displayFields: ['Name','Amount__c','Installment_Period__c','Status__c','Contact__c','Date_Established__c'] },
+  payments:      { obj: 'Payment__c', label: 'Payments', icon: '\u{1F4B3}', nameField: 'Name', displayFields: ['Name','Payment_Amount__c','Payment_Date__c','Payment_Method__c','Paid__c','Opportunity__c'] },
+  gau:           { obj: 'General_Accounting_Unit__c', label: 'Fund Accounting (GAU)', icon: '\u{1F4CA}', nameField: 'Name', displayFields: ['Name','Active__c','Average_Allocation__c','Total_Allocations__c','Description__c'] },
+  engagements:   { obj: 'Engagement_Plan_Template__c', label: 'Engagement Plans', icon: '\u{1F4CB}', nameField: 'Name', displayFields: ['Name','Description__c','Skip_Weekends__c','Default_Assignee__c'] },
+  levels:        { obj: 'Level__c', label: 'Donor Levels', icon: '\u2B50', nameField: 'Name', displayFields: ['Name','Minimum_Amount__c','Maximum_Amount__c','Target__c','Source_Field__c','Level_Field__c','Active__c'] },
+  relationships: { obj: 'Relationship__c', label: 'Relationships', icon: '\u{1F517}', nameField: 'Name', displayFields: ['Name','Contact__c','RelatedContact__c','Type__c','Status__c'] },
+  tasks:         { obj: 'Task', label: 'Tasks', icon: '\u2705', nameField: 'Subject', displayFields: ['Subject','Status','Priority','ActivityDate','WhoId','Description'] },
+  events:        { obj: 'Event', label: 'Events', icon: '\u{1F4C5}', nameField: 'Subject', displayFields: ['Subject','StartDateTime','EndDateTime','Location','WhoId','Description'] },
+  households:    { obj: 'Household__c', label: 'Households', icon: '\u{1F3E1}', nameField: 'Name', displayFields: ['Name','Formal_Greeting__c','Informal_Greeting__c','MailingStreet__c','MailingCity__c'] }
+};
+
+// Related objects map
+const RELATED_OBJECTS = {
+  Contact: [
+    { label: 'Donations', obj: 'Opportunity', field: 'Primary_Contact__c', displayFields: ['Name','Amount','StageName','CloseDate'] },
+    { label: 'Relationships', obj: 'Relationship__c', field: 'Contact__c', displayFields: ['Name','RelatedContact__c','Type__c','Status__c'] },
+    { label: 'Tasks', obj: 'Task', field: 'WhoId', displayFields: ['Subject','Status','ActivityDate'] }
+  ],
+  Account: [
+    { label: 'Donations', obj: 'Opportunity', field: 'AccountId', displayFields: ['Name','Amount','StageName','CloseDate'] },
+    { label: 'Contacts', obj: 'Contact', field: 'AccountId', displayFields: ['FirstName','LastName','Email','Phone'] }
+  ],
+  Campaign: [
+    { label: 'Donations', obj: 'Opportunity', field: 'CampaignId', displayFields: ['Name','Amount','StageName','CloseDate'] },
+    { label: 'Campaign Members', obj: 'CampaignMember', field: 'CampaignId', displayFields: ['ContactId','Status'] }
+  ],
+  Opportunity: [
+    { label: 'Payments', obj: 'Payment__c', field: 'Opportunity__c', displayFields: ['Name','Payment_Amount__c','Payment_Date__c','Paid__c'] },
+    { label: 'GAU Allocations', obj: 'Allocation__c', field: 'Opportunity__c', displayFields: ['Name','Amount__c','Percent__c','General_Accounting_Unit__c'] }
+  ]
+};
+
+// ============================================================================
+// API Layer
+// ============================================================================
+async function api(url, options = {}) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      ...options
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(err.error || err.message || `HTTP ${res.status}`);
+    }
+    if (res.status === 204) return { success: true };
+    return await res.json();
+  } catch (e) {
+    console.error('API Error:', e);
+    throw e;
+  }
+}
+
+async function fetchRecords(objectName) {
+  const key = objectName;
+  if (S.cache[key] && Date.now() - S.cache[key].ts < 30000) return S.cache[key].data;
+  const result = await api(`/api/data/${objectName}`);
+  const records = result.records || [];
+  S.cache[key] = { data: records, ts: Date.now() };
+  S.counts[objectName] = records.length;
+  return records;
+}
+
+async function fetchRecord(objectName, id) {
+  return await api(`/api/data/${objectName}/${id}`);
+}
+
+async function createRecord(objectName, data) {
+  const result = await api(`/api/data/${objectName}`, { method: 'POST', body: JSON.stringify(data) });
+  delete S.cache[objectName];
+  return result;
+}
+
+async function updateRecord(objectName, id, data) {
+  const result = await api(`/api/data/${objectName}/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  delete S.cache[objectName];
+  return result;
+}
+
+async function deleteRecord(objectName, id) {
+  const result = await api(`/api/data/${objectName}/${id}`, { method: 'DELETE' });
+  delete S.cache[objectName];
+  return result;
+}
+
+async function fetchSchema(objectName) {
+  if (S.schemas[objectName]) return S.schemas[objectName];
+  try {
+    const result = await api(`/services/data/v62.0/sobjects/${objectName}/describe/`);
+    S.schemas[objectName] = result;
+    return result;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function runSOQL(query) {
+  return await api(`/services/data/v62.0/query/?q=${encodeURIComponent(query)}`);
+}
+
+// ============================================================================
+// Utilities
+// ============================================================================
+function $(id) { return document.getElementById(id); }
+
+function formatCurrency(val) {
+  if (val == null || val === '') return '--';
+  const n = parseFloat(val);
+  if (isNaN(n)) return val;
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatDate(val) {
+  if (!val) return '--';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function formatDateTime(val) {
+  if (!val) return '--';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function formatFieldValue(val, fieldName) {
+  if (val == null || val === '') return '--';
+  if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+  const lcf = fieldName.toLowerCase();
+  if (lcf.includes('amount') || lcf.includes('revenue') || lcf.includes('cost') || lcf === 'amount' || lcf.includes('currency') || lcf.includes('annualrevenue')) return formatCurrency(val);
+  if (lcf.includes('date') && !lcf.includes('time') || lcf === 'closedate' || lcf === 'birthdate' || lcf === 'startdate' || lcf === 'enddate' || lcf === 'activitydate') return formatDate(val);
+  if (lcf.includes('datetime') || lcf === 'startdatetime' || lcf === 'enddatetime') return formatDateTime(val);
+  return String(val);
+}
+
+function getBadgeClass(val) {
+  if (!val) return 'badge-gray';
+  const v = String(val).toLowerCase();
+  if (['closed won','received','thanked','completed','paid','active','acknowledged','converted','responded','attended'].includes(v)) return 'badge-green';
+  if (['pledged','in progress','submitted','qualified','open','sent'].includes(v)) return 'badge-blue';
+  if (['prospecting','planned','not started','potential','new donor'].includes(v)) return 'badge-orange';
+  if (['closed lost','aborted','unqualified','failed','deferred','lapsed','no show','former'].includes(v)) return 'badge-red';
+  if (['waiting on someone else'].includes(v)) return 'badge-purple';
+  return 'badge-gray';
+}
+
+function truncate(str, len = 40) {
+  if (!str) return '';
+  return str.length > len ? str.substring(0, len) + '...' : str;
+}
+
+function toast(msg, type = 'success') {
+  const c = $('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type === 'success' ? '\u2705' : type === 'error' ? '\u274C' : '\u2139\uFE0F'}</span> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(40px)'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+function showLoading(container) {
+  container.innerHTML = '<div class="loading-overlay"><div class="spinner"></div><span>Loading...</span></div>';
+}
+
+function getRecordName(record, config) {
+  if (!record) return 'Unknown';
+  if (config && config.nameField) {
+    if (config.nameField === 'LastName') return `${record.FirstName || ''} ${record.LastName || ''}`.trim();
+    return record[config.nameField] || record.Name || record.Id || 'Unknown';
+  }
+  return record.Name || record.Subject || record.Id || 'Unknown';
+}
+
+// ============================================================================
+// Navigation
+// ============================================================================
+function navigate(tab) {
+  S.currentTab = tab;
+  S.currentPage = 1;
+  S.sortCol = null;
+  S.sortDir = 'asc';
+  S.searchTerm = '';
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = $(`nav-${tab}`);
+  if (navEl) navEl.classList.add('active');
+
+  renderTab(tab);
+}
+
+function setBreadcrumb(items) {
+  const bc = $('breadcrumb');
+  bc.innerHTML = items.map((item, i) => {
+    if (i < items.length - 1) return `<span onclick="${item.action || ''}">${item.label}</span><span class="sep">/</span>`;
+    return `<span style="color:var(--text)">${item.label}</span>`;
+  }).join('');
+}
+
+async function renderTab(tab) {
+  const area = $('contentArea');
+  const title = $('pageTitle');
+
+  switch (tab) {
+    case 'dashboard': title.textContent = 'Dashboard'; setBreadcrumb([{label:'Home'}]); await renderDashboard(area); break;
+    case 'reports': title.textContent = 'Reports'; setBreadcrumb([{label:'Home',action:"navigate('dashboard')"},{label:'Reports'}]); await renderReports(area); break;
+    case 'soql': title.textContent = 'SOQL Console'; setBreadcrumb([{label:'Home',action:"navigate('dashboard')"},{label:'SOQL Console'}]); renderSOQLConsole(area); break;
+    default:
+      const cfg = OBJ_CONFIG[tab];
+      if (cfg) {
+        title.textContent = cfg.label;
+        setBreadcrumb([{label:'Home',action:"navigate('dashboard')"},{label:cfg.label}]);
+        await renderObjectList(area, tab, cfg);
+      }
+  }
+}
+
+// ============================================================================
+// Dashboard
+// ============================================================================
+async function renderDashboard(area) {
+  showLoading(area);
+  try {
+    const [donations, contacts, campaigns, recurring, payments, events, tasks] = await Promise.all([
+      fetchRecords('Opportunity'),
+      fetchRecords('Contact'),
+      fetchRecords('Campaign'),
+      fetchRecords('Recurring_Donation__c').catch(() => []),
+      fetchRecords('Payment__c').catch(() => []),
+      fetchRecords('Event').catch(() => []),
+      fetchRecords('Task').catch(() => [])
+    ]);
+
+    updateBadges();
+
+    const totalDonations = donations.reduce((s, d) => s + (parseFloat(d.Amount) || 0), 0);
+    const activeCampaigns = campaigns.filter(c => c.Status === 'In Progress' || c.IsActive).length;
+    const recurringCount = recurring.filter(r => r.Status__c === 'Active').length;
+
+    // Pipeline data
+    const stages = ['Prospecting', 'Pledged', 'Received', 'Thanked', 'Closed Won'];
+    const stageColors = ['#3498DB', '#2ECC71', '#E67E22', '#9B59B6', '#1ABC9C'];
+    const pipeline = {};
+    stages.forEach(s => { pipeline[s] = { count: 0, amount: 0 }; });
+    donations.forEach(d => {
+      const st = d.StageName;
+      if (pipeline[st]) {
+        pipeline[st].count++;
+        pipeline[st].amount += parseFloat(d.Amount) || 0;
+      }
+    });
+    const maxPipelineAmt = Math.max(...stages.map(s => pipeline[s].amount), 1);
+
+    // Monthly trend data (last 12 months)
+    const monthlyData = {};
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      monthlyData[key] = 0;
+    }
+    donations.forEach(d => {
+      if (d.CloseDate) {
+        const dt = new Date(d.CloseDate);
+        const key = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
+        if (monthlyData.hasOwnProperty(key)) monthlyData[key] += parseFloat(d.Amount) || 0;
+      }
+    });
+
+    // Top donors
+    const donorMap = {};
+    donations.forEach(d => {
+      const key = d.Primary_Contact__c || d.AccountId || 'Unknown';
+      if (!donorMap[key]) donorMap[key] = { name: d.Primary_Contact__c || d.AccountId || d.Name || 'Anonymous', total: 0, count: 0 };
+      donorMap[key].total += parseFloat(d.Amount) || 0;
+      donorMap[key].count++;
+    });
+    const topDonors = Object.values(donorMap).sort((a, b) => b.total - a.total).slice(0, 10);
+
+    // Recent donations
+    const recentDonations = [...donations].sort((a, b) => {
+      const da = a.CloseDate ? new Date(a.CloseDate) : new Date(0);
+      const db = b.CloseDate ? new Date(b.CloseDate) : new Date(0);
+      return db - da;
+    }).slice(0, 10);
+
+    // Upcoming events
+    const upcomingEvents = events
+      .filter(e => e.StartDateTime && new Date(e.StartDateTime) >= new Date())
+      .sort((a, b) => new Date(a.StartDateTime) - new Date(b.StartDateTime))
+      .slice(0, 5);
+
+    // Active campaigns
+    const activeCampaignList = campaigns.filter(c => c.Status === 'In Progress' || c.IsActive).slice(0, 4);
+
+    area.innerHTML = `
+      <!-- KPI Row -->
+      <div class="grid g4" style="margin-bottom:20px">
+        <div class="kpi k-blue">
+          <div class="kpi-icon">\u{1F4B0}</div>
+          <div class="kpi-value">${formatCurrency(totalDonations)}</div>
+          <div class="kpi-label">Total Donations</div>
+          <div class="kpi-change up">${donations.length} total gifts</div>
+        </div>
+        <div class="kpi k-orange">
+          <div class="kpi-icon">\u{1F465}</div>
+          <div class="kpi-value">${contacts.length.toLocaleString()}</div>
+          <div class="kpi-label">Total Contacts</div>
+          <div class="kpi-change up">Active constituents</div>
+        </div>
+        <div class="kpi k-green">
+          <div class="kpi-icon">\u{1F4E3}</div>
+          <div class="kpi-value">${activeCampaigns}</div>
+          <div class="kpi-label">Active Campaigns</div>
+          <div class="kpi-change">${campaigns.length} total campaigns</div>
+        </div>
+        <div class="kpi k-purple">
+          <div class="kpi-icon">\u{1F504}</div>
+          <div class="kpi-value">${recurringCount}</div>
+          <div class="kpi-label">Recurring Donors</div>
+          <div class="kpi-change up">${recurring.length} total recurring</div>
+        </div>
+      </div>
+
+      <!-- Pipeline & Monthly Trend -->
+      <div class="grid g2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-header"><h3>Donation Pipeline</h3></div>
+          ${stages.map((s, i) => `
+            <div class="pipeline-row">
+              <div class="pipeline-label">${s}</div>
+              <div class="pipeline-bar-wrap">
+                <div class="pipeline-bar" style="width:${Math.max((pipeline[s].amount / maxPipelineAmt) * 100, 5)}%;background:${stageColors[i]}">${pipeline[s].count}</div>
+              </div>
+              <div class="pipeline-value">${formatCurrency(pipeline[s].amount)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="chart-container">
+          <h4>Monthly Donation Trend</h4>
+          <canvas id="chartMonthly"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Donors & Recent Donations -->
+      <div class="grid g2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-header"><h3>Top 10 Donors</h3></div>
+          ${topDonors.length === 0 ? '<div class="empty-state"><p>No donation data available</p></div>' :
+            topDonors.map((d, i) => `
+              <div class="donor-row">
+                <div class="donor-rank ${i < 3 ? 'top3' : ''}">${i + 1}</div>
+                <div class="donor-info">
+                  <div class="name">${truncate(d.name, 30)}</div>
+                  <div class="org">${d.count} donation${d.count !== 1 ? 's' : ''}</div>
+                </div>
+                <div class="donor-amount">${formatCurrency(d.total)}</div>
+              </div>
+            `).join('')}
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Recent Donations</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Amount</th><th>Stage</th><th>Date</th></tr></thead>
+              <tbody>
+                ${recentDonations.length === 0 ? '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No recent donations</td></tr>' :
+                  recentDonations.map(d => `
+                    <tr class="clickable-row" onclick="openRecordDetail('Opportunity','${d.Id}')">
+                      <td>${truncate(d.Name || 'Unnamed', 25)}</td>
+                      <td><strong>${formatCurrency(d.Amount)}</strong></td>
+                      <td><span class="badge-status ${getBadgeClass(d.StageName)}">${d.StageName || '--'}</span></td>
+                      <td>${formatDate(d.CloseDate)}</td>
+                    </tr>
+                  `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign Performance & Upcoming Events -->
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-header"><h3>Campaign Performance</h3></div>
+          ${activeCampaignList.length === 0 ? '<div class="empty-state"><p>No active campaigns</p></div>' :
+            `<div class="grid g2">${activeCampaignList.map(c => {
+              const raised = donations.filter(d => d.CampaignId === c.Id).reduce((s, d) => s + (parseFloat(d.Amount) || 0), 0);
+              const goal = parseFloat(c.ExpectedRevenue) || 1;
+              const pct = Math.min((raised / goal) * 100, 100);
+              return `
+                <div class="campaign-card">
+                  <div class="c-name">${truncate(c.Name, 25)}</div>
+                  <div class="c-stats">
+                    <div><span class="c-stat-val">${formatCurrency(raised)}</span>Raised</div>
+                    <div><span class="c-stat-val">${Math.round(pct)}%</span>of Goal</div>
+                  </div>
+                  <div class="c-progress"><div class="c-progress-bar" style="width:${pct}%"></div></div>
+                </div>`;
+            }).join('')}</div>`}
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Upcoming Events</h3></div>
+          ${upcomingEvents.length === 0 ? '<div class="empty-state"><p>No upcoming events</p></div>' :
+            upcomingEvents.map(e => {
+              const d = new Date(e.StartDateTime);
+              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              return `
+                <div class="event-card" onclick="openRecordDetail('Event','${e.Id}')">
+                  <div class="event-date-badge">
+                    <div class="month">${months[d.getMonth()]}</div>
+                    <div class="day">${d.getDate()}</div>
+                  </div>
+                  <div class="event-info">
+                    <div class="event-title">${e.Subject || 'No Subject'}</div>
+                    <div class="event-meta">${e.Location ? e.Location + ' \u2022 ' : ''}${formatDateTime(e.StartDateTime)}</div>
+                  </div>
+                </div>`;
+            }).join('')}
+        </div>
+      </div>
+    `;
+
+    // Monthly chart
+    const monthLabels = Object.keys(monthlyData).map(k => {
+      const [y, m] = k.split('-');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return months[parseInt(m) - 1] + ' ' + y.slice(2);
+    });
+    const monthValues = Object.values(monthlyData);
+
+    destroyChart('chartMonthly');
+    const ctx = $('chartMonthly');
+    if (ctx) {
+      S.charts.chartMonthly = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: monthLabels,
+          datasets: [{
+            label: 'Donations',
+            data: monthValues,
+            backgroundColor: 'rgba(230,126,34,0.7)',
+            borderColor: '#E67E22',
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => '$' + (v / 1000).toFixed(0) + 'k' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+  } catch (e) {
+    area.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">\u26A0\uFE0F</div><h4>Error Loading Dashboard</h4><p>${e.message}</p><button class="btn btn-primary" style="margin-top:12px" onclick="navigate('dashboard')">Retry</button></div></div>`;
+  }
+}
+
+// ============================================================================
+// Object List View
+// ============================================================================
+async function renderObjectList(area, tab, cfg) {
+  showLoading(area);
+  try {
+    const records = await fetchRecords(cfg.obj);
+    updateBadges();
+    renderListView(area, tab, cfg, records);
+  } catch (e) {
+    area.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">\u26A0\uFE0F</div><h4>Error Loading ${cfg.label}</h4><p>${e.message}</p><button class="btn btn-primary" style="margin-top:12px" onclick="navigate('${tab}')">Retry</button></div></div>`;
+  }
+}
+
+function renderListView(area, tab, cfg, allRecords) {
+  // Filter
+  let records = allRecords;
+  if (S.searchTerm) {
+    const term = S.searchTerm.toLowerCase();
+    records = records.filter(r => {
+      return Object.values(r).some(v => v && String(v).toLowerCase().includes(term));
+    });
+  }
+
+  // Sort
+  if (S.sortCol) {
+    records = [...records].sort((a, b) => {
+      let va = a[S.sortCol], vb = b[S.sortCol];
+      if (va == null) va = '';
+      if (vb == null) vb = '';
+      if (typeof va === 'number' && typeof vb === 'number') return S.sortDir === 'asc' ? va - vb : vb - va;
+      return S.sortDir === 'asc' ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+    });
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(records.length / S.pageSize) || 1;
+  if (S.currentPage > totalPages) S.currentPage = totalPages;
+  const start = (S.currentPage - 1) * S.pageSize;
+  const pageRecords = records.slice(start, start + S.pageSize);
+  const fields = cfg.displayFields;
+
+  area.innerHTML = `
+    <div class="card">
+      <div class="table-toolbar">
+        <div class="left">
+          <button class="btn btn-primary" onclick="openCreateForm('${tab}')">+ New ${cfg.label.replace(/s$/, '')}</button>
+          <span style="font-size:12px;color:var(--text-secondary)">${records.length} record${records.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="right">
+          <input class="table-search" type="text" id="listSearch" placeholder="Search ${cfg.label}..." value="${S.searchTerm}" oninput="handleListSearch(event, '${tab}', '${cfg.obj}')" oncompositionstart="window._imeOn=true" oncompositionend="window._imeOn=false;handleListSearch(event,'${tab}','${cfg.obj}')" onkeydown="if(!window._imeOn&&event.key==='Enter'){handleListSearch(event,'${tab}','${cfg.obj}')}">
+          <button class="btn btn-secondary btn-sm" onclick="handleListSearch({target:document.getElementById('listSearch')},'${tab}','${cfg.obj}')">Search</button>
+          <button class="btn btn-secondary btn-sm" onclick="S.cache['${cfg.obj}']=null;navigate('${tab}')">Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              ${fields.map(f => `<th class="${S.sortCol === f ? 'sorted' : ''}" onclick="handleSort('${f}','${tab}','${cfg.obj}')">${fieldLabel(f)} <span class="sort-arrow">${S.sortCol === f ? (S.sortDir === 'asc' ? '\u25B2' : '\u25BC') : '\u25B4'}</span></th>`).join('')}
+              <th style="width:80px">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${pageRecords.length === 0 ?
+              `<tr><td colspan="${fields.length + 1}"><div class="empty-state" style="padding:30px"><div class="empty-icon">\u{1F4C2}</div><h4>No Records Found</h4><p>${S.searchTerm ? 'Try a different search term' : `No ${cfg.label.toLowerCase()} yet. Click "+ New" to create one.`}</p></div></td></tr>` :
+              pageRecords.map(r => `
+                <tr class="clickable-row" onclick="openRecordDetail('${cfg.obj}','${r.Id}')">
+                  ${fields.map(f => {
+                    const v = r[f];
+                    const isStatus = f.toLowerCase().includes('status') || f === 'StageName' || f === 'Priority' || f === 'Paid__c';
+                    if (isStatus && v) return `<td><span class="badge-status ${getBadgeClass(v)}">${v}</span></td>`;
+                    return `<td title="${String(v || '')}">${formatFieldValue(v, f)}</td>`;
+                  }).join('')}
+                  <td>
+                    <div class="table-actions">
+                      <button onclick="event.stopPropagation();openEditForm('${tab}','${r.Id}')" title="Edit">\u270F\uFE0F</button>
+                      <button onclick="event.stopPropagation();confirmDelete('${cfg.obj}','${r.Id}','${tab}')" title="Delete">\u{1F5D1}\uFE0F</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${records.length > S.pageSize ? `
+        <div class="pagination">
+          <div class="page-info">Showing ${start + 1}-${Math.min(start + S.pageSize, records.length)} of ${records.length}</div>
+          <div class="page-btns">
+            <button ${S.currentPage <= 1 ? 'disabled' : ''} onclick="S.currentPage=1;renderListView($('contentArea'),'${tab}',OBJ_CONFIG['${tab}'],${JSON.stringify(allRecords).length < 50000 ? 'cachedRecords' : 'cachedRecords'})">\u00AB</button>
+            <button ${S.currentPage <= 1 ? 'disabled' : ''} onclick="S.currentPage--;refreshList('${tab}')">\u2039</button>
+            <button class="active">${S.currentPage}</button>
+            <button ${S.currentPage >= totalPages ? 'disabled' : ''} onclick="S.currentPage++;refreshList('${tab}')">\u203A</button>
+            <button ${S.currentPage >= totalPages ? 'disabled' : ''} onclick="S.currentPage=${totalPages};refreshList('${tab}')">\u00BB</button>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+async function refreshList(tab) {
+  const cfg = OBJ_CONFIG[tab];
+  if (!cfg) return;
+  const records = S.cache[cfg.obj] ? S.cache[cfg.obj].data : await fetchRecords(cfg.obj);
+  renderListView($('contentArea'), tab, cfg, records);
+}
+
+function handleListSearch(e, tab, obj) {
+  if(window._imeOn)return;
+  S.searchTerm = e.target.value;
+  S.currentPage = 1;
+  refreshList(tab);
+}
+
+function handleSort(field, tab, obj) {
+  if (S.sortCol === field) {
+    S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    S.sortCol = field;
+    S.sortDir = 'asc';
+  }
+  refreshList(tab);
+}
+
+function fieldLabel(apiName) {
+  const labels = {
+    FirstName:'First Name', LastName:'Last Name', CloseDate:'Close Date', StageName:'Stage',
+    AccountId:'Account', BillingCity:'City', StartDate:'Start', EndDate:'End',
+    BudgetedCost:'Budget', ExpectedRevenue:'Expected', LeadSource:'Source',
+    ActivityDate:'Due Date', WhoId:'Contact', WhatId:'Related To', OwnerId:'Owner',
+    StartDateTime:'Start', EndDateTime:'End', ContactId:'Contact', LeadId:'Lead',
+    CampaignId:'Campaign', NumberOfContacts:'Contacts', NumberOfResponses:'Responses',
+    MobilePhone:'Mobile'
+  };
+  if (labels[apiName]) return labels[apiName];
+  return apiName.replace(/__c$/,'').replace(/_/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2');
+}
+
+// ============================================================================
+// Record Detail
+// ============================================================================
+async function openRecordDetail(objectName, id) {
+  const panel = $('detailPanel');
+  const backdrop = $('detailBackdrop');
+  const body = $('detailBody');
+  const title = $('detailTitle');
+  const actions = $('detailActions');
+
+  panel.classList.add('open');
+  backdrop.classList.add('open');
+  body.innerHTML = '<div class="loading-overlay"><div class="spinner"></div><span>Loading record...</span></div>';
+
+  try {
+    const record = await fetchRecord(objectName, id);
+    const schema = await fetchSchema(objectName);
+    const tabKey = Object.keys(OBJ_CONFIG).find(k => OBJ_CONFIG[k].obj === objectName);
+    const cfg = tabKey ? OBJ_CONFIG[tabKey] : null;
+
+    title.textContent = getRecordName(record, cfg) || objectName;
+
+    // Build field display
+    const excludeFields = ['Id', 'attributes', 'CreatedDate', 'LastModifiedDate', 'SystemModstamp'];
+    const fields = Object.entries(record).filter(([k]) => !excludeFields.includes(k) && k !== 'undefined');
+
+    let html = `
+      <div class="detail-section">
+        <h4>Record Details</h4>
+        <div class="field-grid">
+          <div class="field-item"><label>Record ID</label><div class="field-value" style="font-family:monospace;font-size:11px">${record.Id || '--'}</div></div>
+          ${fields.map(([k, v]) => `
+            <div class="field-item">
+              <label>${fieldLabel(k)}</label>
+              <div class="field-value">${typeof v === 'boolean' ? (v ? '\u2705 Yes' : '\u274C No') : formatFieldValue(v, k)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Related lists
+    const relatedConfig = RELATED_OBJECTS[objectName];
+    if (relatedConfig) {
+      for (const rel of relatedConfig) {
+        try {
+          const relRecords = await fetchRecords(rel.obj);
+          const filtered = relRecords.filter(r => r[rel.field] === id);
+          html += `
+            <div class="related-list">
+              <h4>${rel.label} <span class="rl-count">${filtered.length}</span></h4>
+              ${filtered.length === 0 ? '<div style="font-size:12px;color:var(--text-secondary);padding:8px 0">No related records</div>' : `
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr>${rel.displayFields.map(f => `<th>${fieldLabel(f)}</th>`).join('')}</tr></thead>
+                    <tbody>
+                      ${filtered.slice(0, 10).map(r => `
+                        <tr class="clickable-row" onclick="openRecordDetail('${rel.obj}','${r.Id}')">
+                          ${rel.displayFields.map(f => `<td>${formatFieldValue(r[f], f)}</td>`).join('')}
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+                ${filtered.length > 10 ? `<div style="font-size:11px;color:var(--text-secondary);padding:4px 0">Showing 10 of ${filtered.length}</div>` : ''}
+              `}
+            </div>
+          `;
+        } catch (e) {
+          // Skip related list on error
+        }
+      }
+    }
+
+    body.innerHTML = html;
+    actions.innerHTML = `
+      <button class="btn btn-secondary" onclick="closeDetail()">Close</button>
+      ${tabKey ? `<button class="btn btn-primary" onclick="closeDetail();openEditForm('${tabKey}','${id}')">Edit</button>` : ''}
+      <button class="btn btn-danger" onclick="closeDetail();confirmDelete('${objectName}','${id}','${tabKey || S.currentTab}')">Delete</button>
+    `;
+  } catch (e) {
+    body.innerHTML = `<div class="empty-state"><div class="empty-icon">\u274C</div><h4>Error Loading Record</h4><p>${e.message}</p></div>`;
+    actions.innerHTML = '<button class="btn btn-secondary" onclick="closeDetail()">Close</button>';
+  }
+}
+
+function closeDetail() {
+  $('detailPanel').classList.remove('open');
+  $('detailBackdrop').classList.remove('open');
+}
+
+// ============================================================================
+// Create / Edit Forms
+// ============================================================================
+async function openCreateForm(tab) {
+  const cfg = OBJ_CONFIG[tab];
+  if (!cfg) return;
+  const schema = await fetchSchema(cfg.obj);
+  showFormModal(`New ${cfg.label.replace(/s$/, '')}`, cfg.obj, schema, null, tab);
+}
+
+async function openEditForm(tab, id) {
+  const cfg = OBJ_CONFIG[tab];
+  if (!cfg) return;
+  const [schema, record] = await Promise.all([fetchSchema(cfg.obj), fetchRecord(cfg.obj, id)]);
+  showFormModal(`Edit ${cfg.label.replace(/s$/, '')}`, cfg.obj, schema, record, tab);
+}
+
+function showFormModal(title, objectName, schema, record, tab) {
+  const fields = schema ? schema.fields.filter(f => f.name !== 'Id' && f.createable !== false && f.name !== 'attributes') : [];
+  const isEdit = !!record;
+
+  let formHtml = '<div class="form-row">';
+  let colCount = 0;
+
+  fields.forEach((f, i) => {
+    const val = record ? (record[f.name] ?? '') : (f.defaultValue ?? '');
+    const req = !f.nillable && f.createable ? '<span class="req">*</span>' : '';
+    let input = '';
+
+    switch (f.type) {
+      case 'picklist':
+        const opts = (f.picklistValues || []).map(pv => `<option value="${pv.value}" ${val === pv.value ? 'selected' : ''}>${pv.label}</option>`).join('');
+        input = `<select id="field_${f.name}" name="${f.name}"><option value="">-- Select --</option>${opts}</select>`;
+        break;
+      case 'boolean':
+        input = `<select id="field_${f.name}" name="${f.name}"><option value="false" ${!val ? 'selected' : ''}>No</option><option value="true" ${val ? 'selected' : ''}>Yes</option></select>`;
+        break;
+      case 'textarea':
+        input = `<textarea id="field_${f.name}" name="${f.name}" rows="3">${val}</textarea>`;
+        break;
+      case 'date':
+        input = `<input type="date" id="field_${f.name}" name="${f.name}" value="${val}">`;
+        break;
+      case 'datetime':
+        input = `<input type="datetime-local" id="field_${f.name}" name="${f.name}" value="${val ? val.replace('Z','').replace('.000','') : ''}">`;
+        break;
+      case 'currency':
+      case 'double':
+      case 'percent':
+        input = `<input type="number" step="any" id="field_${f.name}" name="${f.name}" value="${val}">`;
+        break;
+      case 'email':
+        input = `<input type="email" id="field_${f.name}" name="${f.name}" value="${val}">`;
+        break;
+      case 'url':
+        input = `<input type="url" id="field_${f.name}" name="${f.name}" value="${val}">`;
+        break;
+      case 'phone':
+        input = `<input type="tel" id="field_${f.name}" name="${f.name}" value="${val}">`;
+        break;
+      default:
+        input = `<input type="text" id="field_${f.name}" name="${f.name}" value="${String(val).replace(/"/g, '&quot;')}">`;
+    }
+
+    formHtml += `<div class="form-group"><label>${f.label} ${req}</label>${input}</div>`;
+    colCount++;
+    if (colCount % 2 === 0 && i < fields.length - 1) {
+      formHtml += '</div><div class="form-row">';
+    }
+  });
+  formHtml += '</div>';
+
+  if (fields.length === 0) {
+    formHtml = '<div class="empty-state"><p>No schema information available. Enter field values manually.</p></div>';
+    formHtml += `<div class="form-group"><label>Name</label><input type="text" id="field_Name" name="Name" value="${record ? (record.Name || '') : ''}"></div>`;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'formModal';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>${title}</h3>
+        <button class="close-btn" onclick="closeFormModal()">\u2715</button>
+      </div>
+      <div class="modal-body">${formHtml}</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeFormModal()">Cancel</button>
+        <button class="btn btn-primary" id="formSaveBtn" onclick="saveForm('${objectName}','${isEdit ? record.Id : ''}','${tab}')">${isEdit ? 'Update' : 'Create'}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeFormModal() {
+  const modal = $('formModal');
+  if (modal) modal.remove();
+}
+
+async function saveForm(objectName, id, tab) {
+  const btn = $('formSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const data = {};
+  const modal = $('formModal');
+  const inputs = modal.querySelectorAll('input, select, textarea');
+  inputs.forEach(inp => {
+    const name = inp.name;
+    if (!name) return;
+    let val = inp.value;
+    if (inp.type === 'number' && val !== '') val = parseFloat(val);
+    if (val === 'true') val = true;
+    if (val === 'false') val = false;
+    if (val !== '' && val !== null) data[name] = val;
+  });
+
+  try {
+    if (id) {
+      await updateRecord(objectName, id, data);
+      toast(`Record updated successfully`);
+    } else {
+      await createRecord(objectName, data);
+      toast(`Record created successfully`);
+    }
+    closeFormModal();
+    navigate(tab);
+  } catch (e) {
+    toast(`Error: ${e.message}`, 'error');
+    btn.disabled = false;
+    btn.textContent = id ? 'Update' : 'Create';
+  }
+}
+
+function confirmDelete(objectName, id, tab) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'confirmModal';
+  overlay.innerHTML = `
+    <div class="modal" style="width:420px">
+      <div class="modal-header" style="background:var(--danger)">
+        <h3>Confirm Delete</h3>
+        <button class="close-btn" onclick="$('confirmModal').remove()">\u2715</button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:30px">
+        <div style="font-size:40px;margin-bottom:12px">\u26A0\uFE0F</div>
+        <p style="font-size:14px;margin-bottom:4px">Are you sure you want to delete this record?</p>
+        <p style="font-size:12px;color:var(--text-secondary)">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer" style="justify-content:center">
+        <button class="btn btn-secondary" onclick="$('confirmModal').remove()">Cancel</button>
+        <button class="btn btn-danger" onclick="executeDelete('${objectName}','${id}','${tab}')">Delete</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+async function executeDelete(objectName, id, tab) {
+  try {
+    await deleteRecord(objectName, id);
+    $('confirmModal').remove();
+    toast('Record deleted successfully');
+    navigate(tab);
+  } catch (e) {
+    $('confirmModal').remove();
+    toast(`Error deleting record: ${e.message}`, 'error');
+  }
+}
+
+// ============================================================================
+// Reports
+// ============================================================================
+async function renderReports(area) {
+  showLoading(area);
+  try {
+    const [donations, contacts, campaigns, accounts] = await Promise.all([
+      fetchRecords('Opportunity'),
+      fetchRecords('Contact'),
+      fetchRecords('Campaign'),
+      fetchRecords('Account')
+    ]);
+
+    // Donation by Type
+    const byType = {};
+    donations.forEach(d => {
+      const t = d.Type || 'Other';
+      byType[t] = (byType[t] || 0) + (parseFloat(d.Amount) || 0);
+    });
+
+    // Donation by Campaign
+    const byCampaign = {};
+    donations.forEach(d => {
+      if (d.CampaignId) {
+        const c = campaigns.find(c => c.Id === d.CampaignId);
+        const name = c ? c.Name : d.CampaignId;
+        byCampaign[name] = (byCampaign[name] || 0) + (parseFloat(d.Amount) || 0);
+      }
+    });
+    const topCampaigns = Object.entries(byCampaign).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+    // Donor retention: contacts who donated this year vs last year
+    const thisYear = new Date().getFullYear();
+    const donorsThisYear = new Set();
+    const donorsLastYear = new Set();
+    donations.forEach(d => {
+      if (d.CloseDate) {
+        const y = new Date(d.CloseDate).getFullYear();
+        const donorKey = d.Primary_Contact__c || d.AccountId || d.Name;
+        if (y === thisYear) donorsThisYear.add(donorKey);
+        if (y === thisYear - 1) donorsLastYear.add(donorKey);
+      }
+    });
+    const retained = [...donorsThisYear].filter(d => donorsLastYear.has(d)).length;
+    const retentionRate = donorsLastYear.size > 0 ? ((retained / donorsLastYear.size) * 100).toFixed(1) : 'N/A';
+
+    // Giving Level Distribution
+    const levels = { 'Under $100': 0, '$100-$499': 0, '$500-$999': 0, '$1,000-$4,999': 0, '$5,000-$9,999': 0, '$10,000+': 0 };
+    donations.forEach(d => {
+      const a = parseFloat(d.Amount) || 0;
+      if (a < 100) levels['Under $100']++;
+      else if (a < 500) levels['$100-$499']++;
+      else if (a < 1000) levels['$500-$999']++;
+      else if (a < 5000) levels['$1,000-$4,999']++;
+      else if (a < 10000) levels['$5,000-$9,999']++;
+      else levels['$10,000+']++;
+    });
+
+    // Top Accounts
+    const accountTotals = {};
+    donations.forEach(d => {
+      if (d.AccountId) {
+        const acct = accounts.find(a => a.Id === d.AccountId);
+        const name = acct ? acct.Name : d.AccountId;
+        accountTotals[name] = (accountTotals[name] || 0) + (parseFloat(d.Amount) || 0);
+      }
+    });
+    const topAccounts = Object.entries(accountTotals).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+    // Stage distribution
+    const byStage = {};
+    donations.forEach(d => { const s = d.StageName || 'Unknown'; byStage[s] = (byStage[s] || 0) + 1; });
+
+    area.innerHTML = `
+      <!-- Summary KPIs -->
+      <div class="grid g5" style="margin-bottom:20px">
+        <div class="kpi k-blue">
+          <div class="kpi-value">${donations.length}</div>
+          <div class="kpi-label">Total Donations</div>
+        </div>
+        <div class="kpi k-orange">
+          <div class="kpi-value">${formatCurrency(donations.reduce((s,d)=>s+(parseFloat(d.Amount)||0),0))}</div>
+          <div class="kpi-label">Total Raised</div>
+        </div>
+        <div class="kpi k-green">
+          <div class="kpi-value">${retentionRate}${retentionRate !== 'N/A' ? '%' : ''}</div>
+          <div class="kpi-label">Donor Retention</div>
+        </div>
+        <div class="kpi k-purple">
+          <div class="kpi-value">${donorsThisYear.size}</div>
+          <div class="kpi-label">Donors This Year</div>
+        </div>
+        <div class="kpi k-blue">
+          <div class="kpi-value">${donations.length > 0 ? formatCurrency(donations.reduce((s,d)=>s+(parseFloat(d.Amount)||0),0) / donations.length) : '$0'}</div>
+          <div class="kpi-label">Avg Gift Size</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="grid g2" style="margin-bottom:20px">
+        <div class="chart-container">
+          <h4>Donations by Type</h4>
+          <canvas id="chartByType" height="260"></canvas>
+        </div>
+        <div class="chart-container">
+          <h4>Donations by Campaign</h4>
+          <canvas id="chartByCampaign" height="260"></canvas>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="grid g2" style="margin-bottom:20px">
+        <div class="chart-container">
+          <h4>Giving Level Distribution</h4>
+          <canvas id="chartLevels" height="260"></canvas>
+        </div>
+        <div class="chart-container">
+          <h4>Donation Stage Distribution</h4>
+          <canvas id="chartStages" height="260"></canvas>
+        </div>
+      </div>
+
+      <!-- Top Accounts -->
+      <div class="card">
+        <div class="card-header"><h3>Top Accounts by Total Giving</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Account</th><th>Total Giving</th><th>% of Total</th></tr></thead>
+            <tbody>
+              ${topAccounts.length === 0 ? '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No account data</td></tr>' :
+                topAccounts.map(([name, total], i) => {
+                  const grandTotal = donations.reduce((s, d) => s + (parseFloat(d.Amount) || 0), 0);
+                  const pct = grandTotal > 0 ? ((total / grandTotal) * 100).toFixed(1) : 0;
+                  return `<tr><td><strong>${i + 1}</strong></td><td>${name}</td><td><strong>${formatCurrency(total)}</strong></td><td>${pct}%</td></tr>`;
+                }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    // Render charts
+    const chartColors = ['#E67E22','#3498DB','#2ECC71','#9B59B6','#E74C3C','#1ABC9C','#F39C12','#34495E','#16A085','#D35400'];
+
+    destroyChart('chartByType');
+    S.charts.chartByType = new Chart($('chartByType'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(byType),
+        datasets: [{ data: Object.values(byType), backgroundColor: chartColors.slice(0, Object.keys(byType).length), borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 }, padding: 12 } } } }
+    });
+
+    destroyChart('chartByCampaign');
+    if (topCampaigns.length > 0) {
+      S.charts.chartByCampaign = new Chart($('chartByCampaign'), {
+        type: 'bar',
+        data: {
+          labels: topCampaigns.map(c => truncate(c[0], 20)),
+          datasets: [{ label: 'Amount', data: topCampaigns.map(c => c[1]), backgroundColor: 'rgba(52,152,219,0.7)', borderColor: '#3498DB', borderWidth: 1, borderRadius: 4 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'k' } } } }
+      });
+    }
+
+    destroyChart('chartLevels');
+    S.charts.chartLevels = new Chart($('chartLevels'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(levels),
+        datasets: [{ label: 'Count', data: Object.values(levels), backgroundColor: chartColors.slice(0, 6), borderRadius: 4 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    destroyChart('chartStages');
+    S.charts.chartStages = new Chart($('chartStages'), {
+      type: 'pie',
+      data: {
+        labels: Object.keys(byStage),
+        datasets: [{ data: Object.values(byStage), backgroundColor: chartColors.slice(0, Object.keys(byStage).length), borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 }, padding: 12 } } } }
+    });
+
+  } catch (e) {
+    area.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">\u26A0\uFE0F</div><h4>Error Loading Reports</h4><p>${e.message}</p></div></div>`;
+  }
+}
+
+function destroyChart(id) {
+  if (S.charts[id]) {
+    S.charts[id].destroy();
+    delete S.charts[id];
+  }
+}
+
+// ============================================================================
+// SOQL Console
+// ============================================================================
+function renderSOQLConsole(area) {
+  const examples = [
+    { label: '-- Select an example query --', value: '' },
+    { label: 'All Contacts', value: 'SELECT Id, FirstName, LastName, Email, Phone FROM Contact LIMIT 50' },
+    { label: 'All Donations', value: 'SELECT Id, Name, Amount, StageName, CloseDate, Type FROM Opportunity LIMIT 50' },
+    { label: 'Donations > $1000', value: "SELECT Id, Name, Amount, StageName FROM Opportunity WHERE Amount > 1000 ORDER BY Amount DESC" },
+    { label: 'Closed Won Donations', value: "SELECT Id, Name, Amount, CloseDate FROM Opportunity WHERE StageName = 'Closed Won' ORDER BY Amount DESC LIMIT 20" },
+    { label: 'Active Campaigns', value: "SELECT Id, Name, Type, Status, StartDate, ExpectedRevenue FROM Campaign WHERE Status = 'In Progress'" },
+    { label: 'All Accounts', value: 'SELECT Id, Name, Type, Phone, Industry FROM Account LIMIT 50' },
+    { label: 'Active Recurring Donations', value: "SELECT Id, Name, Amount__c, Status__c, Contact__c FROM Recurring_Donation__c WHERE Status__c = 'Active'" },
+    { label: 'Payments', value: 'SELECT Id, Name, Payment_Amount__c, Payment_Date__c, Paid__c FROM Payment__c LIMIT 50' },
+    { label: 'Donor Levels', value: 'SELECT Id, Name, Minimum_Amount__c, Maximum_Amount__c, Target__c, Active__c FROM Level__c' },
+    { label: 'GAU Units', value: 'SELECT Id, Name, Active__c, Description__c FROM General_Accounting_Unit__c' },
+    { label: 'Tasks', value: 'SELECT Id, Subject, Status, Priority, ActivityDate FROM Task LIMIT 50' },
+    { label: 'Events', value: 'SELECT Id, Subject, StartDateTime, EndDateTime, Location FROM Event LIMIT 50' },
+    { label: 'Leads', value: 'SELECT Id, FirstName, LastName, Company, Email, Status FROM Lead LIMIT 50' },
+    { label: 'Count of Donations', value: 'SELECT COUNT() FROM Opportunity' },
+    { label: 'Relationships', value: 'SELECT Id, Name, Contact__c, RelatedContact__c, Type__c, Status__c FROM Relationship__c LIMIT 50' }
+  ];
+
+  area.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h3>SOQL Query Console</h3>
+        <span style="font-size:11px;color:var(--text-secondary)">Execute Salesforce Object Query Language queries</span>
+      </div>
+      <div class="soql-examples">
+        <select onchange="if(this.value)document.getElementById('soqlInput').value=this.value">
+          ${examples.map(e => `<option value="${e.value}">${e.label}</option>`).join('')}
+        </select>
+      </div>
+      <div style="margin-top:12px">
+        <textarea class="soql-area" id="soqlInput" placeholder="Enter your SOQL query here...&#10;Example: SELECT Id, Name, Amount FROM Opportunity WHERE Amount > 1000 ORDER BY Amount DESC LIMIT 20">${S.soqlHistory.length > 0 ? S.soqlHistory[S.soqlHistory.length - 1] : ''}</textarea>
+      </div>
+      <div class="soql-toolbar">
+        <button class="btn btn-primary" onclick="executeSOQL()">Execute Query</button>
+        <button class="btn btn-secondary" onclick="$('soqlInput').value='';$('soqlResults').innerHTML=''">Clear</button>
+        <span id="soqlStatus" style="font-size:12px;color:var(--text-secondary)"></span>
+      </div>
+    </div>
+    <div id="soqlResults"></div>
+  `;
+}
+
+async function executeSOQL() {
+  const input = $('soqlInput');
+  const query = input.value.trim();
+  const results = $('soqlResults');
+  const status = $('soqlStatus');
+
+  if (!query) {
+    toast('Please enter a SOQL query', 'error');
+    return;
+  }
+
+  S.soqlHistory.push(query);
+  results.innerHTML = '<div class="loading-overlay"><div class="spinner"></div><span>Executing query...</span></div>';
+  status.textContent = 'Running...';
+
+  const startTime = Date.now();
+  try {
+    const data = await runSOQL(query);
+    const elapsed = Date.now() - startTime;
+    status.textContent = `${data.totalSize} record${data.totalSize !== 1 ? 's' : ''} returned in ${elapsed}ms`;
+
+    if (!data.records || data.records.length === 0) {
+      results.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">\u{1F4C4}</div><h4>No Results</h4><p>Query returned 0 records. Total size: ${data.totalSize}</p></div></div>`;
+      return;
+    }
+
+    const records = data.records;
+    const fields = Object.keys(records[0]).filter(k => k !== 'attributes');
+
+    // Paginate SOQL results
+    const soqlPageSize = 50;
+    let soqlPage = 1;
+    const totalSoqlPages = Math.ceil(records.length / soqlPageSize);
+
+    function renderSOQLPage(page) {
+      const start = (page - 1) * soqlPageSize;
+      const pageRecs = records.slice(start, start + soqlPageSize);
+
+      results.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <h3>Query Results</h3>
+            <span style="font-size:12px;color:var(--text-secondary)">${data.totalSize} record${data.totalSize !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>${fields.map(f => `<th>${f}</th>`).join('')}</tr></thead>
+              <tbody>
+                ${pageRecs.map(r => `<tr>${fields.map(f => `<td title="${String(r[f] || '')}">${truncate(String(r[f] ?? '--'), 50)}</td>`).join('')}</tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+          ${records.length > soqlPageSize ? `
+            <div class="pagination">
+              <div class="page-info">Showing ${start + 1}-${Math.min(start + soqlPageSize, records.length)} of ${records.length}</div>
+              <div class="page-btns">
+                <button ${page <= 1 ? 'disabled' : ''} onclick="soqlPaginate(${page - 1})">Prev</button>
+                <button class="active">${page} / ${totalSoqlPages}</button>
+                <button ${page >= totalSoqlPages ? 'disabled' : ''} onclick="soqlPaginate(${page + 1})">Next</button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    window.soqlPaginate = function(page) {
+      soqlPage = page;
+      renderSOQLPage(page);
+    };
+
+    renderSOQLPage(1);
+
+  } catch (e) {
+    const elapsed = Date.now() - startTime;
+    status.textContent = `Error (${elapsed}ms)`;
+    results.innerHTML = `<div class="card" style="border-color:var(--danger)"><div class="empty-state"><div class="empty-icon">\u274C</div><h4>Query Error</h4><p style="color:var(--danger)">${e.message}</p></div></div>`;
+  }
+}
+
+// ============================================================================
+// Global Search
+// ============================================================================
+function handleGlobalSearch(event) {
+  if (event.key === 'Enter') {
+    const term = event.target.value.trim();
+    if (!term) return;
+    performGlobalSearch(term);
+  }
+}
+
+async function performGlobalSearch(term) {
+  const area = $('contentArea');
+  const title = $('pageTitle');
+  title.textContent = `Search: "${term}"`;
+  setBreadcrumb([{label:'Home',action:"navigate('dashboard')"},{label:`Search: ${term}`}]);
+  showLoading(area);
+
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+  const searchObjects = ['Contact', 'Account', 'Opportunity', 'Campaign', 'Lead', 'Task', 'Event'];
+  const results = [];
+
+  try {
+    const promises = searchObjects.map(async (obj) => {
+      try {
+        const records = await fetchRecords(obj);
+        const matches = records.filter(r =>
+          Object.values(r).some(v => v && String(v).toLowerCase().includes(term.toLowerCase()))
+        );
+        return matches.map(r => ({ ...r, _objectType: obj }));
+      } catch (e) { return []; }
+    });
+
+    const allResults = (await Promise.all(promises)).flat();
+
+    area.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <h3>Search Results</h3>
+          <span style="font-size:12px;color:var(--text-secondary)">${allResults.length} result${allResults.length !== 1 ? 's' : ''} for "${term}"</span>
+        </div>
+        ${allResults.length === 0 ?
+          '<div class="empty-state"><div class="empty-icon">\u{1F50D}</div><h4>No Results Found</h4><p>Try a different search term</p></div>' :
+          `<div class="table-wrap">
+            <table>
+              <thead><tr><th>Type</th><th>Name</th><th>Details</th><th>Action</th></tr></thead>
+              <tbody>
+                ${allResults.slice(0, 100).map(r => {
+                  const name = r.Name || r.Subject || (r.FirstName ? r.FirstName + ' ' + r.LastName : '') || r.Id;
+                  const detail = r.Email || r.Phone || r.Amount || r.Status || r.StageName || '';
+                  return `
+                    <tr class="clickable-row" onclick="openRecordDetail('${r._objectType}','${r.Id}')">
+                      <td><span class="badge-status badge-blue">${r._objectType}</span></td>
+                      <td><strong>${truncate(name, 40)}</strong></td>
+                      <td>${formatFieldValue(detail, 'detail')}</td>
+                      <td><button class="btn btn-xs btn-secondary" onclick="event.stopPropagation();openRecordDetail('${r._objectType}','${r.Id}')">View</button></td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+          ${allResults.length > 100 ? `<div style="padding:10px;font-size:12px;color:var(--text-secondary);text-align:center">Showing first 100 of ${allResults.length} results</div>` : ''}`}
+      </div>
+    `;
+  } catch (e) {
+    area.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">\u274C</div><h4>Search Error</h4><p>${e.message}</p></div></div>`;
+  }
+}
+
+// ============================================================================
+// Badge Updates
+// ============================================================================
+function updateBadges() {
+  const badgeMap = {
+    contacts: 'Contact', accounts: 'Account', donations: 'Opportunity',
+    leads: 'Lead', campaigns: 'Campaign', recurring: 'Recurring_Donation__c',
+    payments: 'Payment__c', gau: 'General_Accounting_Unit__c',
+    engagements: 'Engagement_Plan_Template__c', levels: 'Level__c',
+    relationships: 'Relationship__c', tasks: 'Task', events: 'Event',
+    households: 'Household__c'
+  };
+  Object.entries(badgeMap).forEach(([tab, obj]) => {
+    const badge = $(`badge-${tab}`);
+    if (badge && S.counts[obj] !== undefined) {
+      badge.textContent = S.counts[obj];
+      badge.style.display = S.counts[obj] > 0 ? '' : 'none';
+    }
+  });
+}
+
+// ============================================================================
+// Health Check
+// ============================================================================
+async function checkHealth() {
+  try {
+    const result = await api('/health');
+    toast(`System healthy: ${result.timestamp}`, 'info');
+  } catch (e) {
+    toast('System health check failed', 'error');
+  }
+}
+
+// ============================================================================
+// Initialization
+// ============================================================================
+async function init() {
+  navigate('dashboard');
+
+  // Background load counts for badges
+  const objects = ['Contact','Account','Opportunity','Lead','Campaign','Recurring_Donation__c','Payment__c',
+    'General_Accounting_Unit__c','Engagement_Plan_Template__c','Level__c','Relationship__c','Task','Event','Household__c'];
+
+  for (const obj of objects) {
+    fetchRecords(obj).catch(() => {}).then(() => updateBadges());
+  }
+}
+
+// Start application
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+apiName: Visit_Target__c
+label: 訪問ターゲット
+pluralLabel: 訪問ターゲット
+description: 訪問目標と達成状況の管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: ターゲット名
+  type: Text
+  length: 255
+fields:
+  - apiName: Target_Month__c
+    label: 対象月
+    type: Text
+    length: 7
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+  - apiName: Doctor__c
+    label: ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+  - apiName: Institution__c
+    label: 医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+  - apiName: Target_Visits__c
+    label: 目標訪問数
+    type: Number
+    precision: 5
+    scale: 0
+  - apiName: Actual_Visits__c
+    label: 実績訪問数
+    type: Number
+    precision: 5
+    scale: 0
+  - apiName: Visit_Purpose__c
+    label: 訪問目的
+    type: Picklist
+    values:
+      - 定期訪問
+      - 新規開拓
+      - フォローアップ
+      - 情報提供
+      - 説明会
+      - 検体回収
+      - その他
+  - apiName: Priority__c
+    label: 優先度
+    type: Picklist
+    values:
+      - A（最優先）
+      - B（重要）
+      - C（通常）
+      - D（低）
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 未着手
+      - 進行中
+      - 達成
+      - 未達
+      - 中止
+  - apiName: Achievement_Rate__c
+    label: 達成率
+    type: Percent
+    precision: 5
+    scale: 0
+  - apiName: Last_Visit_Date__c
+    label: 最終訪問日
+    type: Date
+  - apiName: Next_Visit_Date__c
+    label: 次回訪問予定
+    type: Date
+  - apiName: Note__c
+    label: 備考
+    type: LongTextArea
+    length: 2000
+    visibleLines: 3

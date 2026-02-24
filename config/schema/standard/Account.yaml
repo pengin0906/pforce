@@ -1,0 +1,129 @@
+apiName: Account
+label: 取引先
+pluralLabel: 取引先
+description: 取引先企業・組織の管理
+fields:
+  - apiName: Name
+    label: 取引先名
+    type: Text
+    length: 255
+    required: true
+  - apiName: Industry
+    label: 業種
+    type: Picklist
+    values:
+      - 農業
+      - アパレル
+      - 銀行
+      - バイオテクノロジー
+      - 化学
+      - 通信
+      - 建設
+      - コンサルティング
+      - 教育
+      - 電子機器
+      - エネルギー
+      - エンジニアリング
+      - エンターテインメント
+      - 環境
+      - 金融
+      - 飲食
+      - 政府機関
+      - ヘルスケア
+      - ホスピタリティ
+      - 保険
+      - 機械
+      - 製造
+      - メディア
+      - 非営利
+      - その他
+      - レクリエーション
+      - 小売
+      - 運輸
+      - テクノロジー
+      - 通信
+      - 公益事業
+  - apiName: Type
+    label: 種別
+    type: Picklist
+    values:
+      - 顧客
+      - 見込み客
+      - パートナー
+      - 競合他社
+      - その他
+  - apiName: Phone
+    label: 電話
+    type: Phone
+  - apiName: Fax
+    label: Fax
+    type: Fax
+  - apiName: Website
+    label: Webサイト
+    type: Url
+  - apiName: BillingStreet
+    label: 請求先（町名・番地）
+    type: Text
+    length: 255
+  - apiName: BillingCity
+    label: 請求先（市区郡）
+    type: Text
+    length: 40
+  - apiName: BillingState
+    label: 請求先（都道府県）
+    type: Text
+    length: 80
+  - apiName: BillingPostalCode
+    label: 請求先（郵便番号）
+    type: Text
+    length: 20
+  - apiName: BillingCountry
+    label: 請求先（国）
+    type: Text
+    length: 80
+  - apiName: ShippingStreet
+    label: 納入先（町名・番地）
+    type: Text
+    length: 255
+  - apiName: ShippingCity
+    label: 納入先（市区郡）
+    type: Text
+    length: 40
+  - apiName: ShippingState
+    label: 納入先（都道府県）
+    type: Text
+    length: 80
+  - apiName: ShippingPostalCode
+    label: 納入先（郵便番号）
+    type: Text
+    length: 20
+  - apiName: ShippingCountry
+    label: 納入先（国）
+    type: Text
+    length: 80
+  - apiName: NumberOfEmployees
+    label: 従業員数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: AnnualRevenue
+    label: 年間売上
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedAccounts
+  - apiName: ParentId
+    label: 親取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: ChildAccounts
+    relationshipLabel: 子取引先

@@ -1,0 +1,71 @@
+apiName: Genomic_Project__c
+label: ゲノム解析案件
+pluralLabel: ゲノム解析案件
+description: ゲノム解析プロジェクトの進捗管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: プロジェクト名
+  type: Text
+  length: 80
+fields:
+  - apiName: Medical_Institution__c
+    label: 医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: Genomic_Projects
+    relationshipLabel: ゲノム解析案件
+    deleteConstraint: SetNull
+  - apiName: Cancer_Type__c
+    label: がん種
+    type: Picklist
+    required: true
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+  - apiName: Data_Modality__c
+    label: データ種別
+    type: MultiselectPicklist
+    values:
+      - ゲノム
+      - 臨床
+      - 画像
+      - 病理
+    visibleLines: 4
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    required: true
+    values:
+      - 検体待ち
+      - 解析中
+      - レポート作成中
+      - レポート完了
+      - 納品済
+  - apiName: Report_Due_Date__c
+    label: 報告予定日
+    type: Date
+  - apiName: Sample_Count__c
+    label: サンプル数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: TAT_Days__c
+    label: TAT（日数）
+    type: Number
+    precision: 18
+    scale: 0
+    inlineHelpText: ターンアラウンドタイム（受領からレポート発行まで）
+  - apiName: Is_Urgent__c
+    label: 緊急案件
+    type: Checkbox
+    defaultValue: false

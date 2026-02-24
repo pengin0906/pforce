@@ -1,0 +1,71 @@
+apiName: Daily_Report__c
+label: 日報
+pluralLabel: 日報
+description: MR/MSL/ラボの日次報告管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 日報番号
+  type: AutoNumber
+  displayFormat: DR-{0000}
+fields:
+  - apiName: Report_Date__c
+    label: 報告日
+    type: Date
+  - apiName: Report_Type__c
+    label: 報告種別
+    type: Picklist
+    values:
+      - MR日報
+      - MSL日報
+      - ラボ日報
+  - apiName: Visit_Summary__c
+    label: 訪問件数
+    type: Number
+    precision: 5
+    scale: 0
+  - apiName: Key_Activities__c
+    label: 主な活動
+    type: LongTextArea
+    length: 5000
+    visibleLines: 5
+  - apiName: Key_Findings__c
+    label: 主な気づき
+    type: LongTextArea
+    length: 5000
+    visibleLines: 5
+  - apiName: Issues__c
+    label: 課題・問題
+    type: LongTextArea
+    length: 3000
+    visibleLines: 3
+  - apiName: Tomorrow_Plan__c
+    label: 翌日予定
+    type: LongTextArea
+    length: 3000
+    visibleLines: 3
+  - apiName: Approval_Status__c
+    label: 承認状態
+    type: Picklist
+    values:
+      - 下書き
+      - 提出済
+      - 承認済
+      - 差戻し
+  - apiName: Approved_By__c
+    label: 承認者
+    type: Lookup
+    referenceTo: User
+  - apiName: Approval_Date__c
+    label: 承認日
+    type: Date
+  - apiName: Approval_Comment__c
+    label: 承認コメント
+    type: LongTextArea
+    length: 2000
+    visibleLines: 3
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User

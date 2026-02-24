@@ -1,0 +1,107 @@
+apiName: Specimen__c
+label: 検体管理
+pluralLabel: 検体管理
+description: 検体の受領からレポート発行までのトラッキング
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: 検体ID
+  type: AutoNumber
+  displayFormat: SP-{00000}
+fields:
+  - apiName: Patient_ID__c
+    label: 患者ID（匿名化）
+    type: Text
+    length: 40
+    required: true
+    externalId: true
+    unique: true
+  - apiName: Source_Institution__c
+    label: 提出元医療機関
+    type: Lookup
+    referenceTo: Medical_Institution__c
+    relationshipName: Specimens
+    relationshipLabel: 提出検体
+    deleteConstraint: Restrict
+  - apiName: Referring_Doctor__c
+    label: 紹介ドクター
+    type: Lookup
+    referenceTo: Doctor__c
+    relationshipName: Referred_Specimens
+    relationshipLabel: 紹介検体
+    deleteConstraint: SetNull
+  - apiName: Cancer_Type__c
+    label: がん種
+    type: Picklist
+    required: true
+    values:
+      - 肺がん
+      - 乳がん
+      - 胃がん
+      - 膵がん
+      - 大腸がん
+      - 血液がん
+      - 希少がん
+  - apiName: Specimen_Type__c
+    label: 検体種別
+    type: Picklist
+    required: true
+    values:
+      - FFPE（組織）
+      - 血液（リキッドバイオプシー）
+      - 骨髄
+      - 新鮮凍結組織
+      - 細胞診検体
+  - apiName: Received_Date__c
+    label: 受領日
+    type: Date
+  - apiName: Specimen_Status__c
+    label: 検体ステータス
+    type: Picklist
+    required: true
+    values:
+      - 受領待ち
+      - 受領済
+      - QC中
+      - QC合格
+      - QC不合格
+      - 解析中
+      - 解析完了
+      - レポート発行済
+  - apiName: Analysis_Panel__c
+    label: 解析パネル
+    type: Picklist
+    values:
+      - xT（全エクソーム）
+      - xF（リキッド）
+      - xG（全ゲノム）
+      - xR（RNA）
+      - GenMine標準
+  - apiName: TAT_Target__c
+    label: TAT目標日数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Report_Date__c
+    label: レポート発行日
+    type: Date
+  - apiName: Lab__c
+    label: 担当ラボ
+    type: Lookup
+    referenceTo: Lab__c
+    relationshipName: Specimens
+    relationshipLabel: 処理検体
+    deleteConstraint: SetNull
+  - apiName: Is_Retest__c
+    label: 再検査フラグ
+    type: Checkbox
+    defaultValue: false
+  - apiName: Note__c
+    label: 備考
+    type: LongTextArea
+    length: 32768
+    visibleLines: 3

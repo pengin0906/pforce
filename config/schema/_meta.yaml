@@ -1,0 +1,36 @@
+apiVersion: "62.0"
+domains:
+  crm:
+    label: CRM/営業
+    objects:
+      - Medical_Institution__c
+      - Doctor__c
+      - Visit_Record__c
+      - Pharma_Opportunity__c
+      - Visit_Target__c
+      - Competitive_Intel__c
+  medical:
+    label: メディカルアフェアーズ
+    objects:
+      - MA_Activity__c
+      - Seminar__c
+      - Seminar_Attendee__c
+      - Bento_Order__c
+  lab:
+    label: ラボ/ゲノム
+    objects:
+      - Genomic_Project__c
+      - Specimen__c
+      - Lab__c
+      - Testing_Order__c
+  research:
+    label: 研究
+    objects:
+      - Joint_Research__c
+  operations:
+    label: オペレーション
+    objects:
+      - Daily_Report__c
+      - Approval_Request__c
+      - Expense_Report__c
+      - Workflow_Instance__c

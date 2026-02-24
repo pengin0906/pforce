@@ -1,0 +1,72 @@
+apiName: Quote
+label: 見積
+pluralLabel: 見積
+description: 商談に関連する見積書の管理
+fields:
+  - apiName: Name
+    label: 見積名
+    type: Text
+    length: 255
+    required: true
+  - apiName: OpportunityId
+    label: 商談
+    type: Lookup
+    referenceTo: Opportunity
+    relationshipName: Quotes
+    relationshipLabel: 見積
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    required: true
+    values:
+      - ドラフト
+      - 承認待ち
+      - 承認済
+      - 送付済
+      - 受諾
+      - 拒否
+  - apiName: ExpirationDate
+    label: 有効期限
+    type: Date
+  - apiName: Subtotal
+    label: 小計
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: TotalPrice
+    label: 合計金額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Discount
+    label: 割引率
+    type: Percent
+    precision: 18
+    scale: 2
+  - apiName: Tax
+    label: 税額
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: GrandTotal
+    label: 総計
+    type: Currency
+    precision: 18
+    scale: 0
+  - apiName: Description
+    label: 説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: ContactId
+    label: 取引先責任者
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: Quotes
+    relationshipLabel: 見積
+  - apiName: AccountId
+    label: 取引先
+    type: Lookup
+    referenceTo: Account
+    relationshipName: Quotes
+    relationshipLabel: 見積

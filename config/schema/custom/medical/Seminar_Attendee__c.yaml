@@ -1,0 +1,43 @@
+apiName: Seminar_Attendee__c
+label: セミナー参加者
+pluralLabel: セミナー参加者
+description: セミナー・勉強会の参加者登録管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: 参加者名
+  type: Text
+  length: 120
+fields:
+  - apiName: Seminar__c
+    label: セミナー
+    type: Lookup
+    referenceTo: Seminar__c
+  - apiName: Email__c
+    label: メール
+    type: Email
+  - apiName: Affiliation__c
+    label: 所属
+    type: Text
+    length: 255
+  - apiName: Specialty__c
+    label: 専門分野
+    type: Text
+    length: 120
+  - apiName: Registration_Date__c
+    label: 登録日
+    type: Date
+  - apiName: Attendance_Status__c
+    label: 出席状況
+    type: Picklist
+    values:
+      - 登録済
+      - 出席
+      - 欠席
+      - キャンセル
+  - apiName: Notes__c
+    label: 備考
+    type: LongTextArea
+    length: 1000
+    visibleLines: 3

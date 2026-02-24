@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SB TEMPUS | GenMineTOP SFA/CRM</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;background:#f3f3f3;color:#333}
+.app{display:flex;height:100vh}
+.sidebar{width:250px;background:#1a252f;color:#fff;overflow-y:auto;flex-shrink:0}
+.sidebar-hdr{padding:16px 20px;border-bottom:1px solid #2d3e50}
+.sidebar-hdr h2{font-size:15px;color:#0176d3;letter-spacing:.5px}
+.sidebar-hdr small{color:#8899aa;font-size:11px}
+.nav-sec{padding:8px 0;border-top:1px solid #2d3e50}
+.nav-sec-title{padding:8px 20px;font-size:10px;font-weight:700;text-transform:uppercase;color:#667;letter-spacing:.5px}
+.nav-item{padding:10px 20px;cursor:pointer;font-size:13px;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{background:#2d3e50;border-left-color:#0176d3}
+.nav-item.active{background:#0176d3;border-left-color:#0176d3;font-weight:600}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;height:56px}
+.topbar h1{font-size:17px;font-weight:600}
+.user-area{display:flex;align-items:center;gap:12px;font-size:13px}
+.badge{background:#0176d3;color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.btn{padding:8px 16px;background:#0176d3;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600}
+.btn:hover{background:#015ba8}
+.btn.sec{background:#e0e0e0;color:#333}
+.btn.sm{padding:5px 10px;font-size:11px}
+.content{flex:1;overflow-y:auto;padding:24px;background:#f3f3f3}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.grid{display:grid;gap:16px}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}.grid-6{grid-template-columns:repeat(6,1fr)}
+.kpi-card{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:16px;text-align:center;cursor:pointer;transition:box-shadow .2s,border-color .2s}
+.kpi-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);border-color:#0176d3}
+.kpi-card .kv{font-size:28px;font-weight:700;color:#0176d3}
+.kpi-card .kl{font-size:11px;color:#888;margin-top:4px}
+.kpi-card .ks{font-size:11px;color:#2ecc71;margin-top:2px}
+table{width:100%;border-collapse:collapse}
+thead{background:#f5f5f5;border-bottom:2px solid #e0e0e0}
+th{padding:10px 12px;text-align:left;font-weight:600;font-size:11px;color:#555;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:1px solid #eee;font-size:13px}
+tbody tr:hover{background:#f9f9f9;cursor:pointer}
+.sb{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.sg{background:#e8f5e9;color:#2e7d32}.sbl{background:#e3f2fd;color:#1565c0}.so{background:#fff3e0;color:#e65100}.sr{background:#ffebee;color:#c62828}.sgy{background:#f5f5f5;color:#666}
+.chart-box{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:16px}
+.chart-box h4{font-size:13px;font-weight:600;margin-bottom:10px;color:#555}
+.chart-box canvas{max-height:300px}
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:12px 0}
+.kanban-col{background:#f5f5f5;border-radius:6px;padding:12px}
+.kanban-hdr{font-weight:600;font-size:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #0176d3;display:flex;justify-content:space-between}
+.kanban-hdr .cnt{background:#0176d3;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px}
+.kcard{background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:10px;margin-bottom:8px;cursor:pointer;font-size:12px}
+.kcard:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);transform:translateY(-1px)}
+.kcard strong{display:block;margin-bottom:3px}
+.kcard small{color:#999}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-field label{font-size:11px;color:#888;font-weight:600;display:block;margin-bottom:4px}
+.detail-field .val{background:#f5f5f5;padding:8px 12px;border-radius:4px;font-size:13px;min-height:36px}
+.timeline{list-style:none}.timeline li{padding:8px 0 8px 20px;border-left:2px solid #e0e0e0;position:relative;font-size:12px}
+.timeline li::before{content:'';position:absolute;left:-5px;top:12px;width:8px;height:8px;background:#0176d3;border-radius:50%}
+.perm-table td,.perm-table th{text-align:center;padding:8px}.perm-table td:first-child,.perm-table th:first-child{text-align:left}
+.py{color:#2ecc71;font-weight:700;font-size:16px}.pn{color:#e74c3c;font-weight:700;font-size:16px}
+.pbar{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin-top:4px}
+.pbar .fill{height:100%;border-radius:4px}
+.funnel-row{display:flex;align-items:center;margin:6px 0}
+.funnel-bar{height:32px;background:#0176d3;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;min-width:60px}
+.funnel-label{width:120px;font-size:12px;color:#555;flex-shrink:0}
+.funnel-val{margin-left:8px;font-size:12px;color:#888;width:100px}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid #e0e0e0;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{padding:10px 20px;cursor:pointer;font-size:13px;font-weight:500;border-bottom:3px solid transparent;color:#666}
+.tab-btn.active{color:#0176d3;border-bottom-color:#0176d3}
+textarea.code{width:100%;height:500px;padding:16px;font-family:Monaco,Menlo,monospace;font-size:12px;border:1px solid #e0e0e0;border-radius:4px;resize:vertical;background:#f8f8f8}
+.xml-view{font-family:Monaco,Menlo,monospace;font-size:11px;white-space:pre-wrap;word-break:break-all;background:#f8f8f8;padding:16px;border:1px solid #e0e0e0;border-radius:4px;max-height:600px;overflow:auto;line-height:1.5}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:8px;width:600px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e0e0e0}
+.modal-hdr h3{margin:0;font-size:16px}
+.modal-body{padding:20px}
+.modal-footer{padding:12px 20px;border-top:1px solid #e0e0e0;display:flex;justify-content:flex-end;gap:8px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;color:#555;font-weight:600;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0176d3;box-shadow:0 0 0 2px rgba(1,118,211,.15)}
+.btn.danger{background:#e74c3c}.btn.danger:hover{background:#c0392b}
+.toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:6px;color:#fff;font-size:13px;font-weight:500;z-index:2000;animation:fadeIn .3s}
+.toast.success{background:#2ecc71}.toast.error{background:#e74c3c}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.inline-edit{background:#fff;border:1px solid #0176d3;padding:6px 10px;border-radius:4px;font-size:13px;width:100%}
+@media(max-width:1200px){.grid-4,.grid-6{grid-template-columns:1fr 1fr 1fr}}
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#e0e0e0}
+.cal-hdr{background:#1a252f;color:#fff;padding:8px;text-align:center;font-size:11px;font-weight:600}
+.cal-day{background:#fff;min-height:80px;padding:4px;font-size:11px;cursor:pointer;transition:background .15s}
+.cal-day:hover{background:#f5f7fa}
+.cal-day.other{background:#f8f8f8;color:#ccc;cursor:default}
+.cal-day.other:hover{background:#f8f8f8}
+.cal-day .dn{font-weight:600;margin-bottom:2px}
+.cal-evt{background:#e3f2fd;border-left:2px solid #0176d3;padding:2px 4px;margin:1px 0;font-size:10px;border-radius:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-evt.good{border-left-color:#2ecc71;background:#e8f5e9}
+.cal-evt.hold{border-left-color:#f39c12;background:#fff3e0}
+.cal-evt.bad{border-left-color:#e74c3c;background:#ffebee}
+/* Flow */
+.flow-steps{display:flex;gap:0;align-items:center;margin:20px 0;flex-wrap:wrap}
+.flow-step{flex:1;min-width:120px;padding:12px;text-align:center;background:#fff;border:1px solid #e0e0e0;border-radius:6px;position:relative}
+.flow-step.active{background:#e3f2fd;border-color:#0176d3}
+.flow-step.done{background:#e8f5e9;border-color:#2ecc71}
+.flow-arr{font-size:20px;color:#ccc;padding:0 4px}
+/* Pipeline columns */
+.pipe-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.pipe-col{min-width:180px;flex:1;background:#f5f5f5;border-radius:6px;padding:8px}
+.pipe-col-hdr{font-size:12px;font-weight:700;padding:8px;border-bottom:1px solid #ddd;margin-bottom:8px}
+.pipe-card{background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px;cursor:pointer;font-size:12px}
+.pipe-card:hover{box-shadow:0 2px 6px rgba(0,0,0,.1)}
+/* Review */
+.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.review-panel{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:16px}
+.review-panel h4{margin-bottom:12px;font-size:14px}
+/* Barcode */
+.bc-item{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #eee;font-size:13px}
+.bc-code{font-family:Monaco,Menlo,monospace;font-size:14px;font-weight:700;letter-spacing:2px;background:#f5f5f5;padding:4px 8px;border-radius:4px}
+/* Quote */
+.quote-line{display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:8px;padding:8px 0;border-bottom:1px solid #eee;align-items:center}
+.quote-line input,.quote-line select{padding:6px;border:1px solid #ccc;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="sidebar-hdr"><h2>SB TEMPUS</h2><small>GenMineTOP SFA/CRM</small><div style="margin-top:8px;display:flex;gap:6px"><button onclick="expandAll()" style="flex:1;padding:3px;font-size:10px;background:#2d3e50;color:#8899aa;border:1px solid #3d4e60;border-radius:3px;cursor:pointer">全展開</button><button onclick="collapseAll()" style="flex:1;padding:3px;font-size:10px;background:#2d3e50;color:#8899aa;border:1px solid #3d4e60;border-radius:3px;cursor:pointer">全折畳</button></div></div>
+
+<div class="nav-sec" data-sec="mgmt">
+<div class="nav-sec-title" onclick="toggleSec(this)">経営</div>
+<div class="nav-items">
+<div class="nav-item active" onclick="nav('dashboard')">📊 経営ダッシュボード</div>
+<div class="nav-item" onclick="nav('exec-dash')">📈 エグゼクティブDB</div>
+<div class="nav-item" onclick="nav('report-kpi')">📈 KPI</div>
+<div class="nav-item" onclick="nav('compliance-dash')">🛡️ コンプライアンス</div>
+</div></div>
+
+<div class="nav-sec" data-sec="sales">
+<div class="nav-sec-title" onclick="toggleSec(this)">営業</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('mr-dash')">👤 MRダッシュボード</div>
+<div class="nav-item" onclick="nav('visit-cal')">📅 訪問カレンダー</div>
+<div class="nav-item" onclick="nav('doc360')">👨‍⚕️ Doctor 360°</div>
+<div class="nav-item" onclick="nav('report-sales')">💰 営業成績</div>
+<div class="nav-item" onclick="nav('report-pipeline')">📊 パイプライン</div>
+<div class="nav-item" onclick="nav('quote')">🧮 見積もり支援</div>
+<div class="nav-item" onclick="nav('report-sales-team')">👥 営業チームレポート</div>
+<div class="nav-item" onclick="nav('kol-map')">🌟 KOLマップ</div>
+<div class="nav-item" onclick="nav('competitive-intel')">🔍 競合情報</div>
+<div class="nav-item" onclick="nav('territory')">🗺️ テリトリー分析</div>
+<div class="nav-item" onclick="nav('visit-target')">🎯 訪問ターゲット</div>
+<div class="nav-item" onclick="nav('doctor-assign')">🔄 ドクターアサイン</div>
+<div class="nav-item" onclick="nav('schedule')">📅 スケジュール</div>
+</div></div>
+
+<div class="nav-sec" data-sec="ma">
+<div class="nav-sec-title" onclick="toggleSec(this)">MA / 勉強会</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('report-ma')">📋 MA活動レポート</div>
+<div class="nav-item" onclick="nav('seminar-dash')">🎓 勉強会ダッシュボード</div>
+<div class="nav-item" onclick="nav('seminar-cal')">📅 勉強会カレンダー</div>
+<div class="nav-item" onclick="nav('bento')">🍱 弁当手配</div>
+<div class="nav-item" onclick="nav('seminar-reg')">📝 出席者登録</div>
+<div class="nav-item" onclick="nav('msl-dash')">👩‍🔬 MSLダッシュボード</div>
+<div class="nav-item" onclick="nav('seminar-attendees')">📋 出席者管理</div>
+</div></div>
+
+<div class="nav-sec" data-sec="lab">
+<div class="nav-sec-title" onclick="toggleSec(this)">ラボ / 検査</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('lab-dash')">🧬 ラボダッシュボード</div>
+<div class="nav-item" onclick="nav('specimen-pipe')">🔬 検体パイプライン</div>
+<div class="nav-item" onclick="nav('test-flow')">⚗️ 検査フロー</div>
+<div class="nav-item" onclick="nav('barcode')">📊 バーコード管理</div>
+<div class="nav-item" onclick="nav('monthly-report')">📈 月次検査レポート</div>
+<div class="nav-item" onclick="nav('specimen-review')">🔍 検体レビュー</div>
+<div class="nav-item" onclick="nav('specimen-tracker')">📦 検体トラッカー</div>
+<div class="nav-item" onclick="nav('report-testing')">📊 検査レポート</div>
+</div></div>
+
+<div class="nav-sec" data-sec="workflow">
+<div class="nav-sec-title" onclick="toggleSec(this)">ワークフロー</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('workflow')">🔄 ワークフロー管理</div>
+<div class="nav-item" onclick="nav('approval-queue')">✅ 承認キュー</div>
+<div class="nav-item" onclick="nav('daily-report')">📝 日報管理</div>
+<div class="nav-item" onclick="nav('expense-report')">💰 経費精算</div>
+</div></div>
+
+<div class="nav-sec collapsed" data-sec="reg">
+<div class="nav-sec-title" onclick="toggleSec(this)">規制 / 代理店</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('pmda-dash')">📋 PMDAダッシュボード</div>
+<div class="nav-item" onclick="nav('lsi-dash')">🏢 LSIダッシュボード</div>
+</div></div>
+
+<div class="nav-sec collapsed" data-sec="map">
+<div class="nav-sec-title" onclick="toggleSec(this)">マップ</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('facility-map')">🗺️ 施設マップ</div>
+</div></div>
+
+<div class="nav-sec collapsed" data-sec="data">
+<div class="nav-sec-title" onclick="toggleSec(this)">データ</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('obj','Medical_Institution__c')">🏥 医療機関</div>
+<div class="nav-item" onclick="nav('obj','Doctor__c')">👨‍⚕️ ドクター</div>
+<div class="nav-item" onclick="nav('obj','Pharma_Opportunity__c')">💼 製薬商談</div>
+<div class="nav-item" onclick="nav('obj','Visit_Record__c')">📝 訪問記録</div>
+<div class="nav-item" onclick="nav('obj','Genomic_Project__c')">🧬 ゲノム案件</div>
+<div class="nav-item" onclick="nav('obj','Specimen__c')">🧪 検体</div>
+<div class="nav-item" onclick="nav('obj','Lab__c')">⚗️ ラボ</div>
+<div class="nav-item" onclick="nav('obj','MA_Activity__c')">🎤 MA活動</div>
+<div class="nav-item" onclick="nav('obj','Seminar__c')">📚 勉強会</div>
+<div class="nav-item" onclick="nav('obj','Joint_Research__c')">🔬 共同研究</div>
+<div class="nav-item" onclick="nav('obj','Bento_Order__c')">🍱 弁当注文</div>
+<div class="nav-item" onclick="nav('obj','Seminar_Attendee__c')">📋 勉強会出席者</div>
+<div class="nav-item" onclick="nav('obj','Testing_Order__c')">🧬 検査オーダー</div>
+<div class="nav-item" onclick="nav('obj','Daily_Report__c')">📝 日報</div>
+<div class="nav-item" onclick="nav('obj','Approval_Request__c')">✅ 承認申請</div>
+<div class="nav-item" onclick="nav('obj','Expense_Report__c')">💰 経費精算</div>
+<div class="nav-item" onclick="nav('obj','Competitive_Intel__c')">🔍 競合情報</div>
+<div class="nav-item" onclick="nav('obj','Visit_Target__c')">🎯 訪問ターゲット</div>
+<div class="nav-item" onclick="nav('obj','Workflow_Instance__c')">🔄 ワークフロー</div>
+<div class="nav-item" onclick="nav('obj','Account')">🏢 取引先</div>
+<div class="nav-item" onclick="nav('obj','Contact')">👤 取引先責任者</div>
+<div class="nav-item" onclick="nav('obj','Lead')">🎯 リード</div>
+<div class="nav-item" onclick="nav('obj','Opportunity')">💰 商談</div>
+<div class="nav-item" onclick="nav('obj','Campaign')">📣 キャンペーン</div>
+<div class="nav-item" onclick="nav('obj','Case')">📋 ケース</div>
+<div class="nav-item" onclick="nav('obj','Task')">✅ ToDo</div>
+<div class="nav-item" onclick="nav('obj','Event')">📅 行動</div>
+<div class="nav-item" onclick="nav('obj','Product2')">📦 商品</div>
+<div class="nav-item" onclick="nav('obj','Quote')">📄 見積</div>
+<div class="nav-item" onclick="nav('obj','Contract')">📝 契約</div>
+<div class="nav-item" onclick="nav('obj','Order')">🛒 注文</div>
+<div class="nav-item" onclick="nav('obj','User')">👤 ユーザ</div>
+</div></div>
+
+<div class="nav-sec collapsed" data-sec="admin">
+<div class="nav-sec-title" onclick="toggleSec(this)">管理</div>
+<div class="nav-items">
+<div class="nav-item" onclick="nav('admin-users')">👥 ユーザー管理</div>
+<div class="nav-item" onclick="nav('soql')">💻 SOQL</div>
+<div class="nav-item" onclick="nav('editor')">📝 メタデータ編集</div>
+<div class="nav-item" onclick="nav('metadata')">📦 メタデータ管理</div>
+<div class="nav-item" onclick="nav('access')">🔒 アクセス権限</div>
+</div></div>
+
+</div>
+<div class="main">
+<div id="impersonateBanner" style="display:none;background:#e65100;color:#fff;padding:8px 24px;font-size:13px;font-weight:600;display:none;align-items:center;justify-content:space-between">
+<span id="impersonateMsg"></span>
+<button onclick="stopImpersonate()" style="background:#fff;color:#e65100;border:none;padding:4px 14px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600">元に戻る</button>
+</div>
+<div class="topbar">
+<h1 id="pageTitle">経営ダッシュボード</h1>
+<div class="user-area">
+<span id="userName">ユーザー</span>
+<span class="badge" id="userBadge">Sales_Rep</span>
+<button class="btn sm sec" onclick="location.href='/auth/logout'">ログアウト</button>
+</div>
+</div>
+<div class="content" id="C"></div>
+</div>
+</div>
+<script>
+const CL=['#0176d3','#2ecc71','#f39c12','#e74c3c','#9b59b6','#1abc9c','#e67e22','#3498db','#16a085','#c0392b'];
+const sc=s=>({導入完了:'sg',成約:'sg',完了:'sg',解析完了:'sg',レポート発行済:'sg',開催済:'sg',実施済:'sg',承認済:'sg',QC合格:'sg',通常稼働:'sg',配達済:'sg',出席:'sg',導入中:'sbl',解析中:'sbl',準備中:'sbl',契約交渉:'sbl',講師確定:'sbl',QC中:'sbl',解析実施中:'sbl',データ準備:'sbl',論文執筆:'sbl',発注済:'sbl',出席確認:'sbl',登録済:'so',検体待ち:'so',企画中:'so',リード:'so',企画立案:'so',受領待ち:'so',立ち上げ中:'so',高負荷:'so',倫理審査:'so',発注前:'so',失注:'sr',不採用:'sr',QC不合格:'sr',メンテナンス中:'sr',却下:'sr',キャンセル:'sr',欠席:'sr','Closed Won':'sg','Closed':'sg','有効':'sg','受諾':'sg','Prospecting':'so','Qualification':'sbl','Needs Analysis':'sbl','Value Proposition':'sbl','Negotiation/Review':'sbl','Closed Lost':'sr','不適格':'sr','拒否':'sr','中止':'sr','新規':'so','連絡済':'sbl','適格':'sg','転換済':'sg','計画中':'so','進行中':'sbl','対応中':'sbl','エスカレーション':'sr','高':'sr','中':'so','低':'sgy','ドラフト':'sgy','承認プロセス中':'sbl','承認待ち':'so','未着手':'so','待機中':'sgy','延期':'sr','Available':'sg','Pre Market':'so','Under Agreement':'sbl','Contracted':'sbl','提出済':'sbl','差戻し':'sr','下書き':'sgy','申請中':'so','支払済':'sg','取下げ':'sgy','達成':'sg','未達':'sr','US承認':'sg','US審査中':'sbl','US差戻し':'sr','未送信':'sgy','レビュー中':'so','レポート作成':'sbl','検査中':'sbl','検体待ち':'so','受付':'so','緊急':'sr','A（最優先）':'sr','B（重要）':'so','C（通常）':'sbl','D（低）':'sgy','通常':'sgy'})[s]||'sgy';
+const USERS=[
+{id:'U001',name:'田中太郎',role:'営業マネージャー',team:'Sales',photo:'🧑‍💼'},
+{id:'U002',name:'佐藤花子',role:'MR',team:'Sales',photo:'👩‍💼'},
+{id:'U003',name:'鈴木一郎',role:'MR',team:'Sales',photo:'👨‍💼'},
+{id:'U004',name:'高橋美咲',role:'MSL',team:'MA',photo:'👩‍🔬'},
+{id:'U005',name:'渡辺健太',role:'MSL',team:'MA',photo:'👨‍🔬'},
+{id:'U006',name:'伊藤直樹',role:'ラボマネージャー',team:'Lab',photo:'🧑‍🔬'},
+{id:'U009',name:'藤田優子',role:'遺伝子検査スタッフ',team:'Lab',photo:'👩‍🔬'},
+{id:'U010',name:'岡田真一',role:'遺伝子検査スタッフ',team:'Lab',photo:'👨‍🔬'},
+{id:'U011',name:'油谷不二夫',role:'研究主任（東大）',team:'Research',photo:'👨‍🏫'},
+{id:'U012',name:'吉田研究員',role:'研究員（東大）',team:'Research',photo:'🧑‍🔬'},
+{id:'U007',name:'山本恵理',role:'事業部長',team:'Executive',photo:'👩‍💻'},
+{id:'U008',name:'中村大輔',role:'代表取締役',team:'Executive',photo:'🤵'},
+{id:'U013',name:'Tempus US Reviewer',role:'External Reviewer',team:'External',photo:'🌐'}
+];
+const MONTHLY_TESTING_DATA=[
+{month:'2025-04',orders:45,completed:42,avgTAT:13.2},
+{month:'2025-05',orders:52,completed:48,avgTAT:12.8},
+{month:'2025-06',orders:58,completed:55,avgTAT:12.1},
+{month:'2025-07',orders:63,completed:60,avgTAT:11.5},
+{month:'2025-08',orders:55,completed:52,avgTAT:11.8},
+{month:'2025-09',orders:70,completed:67,avgTAT:11.2},
+{month:'2025-10',orders:78,completed:74,avgTAT:10.8},
+{month:'2025-11',orders:82,completed:79,avgTAT:10.5},
+{month:'2025-12',orders:75,completed:71,avgTAT:10.9},
+{month:'2026-01',orders:88,completed:84,avgTAT:10.2},
+{month:'2026-02',orders:65,completed:45,avgTAT:9.8}
+];
+const WORKFLOW_TEMPLATES={
+'引き継ぎ':{name:'担当引き継ぎワークフロー',icon:'🔄',color:'#1565c0',steps:['引き継ぎ申請','上長承認','引き継ぎ内容整理','後任者への説明会','データ移行実行','完了確認・報告'],sla:30},
+'検査オーダー':{name:'遺伝子パネル検査ワークフロー',icon:'🧬',color:'#2e7d32',steps:['検体受付・品質確認','DNA抽出・ライブラリ調製','シーケンシング・解析','東大チームレビュー','US Tempusレビュー','レポート作成','レポート送付・完了'],sla:21},
+'経費承認':{name:'経費承認ワークフロー',icon:'💴',color:'#e65100',steps:['経費申請','上長承認','経理承認','支払い処理'],sla:7},
+'勉強会開催':{name:'勉強会開催ワークフロー',icon:'📚',color:'#6a1b9a',steps:['企画書作成','講師依頼・調整','会場手配','案内状送付・集客','弁当・備品手配','資料準備・最終確認','勉強会開催','フォローアップ・報告'],sla:60},
+'商談承認':{name:'商談承認ワークフロー',icon:'💼',color:'#c62828',steps:['提案書作成','上長承認','事業部長承認','見積書発行','契約締結・完了'],sla:30},
+'PMDA申請':{name:'PMDA申請ワークフロー',icon:'🏛️',color:'#00695c',steps:['申請書類準備','社内品質レビュー','PMDA申請提出','PMDA審査対応','専門協議','審査報告書確認','承認取得'],sla:180}
+};
+const userName=id=>{const u=USERS.find(u=>u.id===id);return u?u.name:id||'-'};
+let D={};
+let pageState={};// {objectName:{page,pageSize,totalSize,pageCount,q,sortBy,sortDir}}
+let lookupNamesCache={};// {id: displayName}
+async function loadData(){
+  try{
+    const names=await fetch('/api/schema').then(r=>r.json());
+    window.objectNames=names.objects||[];
+  }catch(e){console.error('Failed to load schema:',e)}
+}
+async function loadPage(obj,page,opts){
+  page=page||1;opts=opts||{};
+  const ps=pageState[obj]||{pageSize:25,sortBy:'LastModifiedDate',sortDir:'DESC'};
+  const params=new URLSearchParams({page:page,pageSize:ps.pageSize||25});
+  if(opts.sortBy)params.set('sortBy',opts.sortBy);
+  else if(ps.sortBy)params.set('sortBy',ps.sortBy);
+  if(opts.sortDir)params.set('sortDir',opts.sortDir);
+  else if(ps.sortDir)params.set('sortDir',ps.sortDir);
+  if(opts.q)params.set('q',opts.q);
+  else if(ps.q)params.set('q',ps.q);
+  const resp=await fetch('/api/data/'+obj+'?'+params).then(r=>r.json());
+  D[obj]=resp.records||[];
+  pageState[obj]={page:resp.page,pageSize:resp.pageSize,totalSize:resp.totalSize,pageCount:resp.pageCount,q:opts.q||ps.q||'',sortBy:opts.sortBy||ps.sortBy||'LastModifiedDate',sortDir:opts.sortDir||ps.sortDir||'DESC'};
+  if(resp.lookupNames)Object.assign(lookupNamesCache,resp.lookupNames);
+  return resp;
+}
+const OL={Account:'取引先',Contact:'取引先責任者',Lead:'リード',Opportunity:'商談',OpportunityLineItem:'商談商品',OpportunityContactRole:'商談取引先責任者の役割',Campaign:'キャンペーン',CampaignMember:'キャンペーンメンバー',Case:'ケース',Task:'ToDo',Event:'行動',Product2:'商品',Pricebook2:'価格表',PricebookEntry:'価格表エントリ',Quote:'見積',QuoteLineItem:'見積品目',Contract:'契約',Order:'注文',OrderItem:'注文品目',User:'ユーザ',Note:'メモ',ContentDocument:'コンテンツドキュメント',Medical_Institution__c:'医療機関',Doctor__c:'ドクター',Genomic_Project__c:'ゲノム案件',Pharma_Opportunity__c:'製薬商談',Visit_Record__c:'訪問記録',MA_Activity__c:'MA活動',Seminar__c:'勉強会',Specimen__c:'検体',Lab__c:'ラボ',Joint_Research__c:'共同研究',Bento_Order__c:'弁当注文',Seminar_Attendee__c:'勉強会出席者',Testing_Order__c:'検査オーダー',Daily_Report__c:'日報',Approval_Request__c:'承認申請',Expense_Report__c:'経費精算',Competitive_Intel__c:'競合情報',Visit_Target__c:'訪問ターゲット',Workflow_Instance__c:'ワークフロー'};
+const FL={Name:'名前',FirstName:'名',LastName:'姓',AccountId:'取引先',ContactId:'取引先責任者',LeadId:'リード',OpportunityId:'商談',CampaignId:'キャンペーン',OwnerId:'所有者',Industry:'業種',Type:'種別',Phone:'電話',Fax:'FAX',Website:'Webサイト',Email:'メール',MobilePhone:'携帯',Title:'役職',Department:'部門',Description:'説明',Amount:'金額',CloseDate:'完了予定日',StageName:'フェーズ',Probability:'確度%',NextStep:'次のステップ',Subject:'件名',Status:'状態',Priority:'優先度',Origin:'発生源',ActivityDate:'期日',StartDateTime:'開始',EndDateTime:'終了',Location:'場所',ProductCode:'商品コード',Family:'商品ファミリ',UnitPrice:'単価',Quantity:'数量',TotalPrice:'合計金額',Discount:'割引%',ExpirationDate:'有効期限',ContractTerm:'契約期間',EffectiveDate:'有効開始日',OrderNumber:'注文番号',IsActive:'有効',IsClosed:'クローズ済',IsConverted:'転換済',IsHighPriority:'高優先度',Role:'役割',IsPrimary:'主担当者',Company:'会社名',LeadSource:'リードソース',ForecastCategory:'フォーキャスト分類',BillingCity:'請求先市区町村',BillingState:'請求先都道府県',ShippingCity:'配送先市区町村',NumberOfEmployees:'従業員数',AnnualRevenue:'年間売上',StartDate:'開始日',EndDate:'終了日',BudgetedCost:'予算',ActualCost:'実績コスト',ExpectedRevenue:'期待収益',Subtotal:'小計',Tax:'税額',GrandTotal:'総合計',Username:'ユーザ名',Alias:'別名',IsAllDayEvent:'終日',WhoId:'名前(Who)',WhatId:'関連先(What)',Facility_Type__c:'施設種別',Prefecture__c:'都道府県',Adapter_Status__c:'導入状況',Bed_Count__c:'病床数',Department__c:'診療科',Title__c:'役職',Relationship_Level__c:'関係構築度',Is_KOL__c:'KOL',KOL_Score__c:'KOLスコア',Assigned_MR__c:'担当MR',Visit_Count__c:'訪問回数',Referred_Specimen_Count__c:'紹介検体',Cancer_Type__c:'がん種',Status__c:'ステータス',Sample_Count__c:'サンプル数',Pharma_Company__c:'製薬企業',Phase__c:'フェーズ',Amount__c:'金額(万円)',Service_Type__c:'サービス',Owner_Name__c:'担当営業',Probability__c:'確度%',Doctor__c:'ドクター',Visit_Date__c:'訪問日',Meeting_Result__c:'面談結果',Visit_Purpose__c:'目的',Next_Action__c:'次アクション',Activity_Type__c:'活動種別',Activity_Date__c:'実施日',Budget__c:'予算(万円)',Participant_Count__c:'参加者',Assigned_MSL__c:'担当MSL',Compliance_Check__c:'コンプラ',Event_Format__c:'形式',Progress_Status__c:'ステータス',Event_Date__c:'開催日',Attendee_Count__c:'参加人数',Speaker_Fee__c:'講師謝金',Operation_Cost__c:'運営費',Specimen_Status__c:'検体状態',Analysis_Panel__c:'解析パネル',Received_Date__c:'受領日',Is_Retest__c:'再検査',Location__c:'所在地',Lab_Type__c:'ラボ種別',Operation_Status__c:'稼働状況',Monthly_Capacity__c:'月間容量',Current_Processing__c:'処理数',Principal_Investigator__c:'研究責任者',Medical_Institution__c:'医療機関',Phone__c:'電話',Mobile_Phone__c:'携帯',Email__c:'メール',Latitude__c:'緯度',Longitude__c:'経度',Description__c:'説明',Order_Date__c:'注文日',Delivery_Time__c:'配達時間',Menu_Type__c:'メニュー種類',Vendor__c:'業者',Notes__c:'備考',Affiliation__c:'所属',Registration_Date__c:'登録日',Attendance_Status__c:'出欠状況',Venue__c:'会場',Venue_Address__c:'会場住所',Venue_Latitude__c:'会場緯度',Venue_Longitude__c:'会場経度',Specialty__c:'専門分野',Seminar__c:'勉強会',Quantity__c:'数量',Panel__c:'パネル',Reviewer__c:'レビュアー',US_Review_Status__c:'US審査状態',Report_Date__c:'レポート日',TAT_Days__c:'TAT日数',Report_Type__c:'報告種別',Visit_Summary__c:'訪問件数',Key_Activities__c:'主な活動',Key_Findings__c:'主な気づき',Issues__c:'課題・問題',Tomorrow_Plan__c:'翌日予定',Approval_Status__c:'承認状態',Approved_By__c:'承認者',Approval_Date__c:'承認日',Approval_Comment__c:'承認コメント',Request_Type__c:'申請種別',Related_Object__c:'関連オブジェクト',Related_Record_Id__c:'関連レコードID',Submitted_Date__c:'申請日',Approved_Date__c:'承認日',Approver_Comment__c:'承認者コメント',Approver__c:'承認者',Expense_Type__c:'経費種別',Related_Visit__c:'関連訪問',Related_Seminar__c:'関連勉強会',Receipt_Attached__c:'領収書添付',Competitor__c:'競合企業/製品',Intel_Type__c:'情報種別',Source__c:'情報源',Date__c:'日付',Summary__c:'概要',Impact__c:'影響度',Action_Required__c:'必要アクション',Target_Month__c:'対象月',Target_Visits__c:'目標訪問数',Actual_Visits__c:'実績訪問数',Achievement_Rate__c:'達成率',Last_Visit_Date__c:'最終訪問日',Next_Visit_Date__c:'次回訪問予定',Workflow_Type__c:'ワークフロー種別',Current_Step__c:'現在ステップ',Total_Steps__c:'総ステップ数',Requested_By__c:'申請者',Current_Assignee__c:'現在の担当者',Start_Date__c:'開始日',Due_Date__c:'期限日',Completed_Date__c:'完了日',Related_Record__c:'関連レコード',Institution__c:'医療機関',Note__c:'備考'};
+const fl=f=>FL[f]||f;
+const OK={Account:['Name','Industry','Type','Phone','BillingState'],Contact:['LastName','FirstName','AccountId','Email','Phone'],Lead:['LastName','Company','Status','Email','Phone'],Opportunity:['Name','AccountId','StageName','Amount','CloseDate'],OpportunityLineItem:['Product2Id','Quantity','UnitPrice','TotalPrice'],OpportunityContactRole:['ContactId','Role','IsPrimary'],Campaign:['Name','Type','Status','StartDate','BudgetedCost'],CampaignMember:['CampaignId','ContactId','Status'],Case:['Subject','Status','Priority','AccountId','ContactId'],Task:['Subject','Status','Priority','ActivityDate','OwnerId'],Event:['Subject','StartDateTime','EndDateTime','Location'],Product2:['Name','ProductCode','Family','IsActive'],Pricebook2:['Name','IsActive','IsStandard'],PricebookEntry:['Product2Id','UnitPrice','IsActive'],Quote:['Name','OpportunityId','Status','ExpirationDate','GrandTotal'],QuoteLineItem:['Product2Id','Quantity','UnitPrice','TotalPrice'],Contract:['AccountId','Status','StartDate','EndDate'],Order:['AccountId','Status','EffectiveDate','TotalAmount'],OrderItem:['Product2Id','Quantity','UnitPrice'],User:['Username','LastName','FirstName','Email','IsActive'],Note:['Title','ParentId'],ContentDocument:['Title','FileType','ContentSize'],Medical_Institution__c:['Name','Facility_Type__c','Prefecture__c','Adapter_Status__c','Bed_Count__c'],Doctor__c:['Name','Medical_Institution__c','Department__c','Title__c','Relationship_Level__c','Assigned_MR__c','Is_KOL__c'],Pharma_Opportunity__c:['Name','Pharma_Company__c','Phase__c','Amount__c','Owner_Name__c'],Visit_Record__c:['Name','Doctor__c','Visit_Date__c','Meeting_Result__c','Visit_Purpose__c'],MA_Activity__c:['Name','Activity_Type__c','Status__c','Assigned_MSL__c','Budget__c'],Seminar__c:['Name','Event_Format__c','Progress_Status__c','Event_Date__c','Venue__c'],Specimen__c:['Name','Cancer_Type__c','Specimen_Status__c','Analysis_Panel__c','Received_Date__c'],Lab__c:['Name','Location__c','Operation_Status__c','Monthly_Capacity__c','Current_Processing__c'],Genomic_Project__c:['Name','Cancer_Type__c','Status__c','Sample_Count__c'],Joint_Research__c:['Name','Pharma_Company__c','Status__c','Budget__c'],Bento_Order__c:['Name','Seminar__c','Order_Date__c','Menu_Type__c','Quantity__c','Amount__c','Status__c'],Seminar_Attendee__c:['Name','Seminar__c','Affiliation__c','Email__c','Attendance_Status__c','Registration_Date__c'],Testing_Order__c:['Name','Specimen__c','Doctor__c','Institution__c','Status__c','TAT_Days__c'],Daily_Report__c:['Name','Report_Date__c','Report_Type__c','Visit_Summary__c','Approval_Status__c','OwnerId'],Approval_Request__c:['Name','Request_Type__c','Amount__c','Status__c','Priority__c','Submitted_Date__c'],Expense_Report__c:['Name','Report_Date__c','Expense_Type__c','Amount__c','Status__c','OwnerId'],Competitive_Intel__c:['Name','Competitor__c','Intel_Type__c','Impact__c','Date__c'],Visit_Target__c:['Name','Doctor__c','Target_Visits__c','Actual_Visits__c','Achievement_Rate__c','Status__c'],Workflow_Instance__c:['Name','Workflow_Type__c','Status__c','Priority__c','Current_Step__c','Due_Date__c']};
+const KF={Doctor__c:'Relationship_Level__c',Pharma_Opportunity__c:'Phase__c',Specimen__c:'Specimen_Status__c',MA_Activity__c:'Status__c',Genomic_Project__c:'Status__c',Opportunity:'StageName',Lead:'Status',Case:'Status',Task:'Status',Campaign:'Status',Quote:'Status',Contract:'Status',Order:'Status',Bento_Order__c:'Status__c',Seminar_Attendee__c:'Attendance_Status__c',Testing_Order__c:'Status__c',Daily_Report__c:'Approval_Status__c',Approval_Request__c:'Status__c',Expense_Report__c:'Status__c',Competitive_Intel__c:'Impact__c',Visit_Target__c:'Status__c',Workflow_Instance__c:'Status__c'};
+const fmt=n=>{if(n>=10000)return'¥'+(n/10000).toFixed(1)+'億';return'¥'+n.toLocaleString()+'万'};
+const pct=(a,b)=>b>0?Math.round(a/b*100):0;
+const dn=id=>{
+  if(!id)return'-';
+  if(lookupNamesCache[id])return lookupNamesCache[id];
+  for(const obj of Object.keys(D)){
+    const rec=(D[obj]||[]).find(r=>r.Id===id);
+    if(rec){const n=rec.Name||rec.LastName||rec.Subject||rec.Title||id;lookupNamesCache[id]=n;return n}
+  }
+  return id;
+};
+const mi=id=>{
+  if(!id)return'-';
+  const rec=(D.Medical_Institution__c||[]).find(r=>r.Id===id);
+  return rec?rec.Name:id;
+};
+let charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id]}}
+function mc(id,cfg,clickTarget){dc(id);const ctx=document.getElementById(id);if(!ctx)return;if(clickTarget){if(!cfg.options)cfg.options={};cfg.options.onClick=function(e,els){if(clickTarget.startsWith('obj:'))nav('obj',clickTarget.slice(4));else nav(clickTarget)};ctx.style.cursor='pointer'}charts[id]=new Chart(ctx,cfg)}
+let cv='dashboard',co=null,cr=null;
+// セクション折りたたみ
+function toggleSec(el){el.parentElement.classList.toggle('collapsed');saveSecState()}
+function saveSecState(){const s={};document.querySelectorAll('.nav-sec[data-sec]').forEach(n=>s[n.dataset.sec]=n.classList.contains('collapsed'));try{localStorage.setItem('sfa-nav-sec',JSON.stringify(s))}catch(e){}}
+function loadSecState(){try{const s=JSON.parse(localStorage.getItem('sfa-nav-sec'));if(s)Object.entries(s).forEach(([k,v])=>{const el=document.querySelector(`.nav-sec[data-sec="${k}"]`);if(el){if(v)el.classList.add('collapsed');else el.classList.remove('collapsed')}})}catch(e){}}
+function expandAll(){document.querySelectorAll('.nav-sec').forEach(n=>n.classList.remove('collapsed'));saveSecState()}
+function collapseAll(){document.querySelectorAll('.nav-sec').forEach(n=>n.classList.add('collapsed'));saveSecState()}
+loadSecState();
+async function nav(v,o,skipPush){cv=v;co=o||null;cr=null;document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(event&&event.target){event.target.classList.add('active');const sec=event.target.closest('.nav-sec');if(sec&&sec.classList.contains('collapsed')){sec.classList.remove('collapsed');saveSecState()}}
+if(v==='obj'&&o){await loadPage(o,1,{q:''})}
+if(!skipPush)history.pushState({cv:v,co:o||null,crId:null},'');
+R()}
+function R(){
+  const c=document.getElementById('C'),t=document.getElementById('pageTitle');
+  const rv={
+    'dashboard':['経営ダッシュボード',rDash,iDash],
+    'mr-dash':['MRダッシュボード',rMRDash,bMRDash],
+    'visit-cal':['訪問カレンダー',rVisitCal,iVisitCal],
+    'doc360':['Doctor 360°',rDoc360,iDoc360],
+    'report-sales':['営業成績レポート',rSales,iSales],
+    'report-pipeline':['パイプライン分析',rPipe,iPipe],
+    'report-kpi':['KPIダッシュボード',rKPI],
+    'report-ma':['MA活動レポート',rMA,iMA],
+    'seminar-dash':['勉強会ダッシュボード',rSemDash,iSemDash],
+    'seminar-cal':['勉強会カレンダー',rSemCal,iSemCal],
+    'bento':['弁当手配',rBento],
+    'seminar-reg':['出席者登録',rSemReg],
+    'lab-dash':['ラボダッシュボード',rLabDash,iLabDash],
+    'specimen-pipe':['検体パイプライン',rSpecPipe],
+    'test-flow':['検査フロー (Illumina)',rTestFlow],
+    'barcode':['バーコード管理',rBarcode],
+    'monthly-report':['月次検査レポート',rMonthly,iMonthly],
+    'specimen-review':['検体レビュー',rSpecReview],
+    'pmda-dash':['PMDAダッシュボード',rPMDA,iPMDA],
+    'lsi-dash':['LSIダッシュボード',rLSI,iLSI],
+    'facility-map':['施設マップ',rFacMap,iFacMap],
+    'quote':['見積もり支援',rQuote],
+    'obj':[OL[co]||co,()=>rObj(co)],
+    'detail':['レコード詳細',rDet,bindDetEvents],
+    'access':['アクセス権限',rAccess],
+    'admin-users':['ユーザー管理',rAdminUsers,bAdminUsers],
+    'editor':['メタデータ編集',rEditor],
+    'soql':['SOQLコンソール',rSOQL],
+    'metadata':['メタデータ管理',rMetadata],
+    'exec-dash':['エグゼクティブダッシュボード',rExecDash,iExecDash],
+    'msl-dash':['MSLダッシュボード',rMSLDash,bMSLDash],
+    'compliance-dash':['コンプライアンスダッシュボード',rCompDash],
+    'daily-report':['日報管理',rDailyRep],
+    'report-testing':['検査レポート',rTestRep,iTestRep],
+    'report-sales-team':['営業チームレポート',rSalesTeam],
+    'approval-queue':['承認キュー',rApproval],
+    'workflow':['ワークフロー管理',rWorkflow],
+    'workflow-detail':['ワークフロー詳細',rWfDetail],
+    'workflow-new':['ワークフロー新規作成',rWfNew,bWfNew],
+    'kol-map':['KOLマップ',rKOLMap],
+    'competitive-intel':['競合情報',rCompIntel],
+    'territory':['テリトリー分析',rTerritory],
+    'visit-target':['訪問ターゲット管理',rVisitTarget],
+    'doctor-assign':['ドクターアサイン',rDocAssign],
+    'specimen-tracker':['検体トラッカー',rSpecTracker],
+    'expense-report':['経費精算',rExpense],
+    'schedule':['スケジュール',rSchedule,bSchedule],
+    'seminar-attendees':['勉強会出席者管理',rSemAttendees]
+  };
+  const r=rv[cv];if(!r)return;
+  t.textContent=r[0];
+  // For dashboard views that need D[] data, load it on demand
+  const dashViews=['dashboard','mr-dash','report-sales','report-pipeline','report-kpi','report-ma','seminar-dash','lab-dash','specimen-pipe','exec-dash','msl-dash','facility-map','kol-map','competitive-intel','territory','doctor-assign','specimen-tracker','bento','seminar-reg','seminar-attendees','daily-report','report-testing','approval-queue','expense-report','schedule','visit-target','compliance-dash','report-sales-team','specimen-review','barcode','monthly-report','test-flow','quote','workflow'];
+  if(dashViews.includes(cv)&&!window._dashLoaded){
+    const viewAtLoad=cv;
+    c.innerHTML='<div style="text-align:center;padding:40px;color:#999">読み込み中...</div>';
+    loadDashData().then(()=>{window._dashLoaded=true;if(cv===viewAtLoad){c.innerHTML=typeof r[1]==='function'?r[1]():'';if(r[2])r[2]()}else{R()}});
+  }else{
+    c.innerHTML=typeof r[1]==='function'?r[1]():'';
+    if(r[2])r[2]();
+  }
+  if(cv==='obj'){var nb=document.getElementById('btnNew');if(nb)nb.addEventListener('click',function(){openNew(this.dataset.obj)})}
+}
+async function loadDashData(){
+  // Load all data for dashboard views (backward compat — no pagination)
+  try{
+    const names=window.objectNames||[];
+    const results=await Promise.all(names.map(n=>fetch('/api/data/'+n).then(r=>r.json()).catch(()=>({records:[]}))));
+    names.forEach((n,i)=>{D[n]=results[i].records||[]});
+  }catch(e){console.error('Failed to load dashboard data:',e)}
+}
+
+// ===== 経営ダッシュボード =====
+function rDash(){
+const docs=D.Doctor__c||[],specs=D.Specimen__c||[],opps=D.Pharma_Opportunity__c||[],vis=D.Visit_Record__c||[];
+const instAdopted=(D.Medical_Institution__c||[]).filter(i=>i.Adapter_Status__c==='導入完了').length;
+const kols=docs.filter(d=>d.Is_KOL__c).length;
+const pipe=opps.filter(o=>!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+const specActive=specs.filter(s=>['解析中','QC中','QC合格','受領済'].includes(s.Specimen_Status__c)).length;
+const nowM=new Date().toISOString().slice(0,7);
+const thisMonthVis=vis.filter(v=>(v.Visit_Date__c||'').startsWith(nowM)).length;
+const monthlySpec=specs.length;
+return`<div class="grid grid-6" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${monthlySpec}</div><div class="kl">月間検査件数</div></div>
+<div class="kpi-card" onclick="nav('obj','Medical_Institution__c')"><div class="kv">${instAdopted}</div><div class="kl">GenMineTOP利用施設</div></div>
+<div class="kpi-card" onclick="nav('obj','Doctor__c')"><div class="kv">${kols}</div><div class="kl">KOL数</div><div class="ks">KOL率${pct(kols,docs.length)}%</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(pipe)}</div><div class="kl">パイプライン金額</div></div>
+<div class="kpi-card" onclick="nav('specimen-pipe')"><div class="kv">${specActive}</div><div class="kl">進行中検体</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Record__c')"><div class="kv">${thisMonthVis}</div><div class="kl">今月訪問</div></div>
+</div><div class="grid grid-2">
+<div class="chart-box"><h4>月次検査件数推移</h4><canvas id="cd0"></canvas></div>
+<div class="chart-box"><h4>商談パイプライン</h4><canvas id="cd1"></canvas></div>
+<div class="chart-box"><h4>検体処理状況</h4><canvas id="cd3"></canvas></div>
+<div class="chart-box"><h4>月次訪問推移</h4><canvas id="cd4"></canvas></div></div>`}
+function iDash(){
+const specs=D.Specimen__c||[],vis=D.Visit_Record__c||[],opps=D.Pharma_Opportunity__c||[];
+const ms=['08月','09月','10月','11月','12月'];const mp=['2025-08','2025-09','2025-10','2025-11','2025-12'];
+mc('cd0',{type:'line',data:{labels:ms,datasets:[{label:'検査件数',data:mp.map(m=>specs.filter(s=>(s.Received_Date__c||'').startsWith(m)).length),borderColor:'#0176d3',backgroundColor:'rgba(1,118,211,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Specimen__c');
+const ph=['リード','ヒアリング','提案','セキュリティ審査','契約交渉','成約','失注'];
+mc('cd1',{type:'bar',data:{labels:ph,datasets:[{data:ph.map(p=>opps.filter(o=>o.Phase__c===p).length),backgroundColor:CL}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}},'obj:Pharma_Opportunity__c');
+const ss=['受領待ち','受領済','QC中','QC合格','QC不合格','解析中','解析完了','レポート発行済'];
+mc('cd3',{type:'bar',data:{labels:ss,datasets:[{data:ss.map(s=>specs.filter(x=>x.Specimen_Status__c===s).length),backgroundColor:CL}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}},'specimen-pipe');
+mc('cd4',{type:'line',data:{labels:ms,datasets:[{label:'訪問数',data:mp.map(m=>vis.filter(v=>(v.Visit_Date__c||'').startsWith(m)).length),borderColor:'#2ecc71',backgroundColor:'rgba(46,204,113,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Visit_Record__c')}
+
+// ===== MRダッシュボード =====
+function rMRDash(){
+const mrs=[...new Set((D.Doctor__c||[]).map(d=>d.Assigned_MR__c).filter(Boolean))];
+let h='<div class="tab-bar" id="mrTabs">';
+mrs.forEach((m,i)=>h+=`<div class="tab-btn${i===0?' active':''}" onclick="showMR('${m}',this)">${m}</div>`);
+h+='</div><div id="mrContent"></div>';
+return h}
+function bMRDash(){
+const mrs=[...new Set((D.Doctor__c||[]).map(d=>d.Assigned_MR__c).filter(Boolean))];
+if(mrs.length)showMR(mrs[0])}
+function showMR(mr,tab){
+if(tab){document.querySelectorAll('#mrTabs .tab-btn').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
+const docs=(D.Doctor__c||[]).filter(d=>d.Assigned_MR__c===mr);
+const docIds=docs.map(d=>d.Id);
+const opps=(D.Pharma_Opportunity__c||[]).filter(o=>o.Owner_Name__c===mr);
+const visits=(D.Visit_Record__c||[]).filter(v=>docIds.includes(v.Doctor__c));
+const kols=docs.filter(d=>d.Is_KOL__c);
+const pipe=opps.filter(o=>!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+const won=opps.filter(o=>o.Phase__c==='成約').reduce((s,o)=>s+(o.Amount__c||0),0);
+const closed=opps.filter(o=>['成約','失注'].includes(o.Phase__c));
+const wr=closed.length?pct(opps.filter(o=>o.Phase__c==='成約').length,closed.length):0;
+const totalSpec=docs.reduce((s,d)=>s+(d.Referred_Specimen_Count__c||0),0);
+let h=`<div class="grid grid-6" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(pipe)}</div><div class="kl">パイプライン</div><div class="ks">${opps.filter(o=>!['成約','失注'].includes(o.Phase__c)).length}件</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(won)}</div><div class="kl">成約済</div><div class="ks">成約率 ${wr}%</div></div>
+<div class="kpi-card" onclick="nav('obj','Doctor__c')"><div class="kv">${docs.length}</div><div class="kl">担当ドクター</div><div class="ks">KOL ${kols.length}名</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Record__c')"><div class="kv">${visits.length}</div><div class="kl">訪問件数</div><div class="ks">好感触 ${visits.filter(v=>v.Meeting_Result__c==='好感触').length}件</div></div>
+<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${totalSpec}</div><div class="kl">紹介検体数</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${opps.length}</div><div class="kl">商談数</div><div class="ks">進行中 ${opps.filter(o=>!['成約','失注'].includes(o.Phase__c)).length}件</div></div>
+</div>`;
+h+=`<div class="grid grid-2">
+<div class="chart-box"><h4>商談パイプライン（フェーズ別）</h4><canvas id="mrc1"></canvas></div>
+<div class="chart-box"><h4>ドクター関係構築度</h4><canvas id="mrc2"></canvas></div>
+<div class="chart-box"><h4>訪問結果内訳</h4><canvas id="mrc3"></canvas></div>
+<div class="chart-box"><h4>月別訪問件数推移</h4><canvas id="mrc4"></canvas></div>
+</div>`;
+const acts=[
+...visits.map(v=>({d:v.Visit_Date__c,t:`${dn(v.Doctor__c)} を訪問 (${v.Visit_Purpose__c})`,s:v.Meeting_Result__c,i:'📝'}))
+].sort((a,b)=>(b.d||'').localeCompare(a.d||'')).slice(0,8);
+h+=`<div class="card"><h3>活動タイムライン</h3>`;
+if(acts.length){h+=`<ul style="list-style:none;padding:0">`;acts.forEach(a=>h+=`<li style="padding:8px 16px;border-bottom:1px solid #eee;font-size:13px"><span style="color:#888;margin-right:8px">${a.i} ${a.d||'-'}</span>${a.t} <span class="sb ${sc(a.s)}" style="margin-left:4px">${a.s||''}</span></li>`);h+=`</ul>`}
+else h+=`<p style="padding:16px;color:#888">活動履歴がありません</p>`;
+h+=`</div>`;
+h+=`<div class="card"><h3>担当商談 (${opps.length}件)</h3><table><thead><tr><th>商談名</th><th>企業</th><th>フェーズ</th><th>金額</th><th>確度</th></tr></thead><tbody>`;
+opps.forEach(o=>h+=`<tr onclick="sd('Pharma_Opportunity__c','${o.Id}')"><td>${o.Name}</td><td>${o.Pharma_Company__c}</td><td><span class="sb ${sc(o.Phase__c)}">${o.Phase__c}</span></td><td>¥${(o.Amount__c||0).toLocaleString()}万</td><td>${o.Probability__c||0}%</td></tr>`);
+h+=`</tbody></table></div>`;
+h+=`<div class="card"><h3>担当ドクター (${docs.length}名)</h3><table><thead><tr><th>氏名</th><th>医療機関</th><th>診療科</th><th>役職</th><th>関係構築度</th><th>訪問回数</th><th>KOLスコア</th><th>紹介検体</th></tr></thead><tbody>`;
+docs.forEach(d=>h+=`<tr onclick="sd('Doctor__c','${d.Id}')"><td>${d.Name}</td><td>${mi(d.Medical_Institution__c)}</td><td>${d.Department__c||'-'}</td><td>${d.Title__c||'-'}</td><td><span class="sb ${sc(d.Relationship_Level__c)}">${d.Relationship_Level__c}</span></td><td>${d.Visit_Count__c||0}</td><td>${d.KOL_Score__c||0}</td><td>${d.Referred_Specimen_Count__c||0}</td></tr>`);
+h+=`</tbody></table></div>`;
+h+=`<div class="card"><h3>訪問記録 (${visits.length}件)</h3><table><thead><tr><th>訪問番号</th><th>ドクター</th><th>訪問日</th><th>目的</th><th>結果</th><th>次アクション</th></tr></thead><tbody>`;
+visits.sort((a,b)=>(b.Visit_Date__c||'').localeCompare(a.Visit_Date__c||'')).forEach(v=>h+=`<tr onclick="sd('Visit_Record__c','${v.Id}')"><td>${v.Name}</td><td>${dn(v.Doctor__c)}</td><td>${v.Visit_Date__c}</td><td>${v.Visit_Purpose__c||'-'}</td><td><span class="sb ${sc(v.Meeting_Result__c)}">${v.Meeting_Result__c||'-'}</span></td><td>${v.Next_Action__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;
+document.getElementById('mrContent').innerHTML=h;
+setTimeout(()=>iMRCharts(mr),100)}
+function iMRCharts(mr){
+const docs=(D.Doctor__c||[]).filter(d=>d.Assigned_MR__c===mr);
+const docIds=docs.map(d=>d.Id);
+const opps=(D.Pharma_Opportunity__c||[]).filter(o=>o.Owner_Name__c===mr);
+const visits=(D.Visit_Record__c||[]).filter(v=>docIds.includes(v.Doctor__c));
+const ph=['リード','ヒアリング','提案','セキュリティ審査','契約交渉','成約','失注'];
+mc('mrc1',{type:'bar',data:{labels:ph,datasets:[{label:'万円',data:ph.map(p=>opps.filter(o=>o.Phase__c===p).reduce((s,o)=>s+(o.Amount__c||0),0)),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Pharma_Opportunity__c');
+const lv=['未接触','初回面談済','関心あり','検討中','推進者','ファン（KOL）'];
+mc('mrc2',{type:'doughnut',data:{labels:lv,datasets:[{data:lv.map(l=>docs.filter(d=>d.Relationship_Level__c===l).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Doctor__c');
+const rs=['好感触','継続検討','保留','再訪問要'];
+mc('mrc3',{type:'pie',data:{labels:rs,datasets:[{data:rs.map(r=>visits.filter(v=>v.Meeting_Result__c===r).length),backgroundColor:['#2ecc71','#3498db','#f39c12','#e74c3c']}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Visit_Record__c');
+const ms=['08月','09月','10月','11月','12月'];const mk=['2025-08','2025-09','2025-10','2025-11','2025-12'];
+mc('mrc4',{type:'line',data:{labels:ms,datasets:[{label:'訪問数',data:mk.map(m=>visits.filter(v=>v.Visit_Date__c&&v.Visit_Date__c.startsWith(m)).length),borderColor:'#0176d3',backgroundColor:'rgba(1,118,211,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Visit_Record__c')}
+
+// ===== 営業成績レポート =====
+function rSales(){const o=D.Pharma_Opportunity__c||[],won=o.filter(x=>x.Phase__c==='成約'),lost=o.filter(x=>x.Phase__c==='失注'),pipe=o.filter(x=>!['成約','失注'].includes(x.Phase__c));
+const tp=pipe.reduce((s,x)=>s+(x.Amount__c||0),0),wa=won.reduce((s,x)=>s+(x.Amount__c||0),0),wp=pipe.reduce((s,x)=>s+(x.Amount__c||0)*(x.Probability__c||0)/100,0);
+return`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(tp)}</div><div class="kl">パイプライン</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(wa)}</div><div class="kl">成約金額</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(Math.round(wp))}</div><div class="kl">加重パイプライン</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${pct(won.length,won.length+lost.length)}%</div><div class="kl">成約率</div><div class="ks">${won.length}勝/${lost.length}敗</div></div></div>
+<div class="grid grid-2">
+<div class="chart-box"><h4>担当者別商談金額</h4><canvas id="cs1"></canvas></div>
+<div class="chart-box"><h4>フェーズ別金額</h4><canvas id="cs2"></canvas></div>
+<div class="chart-box"><h4>商談フェーズ分布</h4><canvas id="cs3"></canvas></div>
+<div class="chart-box"><h4>サービス種別</h4><canvas id="cs4"></canvas></div></div>
+<div class="card" style="margin-top:16px"><h3>商談一覧（金額順）</h3><table><thead><tr><th>商談名</th><th>企業</th><th>金額</th><th>フェーズ</th><th>担当</th></tr></thead><tbody>
+${o.sort((a,b)=>(b.Amount__c||0)-(a.Amount__c||0)).map(x=>`<tr onclick="sd('Pharma_Opportunity__c','${x.Id}')"><td>${x.Name}</td><td>${x.Pharma_Company__c}</td><td>¥${(x.Amount__c||0).toLocaleString()}万</td><td><span class="sb ${sc(x.Phase__c)}">${x.Phase__c}</span></td><td>${x.Owner_Name__c}</td></tr>`).join('')}</tbody></table></div>`}
+function iSales(){const o=D.Pharma_Opportunity__c||[];
+const reps=[...new Set(o.map(x=>x.Owner_Name__c))];
+mc('cs1',{type:'bar',data:{labels:reps,datasets:[{label:'万円',data:reps.map(r=>o.filter(x=>x.Owner_Name__c===r).reduce((s,x)=>s+(x.Amount__c||0),0)),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Pharma_Opportunity__c');
+const ph=['リード','ヒアリング','提案','セキュリティ審査','契約交渉','成約','失注'];
+mc('cs2',{type:'bar',data:{labels:ph,datasets:[{label:'万円',data:ph.map(p=>o.filter(x=>x.Phase__c===p).reduce((s,x)=>s+(x.Amount__c||0),0)),backgroundColor:CL}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}},'obj:Pharma_Opportunity__c');
+mc('cs3',{type:'doughnut',data:{labels:ph,datasets:[{data:ph.map(p=>o.filter(x=>x.Phase__c===p).length),backgroundColor:CL}]},options:{responsive:true}},'obj:Pharma_Opportunity__c');
+const sv=[...new Set(o.map(x=>x.Service_Type__c).filter(Boolean))];
+mc('cs4',{type:'pie',data:{labels:sv,datasets:[{data:sv.map(s=>o.filter(x=>x.Service_Type__c===s).length),backgroundColor:CL}]},options:{responsive:true}},'obj:Pharma_Opportunity__c')}
+
+// ===== パイプライン分析 =====
+function rPipe(){const o=D.Pharma_Opportunity__c||[],ph=['リード','ヒアリング','提案','セキュリティ審査','契約交渉','成約'];
+const mx=Math.max(...ph.map(p=>o.filter(x=>x.Phase__c===p).length));
+const dl=['未接触','初回面談済','関心あり','検討中','推進者','ファン（KOL）'];
+const mxd=Math.max(...dl.map(l=>(D.Doctor__c||[]).filter(d=>d.Relationship_Level__c===l).length));
+return`<div class="card"><h3>商談ファネル</h3>${ph.map((p,i)=>{const c=o.filter(x=>x.Phase__c===p);const a=c.reduce((s,x)=>s+(x.Amount__c||0),0);const w=Math.max(pct(c.length,mx),15);return`<div class="funnel-row"><div class="funnel-label">${p}</div><div class="funnel-bar" style="width:${w}%;background:${CL[i]}">${c.length}件</div><div class="funnel-val">${fmt(a)}</div></div>`}).join('')}</div>
+<div class="card"><h3>ドクター関係構築ファネル</h3>${dl.map((l,i)=>{const c=(D.Doctor__c||[]).filter(d=>d.Relationship_Level__c===l);const w=Math.max(pct(c.length,mxd),15);return`<div class="funnel-row"><div class="funnel-label">${l}</div><div class="funnel-bar" style="width:${w}%;background:${CL[i]}">${c.length}名</div><div class="funnel-val"></div></div>`}).join('')}</div>
+<div class="grid grid-2"><div class="chart-box"><h4>検体パイプライン</h4><canvas id="cp1"></canvas></div><div class="chart-box"><h4>ゲノム案件状況</h4><canvas id="cp2"></canvas></div></div>`}
+function iPipe(){
+const ss=['受領待ち','受領済','QC中','QC合格','QC不合格','解析中','解析完了','レポート発行済'];
+mc('cp1',{type:'bar',data:{labels:ss,datasets:[{data:ss.map(s=>(D.Specimen__c||[]).filter(x=>x.Specimen_Status__c===s).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Specimen__c');
+const gs=['検体待ち','解析中','レポート作成中','レポート完了','納品済'];
+mc('cp2',{type:'bar',data:{labels:gs,datasets:[{data:gs.map(s=>(D.Genomic_Project__c||[]).filter(x=>x.Status__c===s).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Genomic_Project__c')}
+
+// ===== KPIダッシュボード =====
+function rKPI(){const docs=D.Doctor__c||[],kols=docs.filter(d=>d.Is_KOL__c),o=D.Pharma_Opportunity__c||[],won=o.filter(x=>x.Phase__c==='成約'),lost=o.filter(x=>x.Phase__c==='失注');
+const nowM=new Date().toISOString().slice(0,7);
+const vis=(D.Visit_Record__c||[]).filter(v=>(v.Visit_Date__c||'').startsWith(nowM)).length;
+const kr=pct(kols.length,docs.length),wr=pct(won.length,won.length+lost.length),tr=85,vr=pct(vis,50);
+const bar=(v,tgt,c)=>`<div class="pbar" style="margin-top:8px"><div class="fill" style="width:${Math.min(v,100)}%;background:${c}"></div></div><div style="font-size:10px;color:#999;margin-top:2px">目標:${tgt}%</div>`;
+return`<div class="grid grid-2">
+<div class="card"><h3>ドクターKOL化率</h3><div style="font-size:36px;font-weight:700;color:#0176d3;text-align:center;margin:16px 0">${kr}%</div>${bar(kr,20,'#0176d3')}<div style="text-align:center;font-size:12px;color:#888;margin-top:4px">${kols.length}名/${docs.length}名</div></div>
+<div class="card"><h3>商談成約率</h3><div style="font-size:36px;font-weight:700;color:#2ecc71;text-align:center;margin:16px 0">${wr}%</div>${bar(wr,30,'#2ecc71')}<div style="text-align:center;font-size:12px;color:#888;margin-top:4px">${won.length}件/${won.length+lost.length}件</div></div>
+<div class="card"><h3>検体TAT達成率</h3><div style="font-size:36px;font-weight:700;color:#f39c12;text-align:center;margin:16px 0">${tr}%</div>${bar(tr,90,'#f39c12')}</div>
+<div class="card"><h3>月間訪問達成率</h3><div style="font-size:36px;font-weight:700;color:#9b59b6;text-align:center;margin:16px 0">${vr}%</div>${bar(vr,100,'#9b59b6')}<div style="text-align:center;font-size:12px;color:#888;margin-top:4px">${vis}件/目標50件</div></div></div>`}
+
+// ===== MA活動レポート =====
+function rMA(){const ma=D.MA_Activity__c||[],msls=[...new Set(ma.map(m=>m.Assigned_MSL__c).filter(Boolean))];
+return`<div class="grid grid-3" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','MA_Activity__c')"><div class="kv">${ma.length}</div><div class="kl">MA活動総数</div></div>
+<div class="kpi-card" onclick="nav('obj','MA_Activity__c')"><div class="kv">${ma.filter(m=>m.Status__c==='実施済'||m.Status__c==='完了').length}</div><div class="kl">実施済・完了</div></div>
+<div class="kpi-card" onclick="nav('obj','MA_Activity__c')"><div class="kv">¥${ma.reduce((s,m)=>s+(m.Budget__c||0),0).toLocaleString()}万</div><div class="kl">予算合計</div></div></div>
+<div class="grid grid-2">
+<div class="chart-box"><h4>MSL別活動件数</h4><canvas id="cm1"></canvas></div>
+<div class="chart-box"><h4>MSL別予算消化</h4><canvas id="cm2"></canvas></div>
+<div class="chart-box"><h4>活動タイプ分布</h4><canvas id="cm3"></canvas></div>
+<div class="chart-box"><h4>コンプライアンス状況</h4><canvas id="cm4"></canvas></div></div>
+<div class="card" style="margin-top:16px"><h3>MSL別ステータス一覧</h3><table><thead><tr><th>MSL</th><th>件数</th><th>企画中</th><th>準備中</th><th>実施済</th><th>完了</th><th>予算計</th></tr></thead><tbody>
+${msls.map(m=>{const a=ma.filter(x=>x.Assigned_MSL__c===m);const bs=s=>a.filter(x=>x.Status__c===s).length;const tb=a.reduce((s,x)=>s+(x.Budget__c||0),0);return`<tr><td><strong>${m}</strong></td><td>${a.length}</td><td>${bs('企画中')}</td><td>${bs('準備中')}</td><td>${bs('実施済')}</td><td>${bs('完了')}</td><td>¥${tb.toLocaleString()}万</td></tr>`}).join('')}</tbody></table></div>
+<div class="card"><h3>全MA活動一覧</h3><table><thead><tr><th>活動名</th><th>種別</th><th>MSL</th><th>状態</th><th>日付</th><th>予算</th></tr></thead><tbody>
+${ma.sort((a,b)=>(b.Activity_Date__c||'').localeCompare(a.Activity_Date__c||'')).map(m=>`<tr onclick="sd('MA_Activity__c','${m.Id}')"><td>${m.Name}</td><td>${m.Activity_Type__c}</td><td><strong>${m.Assigned_MSL__c}</strong></td><td><span class="sb ${sc(m.Status__c)}">${m.Status__c}</span></td><td>${m.Activity_Date__c||'-'}</td><td>¥${(m.Budget__c||0).toLocaleString()}万</td></tr>`).join('')}</tbody></table></div>`}
+function iMA(){const ma=D.MA_Activity__c||[],msls=[...new Set(ma.map(m=>m.Assigned_MSL__c).filter(Boolean))];
+mc('cm1',{type:'bar',data:{labels:msls,datasets:[{label:'件数',data:msls.map(m=>ma.filter(a=>a.Assigned_MSL__c===m).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}},'obj:MA_Activity__c');
+mc('cm2',{type:'bar',data:{labels:msls,datasets:[{label:'万円',data:msls.map(m=>ma.filter(a=>a.Assigned_MSL__c===m).reduce((s,a)=>s+(a.Budget__c||0),0)),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:MA_Activity__c');
+const types=[...new Set(ma.map(m=>m.Activity_Type__c))];
+mc('cm3',{type:'doughnut',data:{labels:types,datasets:[{data:types.map(t=>ma.filter(m=>m.Activity_Type__c===t).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{font:{size:10}}}}}},'obj:MA_Activity__c');
+const cs=['承認済','確認中','未確認'];
+mc('cm4',{type:'bar',data:{labels:cs,datasets:[{data:cs.map(s=>ma.filter(m=>m.Compliance_Check__c===s).length),backgroundColor:['#2ecc71','#f39c12','#e74c3c']}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}}}},'obj:MA_Activity__c')}
+
+// ========================================================
+// SB TEMPUS SFA/CRM - Department Views
+// ========================================================
+
+// === 1. Visit Calendar ===
+var calMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+var calVisits=[];
+function renderVisitCalHTML(){var m=calMonth,y=m.getFullYear(),mo=m.getMonth(),ml=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+var h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><button class="btn sm sec" onclick="navCal(-1)">&larr; 前月</button><h3 style="margin:0">${y}年${ml[mo]}</h3><button class="btn sm sec" onclick="navCal(1)">次月 &rarr;</button></div>`;
+h+=`<div class="cal-grid"><div class="cal-hdr">日</div><div class="cal-hdr">月</div><div class="cal-hdr">火</div><div class="cal-hdr">水</div><div class="cal-hdr">木</div><div class="cal-hdr">金</div><div class="cal-hdr">土</div>`;
+var fd=new Date(y,mo,1).getDay(),ld=new Date(y,mo+1,0).getDate(),vs=calVisits;
+var pad=s=>String(s).padStart(2,'0');
+for(var i=0;i<fd;i++)h+=`<div class="cal-day other"></div>`;
+for(var d=1;d<=ld;d++){var ds=y+'-'+pad(mo+1)+'-'+pad(d);var dv=vs.filter(v=>v.Visit_Date__c===ds);
+h+=`<div class="cal-day" onclick="openNew('Visit_Record__c',{Visit_Date__c:'${ds}'})"><div style="font-weight:600;font-size:11px;margin-bottom:2px">${d}</div>`;
+dv.forEach(v=>{var cls=v.Meeting_Result__c==='好感触'?'cal-evt good':v.Meeting_Result__c==='保留'?'cal-evt hold':v.Meeting_Result__c==='再訪問要'?'cal-evt bad':'cal-evt';
+h+=`<div class="${cls}" onclick="event.stopPropagation();sd('Visit_Record__c','${v.Id}')" title="${dn(v.Doctor__c)}">${dn(v.Doctor__c).slice(0,4)}</div>`});
+h+=`</div>`}
+var rem=(fd+ld)%7;if(rem>0)for(var i=0;i<7-rem;i++)h+=`<div class="cal-day other"></div>`;
+return h+`</div></div>`}
+async function loadCalVisits(){
+var m=calMonth,y=m.getFullYear(),mo=m.getMonth();
+var pad=s=>String(s).padStart(2,'0');
+var from=y+'-'+pad(mo+1)+'-01';
+var to=y+'-'+pad(mo+1)+'-'+pad(new Date(y,mo+1,0).getDate());
+try{
+var reqs=[fetch('/api/data/Visit_Record__c?from='+from+'&to='+to+'&dateField=Visit_Date__c').then(r=>r.json())];
+if(!D.Doctor__c||!D.Doctor__c.length)reqs.push(fetch('/api/data/Doctor__c').then(r=>r.json()));
+var results=await Promise.all(reqs);
+calVisits=results[0].records||[];
+if(results[1])D.Doctor__c=results[1].records||[];
+}catch(e){
+calVisits=(D.Visit_Record__c||[]).filter(v=>{var d=v.Visit_Date__c||'';return d>=from&&d<=to});
+}
+}
+function rVisitCal(){return'<div style="text-align:center;padding:40px;color:#999">読み込み中...</div>'}
+function iVisitCal(){loadCalVisits().then(()=>{document.getElementById('C').innerHTML=renderVisitCalHTML()})}
+function navCal(d){calMonth=new Date(calMonth.getFullYear(),calMonth.getMonth()+d,1);document.getElementById('C').innerHTML='<div style="text-align:center;padding:40px;color:#999">読み込み中...</div>';loadCalVisits().then(()=>{document.getElementById('C').innerHTML=renderVisitCalHTML()})}
+
+// === 2. Doctor 360 View ===
+function rDoc360(){var docs=D.Doctor__c||[];
+var h=`<div class="card"><h3>ドクター360°ビュー</h3><select id="doc360sel" onchange="selDoc360()" style="width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px"><option value="">-- ドクターを選択 --</option>`;
+docs.forEach(d=>h+=`<option value="${d.Id}">${d.Name} (${d.Department__c||''})</option>`);
+h+=`</select></div><div id="doc360body"></div>`;return h}
+function iDoc360(){}
+function selDoc360(){var id=document.getElementById('doc360sel').value;if(!id){document.getElementById('doc360body').innerHTML='';return}
+var d=(D.Doctor__c||[]).find(r=>r.Id===id);if(!d)return;
+var vs=(D.Visit_Record__c||[]).filter(v=>v.Doctor__c===id).sort((a,b)=>(b.Visit_Date__c||'').localeCompare(a.Visit_Date__c||''));
+var sp=(D.Specimen__c||[]).filter(s=>s.Referring_Doctor__c===id);
+var ops=D.Pharma_Opportunity__c||[];
+var h=`<div class="card"><div class="grid grid-2"><div><h3 style="margin-bottom:8px">${d.Name}</h3>`;
+h+=`<div class="detail-field"><label>役職</label><div class="val">${d.Title__c||'-'}</div></div>`;
+h+=`<div class="detail-field"><label>診療科</label><div class="val">${d.Department__c||'-'}</div></div>`;
+h+=`<div class="detail-field"><label>所属医療機関</label><div class="val">${dn(d.Medical_Institution__c)}</div></div>`;
+h+=`<div class="detail-field"><label>関係構築度</label><div class="val"><span class="sb ${sc(d.Relationship_Level__c)}">${d.Relationship_Level__c}</span></div></div>`;
+h+=`</div><div>`;
+h+=`<div class="detail-field"><label>KOL</label><div class="val">${d.Is_KOL__c?'KOL':'-'}</div></div>`;
+h+=`<div class="detail-field"><label>KOLスコア</label><div class="val">${d.KOL_Score__c||0}</div></div>`;
+h+=`<div class="detail-field"><label>担当MR</label><div class="val">${d.Assigned_MR__c||'-'}</div></div>`;
+h+=`<div class="detail-field"><label>訪問回数</label><div class="val">${d.Visit_Count__c||0}</div></div>`;
+h+=`<div class="detail-field"><label>紹介検体数</label><div class="val">${d.Referred_Specimen_Count__c||0}</div></div>`;
+h+=`</div></div></div>`;
+// Visit history
+h+=`<div class="card"><h3>訪問履歴 (${vs.length}件)</h3><table><thead><tr><th>訪問番号</th><th>訪問日</th><th>目的</th><th>結果</th><th>次アクション</th></tr></thead><tbody>`;
+vs.forEach(v=>h+=`<tr onclick="sd('Visit_Record__c','${v.Id}')"><td>${v.Name}</td><td>${v.Visit_Date__c||'-'}</td><td>${v.Visit_Purpose__c||'-'}</td><td><span class="sb ${sc(v.Meeting_Result__c)}">${v.Meeting_Result__c||'-'}</span></td><td>${v.Next_Action__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;
+// Specimens
+h+=`<div class="card"><h3>関連検体</h3><table><thead><tr><th>検体ID</th><th>がん種</th><th>ステータス</th><th>パネル</th><th>受領日</th></tr></thead><tbody>`;
+sp.forEach(s=>h+=`<tr onclick="sd('Specimen__c','${s.Id}')"><td>${s.Name}</td><td>${s.Cancer_Type__c}</td><td><span class="sb ${sc(s.Specimen_Status__c)}">${s.Specimen_Status__c}</span></td><td>${s.Analysis_Panel__c||'-'}</td><td>${s.Received_Date__c||'-'}</td></tr>`);
+if(!sp.length)h+=`<tr><td colspan="5" style="color:#888">関連検体なし</td></tr>`;
+h+=`</tbody></table></div>`;
+// Pharma opportunities
+h+=`<div class="card"><h3>関連商談</h3><table><thead><tr><th>商談名</th><th>企業</th><th>フェーズ</th><th>金額</th></tr></thead><tbody>`;
+ops.slice(0,5).forEach(o=>h+=`<tr onclick="sd('Pharma_Opportunity__c','${o.Id}')"><td>${o.Name}</td><td>${o.Pharma_Company__c}</td><td><span class="sb ${sc(o.Phase__c)}">${o.Phase__c}</span></td><td>¥${(o.Amount__c||0).toLocaleString()}万</td></tr>`);
+h+=`</tbody></table></div>`;
+// Visit trend chart
+h+=`<div class="chart-box"><h4>訪問推移</h4><canvas id="doc360ch"></canvas></div>`;
+document.getElementById('doc360body').innerHTML=h;
+var mk=['2025-07','2025-08','2025-09','2025-10','2025-11','2025-12'],ml=['7月','8月','9月','10月','11月','12月'];
+mc('doc360ch',{type:'line',data:{labels:ml,datasets:[{label:'訪問数',data:mk.map(m=>vs.filter(v=>v.Visit_Date__c&&v.Visit_Date__c.startsWith(m)).length),borderColor:'#0176d3',backgroundColor:'rgba(1,118,211,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Visit_Record__c')}
+
+// === 3. Lab Dashboard ===
+function rLabDash(){var labs=D.Lab__c||[],sp=D.Specimen__c||[];
+var tot=sp.length,proc=sp.filter(s=>['QC中','QC合格','解析中'].includes(s.Specimen_Status__c)).length;
+var active=labs.filter(l=>l.Operation_Status__c==='通常稼働'||l.Operation_Status__c==='高負荷').length;
+var ur=labs.length?pct(active,labs.length):0;
+var h=`<div class="grid grid-4" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${tot}</div><div class="kl">総検体数</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('specimen-pipe')"><div class="kv">${proc}</div><div class="kl">処理中</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Lab__c')"><div class="kv">${active}/${labs.length}</div><div class="kl">稼働ラボ/全ラボ</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Lab__c')"><div class="kv">${ur}%</div><div class="kl">稼働率</div></div></div>`;
+h+=`<div class="grid grid-2"><div class="chart-box"><h4>ラボ別処理状況</h4><canvas id="labch1"></canvas></div>`;
+h+=`<div class="chart-box"><h4>検体ステータス分布</h4><canvas id="labch2"></canvas></div></div>`;
+h+=`<div class="card" style="margin-top:16px"><h3>Illumina Sequencer Management</h3><table><thead><tr><th>ラボ名</th><th>所在地</th><th>種別</th><th>稼働状態</th><th>月間容量</th><th>処理中</th><th>稼働率%</th></tr></thead><tbody>`;
+labs.forEach(l=>{var u=l.Monthly_Capacity__c?pct(l.Current_Processing__c||0,l.Monthly_Capacity__c):0;
+h+=`<tr onclick="sd('Lab__c','${l.Id}')"><td>${l.Name}</td><td>${l.Location__c||'-'}</td><td>${l.Lab_Type__c||'-'}</td><td><span class="sb ${sc(l.Operation_Status__c)}">${l.Operation_Status__c}</span></td><td>${l.Monthly_Capacity__c||0}</td><td>${l.Current_Processing__c||0}</td><td>${u}%</td></tr>`});
+h+=`</tbody></table></div>`;
+var pend=sp.filter(s=>['受領待ち','受領済'].includes(s.Specimen_Status__c)).sort((a,b)=>(a.Received_Date__c||'').localeCompare(b.Received_Date__c||''));
+h+=`<div class="card"><h3>検体キュー（待機中）</h3><table><thead><tr><th>検体ID</th><th>がん種</th><th>ステータス</th><th>受領日</th><th>パネル</th></tr></thead><tbody>`;
+pend.forEach(s=>h+=`<tr onclick="sd('Specimen__c','${s.Id}')"><td>${s.Name}</td><td>${s.Cancer_Type__c}</td><td><span class="sb ${sc(s.Specimen_Status__c)}">${s.Specimen_Status__c}</span></td><td>${s.Received_Date__c||'-'}</td><td>${s.Analysis_Panel__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;return h}
+function iLabDash(){var labs=D.Lab__c||[],sp=D.Specimen__c||[];
+mc('labch1',{type:'bar',data:{labels:labs.map(l=>l.Name),datasets:[{label:'処理中',data:labs.map(l=>l.Current_Processing__c||0),backgroundColor:'#0176d3'},{label:'容量',data:labs.map(l=>l.Monthly_Capacity__c||0),backgroundColor:'#e0e0e0'}]},options:{responsive:true,plugins:{legend:{position:'top'}}}},'obj:Lab__c');
+var ss=['受領待ち','受領済','QC中','QC合格','QC不合格','解析中','解析完了','レポート発行済'];
+mc('labch2',{type:'doughnut',data:{labels:ss,datasets:[{data:ss.map(s=>sp.filter(x=>x.Specimen_Status__c===s).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Specimen__c')}
+
+// === 4. Specimen Pipeline (Kanban) ===
+function rSpecPipe(){var sp=D.Specimen__c||[];
+var cols=['受領待ち','受領済','QC中','QC合格','解析中','解析完了','レポート発行済','QC不合格'];
+var h=`<div class="card"><h3>検体パイプライン</h3></div><div class="pipe-wrap">`;
+cols.forEach(c=>{var items=sp.filter(s=>s.Specimen_Status__c===c);
+h+=`<div class="pipe-col"><div class="pipe-col-hdr">${c} <span class="cnt" style="background:#0176d3;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px">${items.length}</span></div>`;
+items.forEach(s=>h+=`<div class="pipe-card" onclick="sd('Specimen__c','${s.Id}')"><strong>${s.Name}</strong><div style="font-size:11px;color:#555;margin-top:2px">${s.Cancer_Type__c}</div><div style="font-size:11px;color:#888">${s.Analysis_Panel__c||'-'}</div><div style="font-size:10px;color:#aaa">${s.Received_Date__c||'-'}</div></div>`);
+h+=`</div>`});
+return h+`</div>`}
+
+// === 5. Illumina Testing Flow ===
+function rTestFlow(){var sp=D.Specimen__c||[];
+var steps=[
+{n:'検体受領',st:['受領待ち','受領済']},{n:'バーコード付与',st:['受領済']},{n:'DNA/RNA抽出',st:['QC中']},
+{n:'QC',st:['QC中']},{n:'ライブラリ調製',st:['QC合格']},{n:'シーケンシング',st:['解析中']},
+{n:'データ解析',st:['解析中']},{n:'レポート作成',st:['解析完了']},{n:'完了',st:['レポート発行済']}];
+var h=`<div class="card"><h3>Illumina検査フロー</h3><div class="flow-steps">`;
+steps.forEach((s,i)=>{var cnt=sp.filter(x=>s.st.includes(x.Specimen_Status__c)).length;
+var cls=cnt>0?'flow-step active':'flow-step';
+h+=`<div class="${cls}"><div style="font-size:20px;font-weight:700;color:#0176d3">${cnt}</div><div style="font-size:11px">${s.n}</div></div>`;
+if(i<steps.length-1)h+=`<div class="flow-arr">&rarr;</div>`});
+h+=`</div></div>`;
+// Table per step
+h+=`<div class="card"><h3>ステージ別検体一覧</h3>`;
+steps.forEach(s=>{var items=sp.filter(x=>s.st.includes(x.Specimen_Status__c));
+if(!items.length)return;
+h+=`<h4 style="margin:12px 0 6px;font-size:13px;color:#555">${s.n} (${items.length}件)</h4><table><thead><tr><th>検体ID</th><th>がん種</th><th>パネル</th><th>ステータス</th><th>受領日</th></tr></thead><tbody>`;
+items.forEach(x=>h+=`<tr onclick="sd('Specimen__c','${x.Id}')"><td>${x.Name}</td><td>${x.Cancer_Type__c}</td><td>${x.Analysis_Panel__c||'-'}</td><td><span class="sb ${sc(x.Specimen_Status__c)}">${x.Specimen_Status__c}</span></td><td>${x.Received_Date__c||'-'}</td></tr>`);
+h+=`</tbody></table>`});
+return h+`</div>`}
+
+// === 6. Barcode Management ===
+function rBarcode(){var sp=D.Specimen__c||[];
+var h=`<div class="card"><h3>バーコード管理</h3><div style="display:flex;gap:8px;margin-bottom:12px"><input type="text" id="bcSearch" placeholder="バーコード/検体名で検索..." oninput="filtBC(this.value)" oncompositionstart="imeOn=true" oncompositionend="imeOn=false;filtBC(this.value)" onkeydown="if(!imeOn&&event.key==='Enter'){filtBC(this.value)}" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:13px"><button class="btn sm" onclick="filtBC(document.getElementById('bcSearch').value)" style="padding:8px 16px">🔍 検索</button></div></div>`;
+h+=`<div class="card"><table id="bcTbl"><thead><tr><th>バーコード</th><th>検体名</th><th>がん種</th><th>ステータス</th><th>受領日</th><th>パネル</th></tr></thead><tbody>`;
+sp.forEach((s,i)=>{var rd=s.Received_Date__c?s.Received_Date__c.replace(/-/g,''):'00000000';
+var bc='GMTOP-'+rd+'-'+String(i+1).padStart(4,'0');
+h+=`<tr class="bc-item" onclick="sd('Specimen__c','${s.Id}')"><td><span class="bc-code" style="font-family:monospace;font-weight:700;letter-spacing:1px">${bc}</span></td><td>${s.Name}</td><td>${s.Cancer_Type__c}</td><td><span class="sb ${sc(s.Specimen_Status__c)}">${s.Specimen_Status__c}</span></td><td>${s.Received_Date__c||'-'}</td><td>${s.Analysis_Panel__c||'-'}</td></tr>`});
+return h+`</tbody></table></div>`}
+function filtBC(q){if(imeOn)return;document.querySelectorAll('#bcTbl tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'})}
+
+// === 7. Monthly Test Report ===
+function rMonthly(){var sp=D.Specimen__c||[];
+var mks=['2025-07','2025-08','2025-09','2025-10','2025-11','2025-12'],mls=['7月','8月','9月','10月','11月','12月'];
+var mc_=mks.map(m=>sp.filter(s=>s.Received_Date__c&&s.Received_Date__c.startsWith(m)).length);
+var curM=mc_[mc_.length-1]||0,prevM=mc_[mc_.length-2]||0,ratio=prevM?Math.round(curM/prevM*100):0;
+var cumul=sp.length;
+var tatDays=sp.filter(s=>s.Received_Date__c&&s.Report_Date__c).map(s=>(new Date(s.Report_Date__c)-new Date(s.Received_Date__c))/(86400000));
+var avgTat=tatDays.length?Math.round(tatDays.reduce((a,b)=>a+b,0)/tatDays.length):14;
+var h=`<div class="grid grid-4" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${curM}</div><div class="kl">今月検査件数</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">${ratio}%</div><div class="kl">前月比</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${cumul}</div><div class="kl">累計件数</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">${avgTat}日</div><div class="kl">平均TAT</div></div></div>`;
+h+=`<div class="grid grid-2"><div class="chart-box"><h4>月次検査件数推移</h4><canvas id="mthch1"></canvas></div>`;
+h+=`<div class="chart-box"><h4>がん種別検査件数</h4><canvas id="mthch2"></canvas></div>`;
+h+=`<div class="chart-box"><h4>解析パネル別件数</h4><canvas id="mthch3"></canvas></div>`;
+h+=`<div class="chart-box"><h4>月次出件推移</h4><canvas id="mthch4"></canvas></div></div>`;
+return h}
+function iMonthly(){var sp=D.Specimen__c||[];
+var mks=['2025-07','2025-08','2025-09','2025-10','2025-11','2025-12'],mls=['7月','8月','9月','10月','11月','12月'];
+var mc_=mks.map(m=>sp.filter(s=>s.Received_Date__c&&s.Received_Date__c.startsWith(m)).length);
+var tgt=15;
+mc('mthch1',{type:'bar',data:{labels:mls,datasets:[{label:'件数',data:mc_,backgroundColor:'#0176d3'},{label:'目標',data:mls.map(()=>tgt),type:'line',borderColor:'#e74c3c',borderDash:[5,5],pointRadius:0,fill:false}]},options:{responsive:true,plugins:{legend:{position:'top'}}}},'obj:Specimen__c');
+var ct=[...new Set(sp.map(s=>s.Cancer_Type__c))];
+mc('mthch2',{type:'doughnut',data:{labels:ct,datasets:[{data:ct.map(c=>sp.filter(s=>s.Cancer_Type__c===c).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Specimen__c');
+var ap=[...new Set(sp.map(s=>s.Analysis_Panel__c).filter(Boolean))];
+mc('mthch3',{type:'bar',data:{labels:ap,datasets:[{label:'件数',data:ap.map(a=>sp.filter(s=>s.Analysis_Panel__c===a).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Specimen__c');
+var done=mks.map(m=>sp.filter(s=>s.Report_Date__c&&s.Report_Date__c.startsWith(m)).length);
+mc('mthch4',{type:'line',data:{labels:mls,datasets:[{label:'出件数',data:done,borderColor:'#2ecc71',backgroundColor:'rgba(46,204,113,.15)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Specimen__c')}
+
+// === 8. Specimen Review ===
+function rSpecReview(){var sp=D.Specimen__c||[];
+var rev=sp.filter(s=>s.Specimen_Status__c==='解析完了'||s.Specimen_Status__c==='レポート発行済');
+var left=rev,right=rev;
+var h=`<div class="card"><h3>検体レビュー</h3></div><div class="review-grid">`;
+// Left panel
+h+=`<div class="review-panel"><div class="card"><h3>東京大学（油谷チーム）レビュー</h3><div style="margin-bottom:8px;font-size:12px;color:#888">レビュー済: ${left.filter((_,i)=>i%2===0).length}件 / 全${left.length}件</div>`;
+h+=`<table><thead><tr><th>検体</th><th>がん種</th><th>パネル</th><th>ステータス</th><th>受領日</th><th>レビュー</th></tr></thead><tbody>`;
+left.forEach((s,i)=>h+=`<tr onclick="sd('Specimen__c','${s.Id}')"><td>${s.Name}</td><td>${s.Cancer_Type__c}</td><td>${s.Analysis_Panel__c||'-'}</td><td><span class="sb ${sc(s.Specimen_Status__c)}">${s.Specimen_Status__c}</span></td><td>${s.Received_Date__c||'-'}</td><td>${i%2===0?'<span style="color:#2ecc71">&#10003; レビュー済</span>':'<span style="color:#f39c12">&#9203; レビュー待ち</span>'}</td></tr>`);
+h+=`</tbody></table></div></div>`;
+// Right panel
+h+=`<div class="review-panel"><div class="card"><h3>US TEMPUS レビュー</h3><div style="margin-bottom:8px;font-size:12px;color:#888">レビュー済: ${right.filter((_,i)=>i%2===1).length}件 / 全${right.length}件</div>`;
+h+=`<table><thead><tr><th>検体</th><th>がん種</th><th>パネル</th><th>ステータス</th><th>受領日</th><th>レビュー</th></tr></thead><tbody>`;
+right.forEach((s,i)=>h+=`<tr onclick="sd('Specimen__c','${s.Id}')"><td>${s.Name}</td><td>${s.Cancer_Type__c}</td><td>${s.Analysis_Panel__c||'-'}</td><td><span class="sb ${sc(s.Specimen_Status__c)}">${s.Specimen_Status__c}</span></td><td>${s.Received_Date__c||'-'}</td><td>${i%2===1?'<span style="color:#2ecc71">&#10003; レビュー済</span>':'<span style="color:#f39c12">&#9203; レビュー待ち</span>'}</td></tr>`);
+h+=`</tbody></table></div></div></div>`;
+return h}
+
+// === 9. PMDA Dashboard ===
+function rPMDA(){var gp=D.Genomic_Project__c||[],sp=D.Specimen__c||[];
+var stages=['非臨床試験','治験Phase1','治験Phase2','治験Phase3','承認申請','PMDA審査','承認'];
+var approvedIdx=6;
+var h=`<div class="card"><h3>PMDA規制パイプライン - GenMineTOP</h3><div class="flow-steps">`;
+stages.forEach((s,i)=>{var cls=i<approvedIdx?'flow-step done':i===approvedIdx?'flow-step active':'flow-step';
+h+=`<div class="${cls}"><div style="font-size:11px">${s}</div>${i===approvedIdx?'<div style="font-size:10px;color:#2ecc71;font-weight:700">承認済</div>':'<div style="font-size:10px;color:#2ecc71">&#10003;</div>'}</div>`;
+if(i<stages.length-1)h+=`<div class="flow-arr">&rarr;</div>`});
+h+=`</div></div>`;
+var done=sp.filter(s=>s.Specimen_Status__c==='レポート発行済').length;
+h+=`<div class="grid grid-4" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card"><div class="kv">1</div><div class="kl">承認済CDx</div><div class="ks">GenMineTOP</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">0</div><div class="kl">申請中</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">0</div><div class="kl">審査中</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Specimen__c')"><div class="kv">${done}</div><div class="kl">年間検査実績</div></div></div>`;
+h+=`<div class="grid grid-2"><div class="chart-box"><h4>月次PMDA提出件数</h4><canvas id="pmdach1"></canvas></div>`;
+h+=`<div class="chart-box"><h4>ゲノム案件ステータス</h4><canvas id="pmdach2"></canvas></div></div>`;
+h+=`<div class="card" style="margin-top:16px"><h3>規制関連プロジェクト</h3><table><thead><tr><th>プロジェクト</th><th>がん種</th><th>ステータス</th><th>サンプル数</th><th>規制区分</th></tr></thead><tbody>`;
+gp.forEach(g=>h+=`<tr onclick="sd('Genomic_Project__c','${g.Id}')"><td>${g.Name}</td><td>${g.Cancer_Type__c}</td><td><span class="sb ${sc(g.Status__c)}">${g.Status__c}</span></td><td>${g.Sample_Count__c||0}</td><td>CDx関連</td></tr>`);
+h+=`</tbody></table></div>`;return h}
+function iPMDA(){var mls=['7月','8月','9月','10月','11月','12月'];
+mc('pmdach1',{type:'line',data:{labels:mls,datasets:[{label:'提出件数',data:[2,3,1,4,3,5],borderColor:'#0176d3',backgroundColor:'rgba(1,118,211,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Genomic_Project__c');
+var gs=['検体待ち','解析中','レポート作成中','レポート完了','納品済'];
+mc('pmdach2',{type:'bar',data:{labels:gs,datasets:[{data:gs.map(s=>(D.Genomic_Project__c||[]).filter(x=>x.Status__c===s).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Genomic_Project__c')}
+
+// === 10. LSI Distributor Dashboard ===
+function rLSI(){var ops=D.Pharma_Opportunity__c||[],mi=D.Medical_Institution__c||[];
+var lsiOps=ops.filter((_,i)=>i<Math.ceil(ops.length/2));
+var lsiAmt=lsiOps.reduce((s,o)=>s+(o.Amount__c||0),0);
+var lsiInst=mi.filter((_,i)=>i<Math.ceil(mi.length/2));
+var h=`<div class="grid grid-4" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${lsiOps.length}</div><div class="kl">LSI経由案件数</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(lsiAmt)}</div><div class="kl">LSI経由金額</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Medical_Institution__c')"><div class="kv">${lsiInst.length}</div><div class="kl">LSI担当施設</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">8</div><div class="kl">代理店スタッフ数</div></div></div>`;
+h+=`<div class="grid grid-2"><div class="chart-box"><h4>LSI月次売上推移</h4><canvas id="lsich1"></canvas></div>`;
+h+=`<div class="chart-box"><h4>LSIテリトリ別実績</h4><canvas id="lsich2"></canvas></div></div>`;
+h+=`<div class="card" style="margin-top:16px"><h3>LSI案件一覧</h3><table><thead><tr><th>商談名</th><th>企業</th><th>フェーズ</th><th>金額</th><th>担当</th></tr></thead><tbody>`;
+lsiOps.forEach(o=>h+=`<tr onclick="sd('Pharma_Opportunity__c','${o.Id}')"><td>${o.Name}</td><td>${o.Pharma_Company__c}</td><td><span class="sb ${sc(o.Phase__c)}">${o.Phase__c}</span></td><td>¥${(o.Amount__c||0).toLocaleString()}万</td><td>${o.Owner_Name__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;
+h+=`<div class="card"><h3>LSI担当施設一覧</h3><table><thead><tr><th>施設名</th><th>都道府県</th><th>種別</th><th>導入状況</th><th>病床数</th></tr></thead><tbody>`;
+lsiInst.forEach(m=>h+=`<tr onclick="sd('Medical_Institution__c','${m.Id}')"><td>${m.Name}</td><td>${m.Prefecture__c||'-'}</td><td>${m.Facility_Type__c||'-'}</td><td><span class="sb ${sc(m.Adapter_Status__c)}">${m.Adapter_Status__c||'-'}</span></td><td>${m.Bed_Count__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;return h}
+function iLSI(){var mls=['7月','8月','9月','10月','11月','12月'];
+mc('lsich1',{type:'line',data:{labels:mls,datasets:[{label:'万円',data:[1200,1500,1800,2200,2000,2500],borderColor:'#0176d3',backgroundColor:'rgba(1,118,211,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Pharma_Opportunity__c');
+var prefs=[...new Set((D.Medical_Institution__c||[]).map(m=>m.Prefecture__c).filter(Boolean))];
+var ops=D.Pharma_Opportunity__c||[];
+mc('lsich2',{type:'bar',data:{labels:prefs.length?prefs:['東京都','大阪府','京都府','神奈川県','福岡県'],datasets:[{label:'件数',data:prefs.length?prefs.map((_,i)=>Math.floor(Math.random()*5)+1):[3,2,1,2,1],backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Medical_Institution__c')}
+
+// === 11. Seminar Dashboard ===
+function rSemDash(){var sem=D.Seminar__c||[],att=D.Seminar_Attendee__c||[];
+var now='2025-12',thisMo=sem.filter(s=>s.Event_Date__c&&s.Event_Date__c.startsWith(now)).length;
+var totAtt=sem.reduce((s,x)=>s+(x.Attendee_Count__c||0),0)+att.length;
+var totCost=sem.reduce((s,x)=>s+((x.Speaker_Fee__c||0)+(x.Operation_Cost__c||0)),0);
+var budgetAll=sem.length*500;
+var br=budgetAll?pct(totCost,budgetAll):0;
+var h=`<div class="grid grid-4" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card" onclick="nav('obj','Seminar__c')"><div class="kv">${sem.length}</div><div class="kl">勉強会総数</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('seminar-cal')"><div class="kv">${thisMo}</div><div class="kl">今月開催</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('seminar-attendees')"><div class="kv">${totAtt}</div><div class="kl">総参加者</div></div>`;
+h+=`<div class="kpi-card"><div class="kv">${br}%</div><div class="kl">予算消化率</div></div></div>`;
+h+=`<div class="grid grid-3"><div class="chart-box"><h4>月次開催数推移</h4><canvas id="semch1"></canvas></div>`;
+h+=`<div class="chart-box"><h4>形式別分布</h4><canvas id="semch2"></canvas></div>`;
+h+=`<div class="chart-box"><h4>進捗別状況</h4><canvas id="semch3"></canvas></div></div>`;
+h+=`<div class="card" style="margin-top:16px"><h3>勉強会一覧</h3><table><thead><tr><th>名称</th><th>形式</th><th>開催日</th><th>会場</th><th>参加人数</th><th>状態</th></tr></thead><tbody>`;
+sem.sort((a,b)=>(b.Event_Date__c||'').localeCompare(a.Event_Date__c||'')).forEach(s=>{
+var attCnt=(s.Attendee_Count__c||0)+(att.filter(a=>a.Seminar__c===s.Id).length);
+h+=`<tr onclick="sd('Seminar__c','${s.Id}')"><td>${s.Name}</td><td>${s.Event_Format__c||'-'}</td><td>${s.Event_Date__c||'-'}</td><td>${s.Venue__c||'-'}</td><td>${attCnt}</td><td><span class="sb ${sc(s.Progress_Status__c)}">${s.Progress_Status__c}</span></td></tr>`});
+h+=`</tbody></table></div>`;return h}
+function iSemDash(){var sem=D.Seminar__c||[];
+var mks=['2025-07','2025-08','2025-09','2025-10','2025-11','2025-12'],mls=['7月','8月','9月','10月','11月','12月'];
+mc('semch1',{type:'bar',data:{labels:mls,datasets:[{label:'開催数',data:mks.map(m=>sem.filter(s=>s.Event_Date__c&&s.Event_Date__c.startsWith(m)).length),backgroundColor:'#0176d3'}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Seminar__c');
+var fmts=['院内勉強会','Web講演会','ハンズオンセミナー','学術講演会','地域連携セミナー','ランチョンセミナー'];
+var fmtMap={'院内勉強会':'オンサイト','Web講演会':'オンライン','ハンズオンセミナー':'オンサイト','学術講演会':'オンサイト','地域連携セミナー':'ハイブリッド','ランチョンセミナー':'オンサイト'};
+var cats=['オンサイト','オンライン','ハイブリッド'];
+mc('semch2',{type:'doughnut',data:{labels:cats,datasets:[{data:cats.map(c=>sem.filter(s=>fmtMap[s.Event_Format__c]===c).length),backgroundColor:['#0176d3','#2ecc71','#f39c12']}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Seminar__c');
+var ps=['企画立案','講師確定','準備中','開催済'];
+mc('semch3',{type:'bar',data:{labels:ps,datasets:[{label:'件数',data:ps.map(p=>sem.filter(s=>s.Progress_Status__c===p).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Seminar__c')}
+
+// === 12. Seminar Calendar ===
+var semCalMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+var calSeminars=[];
+function renderSemCalHTML(){var m=semCalMonth,y=m.getFullYear(),mo=m.getMonth(),ml=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+var h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><button class="btn sm sec" onclick="navSemCal(-1)">&larr; 前月</button><h3 style="margin:0">${y}年${ml[mo]}</h3><button class="btn sm sec" onclick="navSemCal(1)">次月 &rarr;</button></div>`;
+h+=`<div class="cal-grid"><div class="cal-hdr">日</div><div class="cal-hdr">月</div><div class="cal-hdr">火</div><div class="cal-hdr">水</div><div class="cal-hdr">木</div><div class="cal-hdr">金</div><div class="cal-hdr">土</div>`;
+var fd=new Date(y,mo,1).getDay(),ld=new Date(y,mo+1,0).getDate(),sem=calSeminars;
+var pad=s=>String(s).padStart(2,'0');
+for(var i=0;i<fd;i++)h+=`<div class="cal-day other"></div>`;
+for(var d=1;d<=ld;d++){var ds=y+'-'+pad(mo+1)+'-'+pad(d);var dv=sem.filter(s=>s.Event_Date__c===ds);
+h+=`<div class="cal-day" onclick="openNew('Seminar__c',{Event_Date__c:'${ds}'})"><div style="font-weight:600;font-size:11px;margin-bottom:2px">${d}</div>`;
+dv.forEach(s=>{var cls=s.Progress_Status__c==='開催済'||s.Progress_Status__c==='完了'?'cal-evt good':s.Progress_Status__c==='準備中'||s.Progress_Status__c==='案内配信済'||s.Progress_Status__c==='講師確定'||s.Progress_Status__c==='会場・日程調整中'?'cal-evt hold':s.Progress_Status__c==='企画立案'||s.Progress_Status__c==='講師打診中'?'cal-evt bad':'cal-evt';
+h+=`<div class="${cls}" onclick="event.stopPropagation();sd('Seminar__c','${s.Id}')" title="${s.Name}">${s.Name.slice(0,6)}</div>`});
+h+=`</div>`}
+var rem=(fd+ld)%7;if(rem>0)for(var i=0;i<7-rem;i++)h+=`<div class="cal-day other"></div>`;
+return h+`</div></div>`}
+async function loadCalSeminars(){
+var m=semCalMonth,y=m.getFullYear(),mo=m.getMonth();
+var pad=s=>String(s).padStart(2,'0');
+var from=y+'-'+pad(mo+1)+'-01';
+var to=y+'-'+pad(mo+1)+'-'+pad(new Date(y,mo+1,0).getDate());
+try{var resp=await fetch('/api/data/Seminar__c?from='+from+'&to='+to+'&dateField=Event_Date__c').then(r=>r.json());calSeminars=resp.records||[]}catch(e){calSeminars=(D.Seminar__c||[]).filter(s=>{var d=s.Event_Date__c||'';return d>=from&&d<=to})}
+}
+function rSemCal(){return'<div style="text-align:center;padding:40px;color:#999">読み込み中...</div>'}
+function iSemCal(){loadCalSeminars().then(()=>{document.getElementById('C').innerHTML=renderSemCalHTML()})}
+function navSemCal(d){semCalMonth=new Date(semCalMonth.getFullYear(),semCalMonth.getMonth()+d,1);document.getElementById('C').innerHTML='<div style="text-align:center;padding:40px;color:#999">読み込み中...</div>';loadCalSeminars().then(()=>{document.getElementById('C').innerHTML=renderSemCalHTML()})}
+
+// === 13. Bento Management ===
+function rBento(){var bo=D.Bento_Order__c||[],sem=D.Seminar__c||[];
+var tot=bo.length,now='2025-12',thisM=bo.filter(b=>b.Order_Date__c&&b.Order_Date__c.startsWith(now)).length;
+var totAmt=bo.reduce((s,b)=>s+(b.Amount__c||0),0);
+var h=`<div class="grid grid-3" style="margin-bottom:20px">`;
+h+=`<div class="kpi-card" onclick="nav('obj','Bento_Order__c')"><div class="kv">${tot}</div><div class="kl">総注文数</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Bento_Order__c')"><div class="kv">${thisM}</div><div class="kl">今月注文</div></div>`;
+h+=`<div class="kpi-card" onclick="nav('obj','Bento_Order__c')"><div class="kv">¥${totAmt.toLocaleString()}</div><div class="kl">合計金額</div></div></div>`;
+h+=`<div style="margin-bottom:12px"><button class="btn" onclick="openNew('Bento_Order__c')">+ 新規弁当注文</button></div>`;
+// Group by seminar
+var semIds=[...new Set(bo.map(b=>b.Seminar__c).filter(Boolean))];
+semIds.forEach(sid=>{var s=sem.find(x=>x.Id===sid);var orders=bo.filter(b=>b.Seminar__c===sid);
+var semName=s?s.Name:dn(sid);var semDate=s?s.Event_Date__c:'';var semVenue=s?s.Venue__c:'';
+var subQty=orders.reduce((a,b)=>a+(b.Quantity__c||0),0);
+var subAmt=orders.reduce((a,b)=>a+(b.Amount__c||0),0);
+h+=`<div class="card"><h3>${semName}</h3><div style="font-size:12px;color:#888;margin-bottom:8px">${semDate?'開催日: '+semDate:''} ${semVenue?'/ 会場: '+semVenue:''}</div>`;
+h+=`<table><thead><tr><th>注文名</th><th>メニュー</th><th>数量</th><th>業者</th><th>金額</th><th>ステータス</th></tr></thead><tbody>`;
+orders.forEach(o=>h+=`<tr onclick="sd('Bento_Order__c','${o.Id}')"><td>${o.Name}</td><td>${o.Menu_Type__c||'-'}</td><td>${o.Quantity__c||0}</td><td>${o.Vendor__c||'-'}</td><td>¥${(o.Amount__c||0).toLocaleString()}</td><td><span class="sb ${sc(o.Status__c)}">${o.Status__c||'-'}</span></td></tr>`);
+h+=`</tbody></table><div style="text-align:right;font-size:12px;color:#555;margin-top:6px">小計: ${subQty}食 / ¥${subAmt.toLocaleString()}</div></div>`});
+// Unlinked orders
+var unlinked=bo.filter(b=>!b.Seminar__c);
+if(unlinked.length){h+=`<div class="card"><h3>セミナー未紐付</h3><table><thead><tr><th>注文名</th><th>メニュー</th><th>数量</th><th>業者</th><th>金額</th><th>ステータス</th></tr></thead><tbody>`;
+unlinked.forEach(o=>h+=`<tr onclick="sd('Bento_Order__c','${o.Id}')"><td>${o.Name}</td><td>${o.Menu_Type__c||'-'}</td><td>${o.Quantity__c||0}</td><td>${o.Vendor__c||'-'}</td><td>¥${(o.Amount__c||0).toLocaleString()}</td><td><span class="sb ${sc(o.Status__c)}">${o.Status__c||'-'}</span></td></tr>`);
+h+=`</tbody></table></div>`}
+return h}
+
+// === 14. Seminar Registration ===
+function rSemReg(){var sem=D.Seminar__c||[],att=D.Seminar_Attendee__c||[];
+var h=`<div class="card" style="max-width:700px;margin:0 auto"><h3 style="text-align:center;font-size:18px;margin-bottom:16px">セミナー参加登録</h3>`;
+h+=`<div class="form-group"><label>セミナー選択</label><select id="regSemSel" onchange="updRegInfo()" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:13px"><option value="">-- セミナーを選択 --</option>`;
+sem.forEach(s=>h+=`<option value="${s.Id}">${s.Name} (${s.Event_Date__c||''})</option>`);
+h+=`</select></div><div id="regSemInfo"></div>`;
+h+=`<div class="form-group"><label>お名前</label><input type="text" id="regName" placeholder="山田太郎"></div>`;
+h+=`<div class="form-group"><label>メールアドレス</label><input type="email" id="regEmail" placeholder="example@email.com"></div>`;
+h+=`<div class="form-group"><label>所属</label><input type="text" id="regAffil" placeholder="所属機関・企業名"></div>`;
+h+=`<div class="form-group"><label>専門分野</label><input type="text" id="regSpec" placeholder="専門分野"></div>`;
+h+=`<button class="btn" onclick="submitReg()" style="width:100%;padding:10px;font-size:14px">登録する</button></div>`;
+h+=`<div class="card" style="max-width:700px;margin:16px auto" id="regAttList"><h3>参加者一覧</h3><p style="color:#888;font-size:12px">セミナーを選択してください</p></div>`;
+return h}
+function updRegInfo(){var id=document.getElementById('regSemSel').value;
+if(!id){document.getElementById('regSemInfo').innerHTML='';document.getElementById('regAttList').innerHTML='<h3>参加者一覧</h3><p style="color:#888;font-size:12px">セミナーを選択してください</p>';return}
+var s=(D.Seminar__c||[]).find(x=>x.Id===id);if(!s)return;
+document.getElementById('regSemInfo').innerHTML=`<div style="background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:12px;font-size:13px"><strong>${s.Name}</strong><br>開催日: ${s.Event_Date__c||'-'} / 会場: ${s.Venue__c||'-'} / 形式: ${s.Event_Format__c||'-'}</div>`;
+var att=(D.Seminar_Attendee__c||[]).filter(a=>a.Seminar__c===id);
+var h=`<h3>参加者一覧 (${att.length}名)</h3><table><thead><tr><th>名前</th><th>メール</th><th>所属</th><th>専門</th><th>状況</th></tr></thead><tbody>`;
+att.forEach(a=>h+=`<tr><td>${a.Name}</td><td>${a.Email__c||'-'}</td><td>${a.Affiliation__c||'-'}</td><td>${a.Specialty__c||'-'}</td><td><span class="sb ${sc(a.Attendance_Status__c)}">${a.Attendance_Status__c||'-'}</span></td></tr>`);
+if(!att.length)h+=`<tr><td colspan="5" style="color:#888">参加者なし</td></tr>`;
+document.getElementById('regAttList').innerHTML=h+`</tbody></table>`}
+function submitReg(){var sid=document.getElementById('regSemSel').value;
+var nm=document.getElementById('regName').value,em=document.getElementById('regEmail').value;
+var af=document.getElementById('regAffil').value,sp=document.getElementById('regSpec').value;
+if(!sid||!nm||!em){toast('セミナー・名前・メールは必須です','error');return}
+var body={Name:nm,Email__c:em,Affiliation__c:af,Specialty__c:sp,Seminar__c:sid,Attendance_Status__c:'登録済',Registration_Date__c:new Date().toISOString().slice(0,10)};
+fetch('/api/data/Seminar_Attendee__c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+.then(r=>{if(!r.ok)throw new Error('登録失敗');return r.json()})
+.then(res=>{body.Id=res.Id;if(!D.Seminar_Attendee__c)D.Seminar_Attendee__c=[];D.Seminar_Attendee__c.push(body);
+toast('参加登録が完了しました');document.getElementById('regName').value='';document.getElementById('regEmail').value='';
+document.getElementById('regAffil').value='';document.getElementById('regSpec').value='';updRegInfo()})
+.catch(e=>toast(e.message,'error'))}
+
+// === 15. Quote Estimation System ===
+function rQuote(){
+var items=[
+{d:'検体処理費',u:50000,unit:'/検体'},{d:'遺伝子解析費 - XT(組織)',u:300000,unit:''},
+{d:'遺伝子解析費 - xF(リキッド)',u:250000,unit:''},{d:'レポート作成費',u:80000,unit:''},
+{d:'データ管理費',u:30000,unit:'/月'},{d:'技術サポート費',u:100000,unit:'/年'}];
+var h=`<div class="card"><h3>GenMineTOP 積算見積</h3>`;
+h+=`<table><thead><tr><th>項目</th><th>単価</th><th>数量</th><th>小計</th></tr></thead><tbody>`;
+items.forEach((it,i)=>h+=`<tr class="quote-line"><td>${it.d} <span style="color:#888;font-size:10px">${it.unit}</span></td><td>¥${it.u.toLocaleString()}</td><td><input type="number" id="qq${i}" value="0" min="0" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:3px" onchange="calcQuote()" oninput="calcQuote()"></td><td id="qs${i}" style="text-align:right;font-weight:600">¥0</td></tr>`);
+h+=`</tbody></table>`;
+h+=`<div style="border-top:2px solid #e0e0e0;padding-top:12px;margin-top:12px">`;
+h+=`<div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:8px"><span>小計</span><span id="qSubtotal" style="font-weight:700">¥0</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span>値引率</span><span><input type="number" id="qDisc" value="0" min="0" max="100" style="width:60px;padding:4px;border:1px solid #ccc;border-radius:3px" onchange="calcQuote()" oninput="calcQuote()"> %</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#0176d3"><span>合計（税抜）</span><span id="qTotal">¥0</span></div>`;
+h+=`<div style="display:flex;justify-content:space-between;font-size:14px;color:#555;margin-top:4px"><span>合計（税込10%）</span><span id="qTotalTax">¥0</span></div>`;
+h+=`</div></div>`;return h}
+function calcQuote(){
+var items=[50000,300000,250000,80000,30000,100000];var sub=0;
+items.forEach((u,i)=>{var q=Number(document.getElementById('qq'+i).value)||0;var s=u*q;sub+=s;
+document.getElementById('qs'+i).textContent='¥'+s.toLocaleString()});
+document.getElementById('qSubtotal').textContent='¥'+sub.toLocaleString();
+var disc=Number(document.getElementById('qDisc').value)||0;
+var total=Math.round(sub*(1-disc/100));
+document.getElementById('qTotal').textContent='¥'+total.toLocaleString();
+document.getElementById('qTotalTax').textContent='¥'+Math.round(total*1.1).toLocaleString()}
+
+// === 16. Facility Map ===
+var facMap=null,facMarkers=[];
+function rFacMap(){
+var h=`<div class="card"><h3>施設マップ</h3></div>`;
+h+=`<div id="facMapEl" style="height:500px;border-radius:6px;margin-bottom:16px"></div>`;
+h+=`<div class="card" style="margin-bottom:8px"><div style="font-size:12px"><span style="display:inline-block;width:12px;height:12px;background:#2563eb;border-radius:50%;margin-right:4px;vertical-align:middle"></span> 医療機関 <span style="display:inline-block;width:12px;height:12px;background:#e74c3c;border-radius:50%;margin-right:4px;margin-left:12px;vertical-align:middle"></span> セミナー会場</div></div>`;
+var mi=D.Medical_Institution__c||[];
+h+=`<div class="card"><h3>施設一覧</h3><table><thead><tr><th>施設名</th><th>種別</th><th>都道府県</th><th>導入状況</th></tr></thead><tbody>`;
+mi.forEach(m=>h+=`<tr onclick="sd('Medical_Institution__c','${m.Id}')"><td>${m.Name}</td><td>${m.Facility_Type__c||'-'}</td><td>${m.Prefecture__c||'-'}</td><td><span class="sb ${sc(m.Adapter_Status__c)}">${m.Adapter_Status__c||'-'}</span></td></tr>`);
+h+=`</tbody></table></div>`;return h}
+function iFacMap(){
+var el=document.getElementById('facMapEl');if(!el)return;
+facMap=L.map(el).setView([35.68,139.69],6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(facMap);
+setTimeout(function(){facMap.invalidateSize()},200);
+facMarkers=[];
+var blueIcon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#2563eb;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+var redIcon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#e74c3c;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+(D.Medical_Institution__c||[]).forEach(m=>{if(!m.Latitude__c||!m.Longitude__c)return;
+var mk=L.marker([m.Latitude__c,m.Longitude__c],{icon:blueIcon}).addTo(facMap).bindPopup(`<b>${m.Name}</b><br>${m.Facility_Type__c||''}<br>${m.Prefecture__c||''}<br><span class="sb ${sc(m.Adapter_Status__c)}">${m.Adapter_Status__c||''}</span>`);
+facMarkers.push(mk)});
+(D.Seminar__c||[]).forEach(s=>{if(!s.Venue_Latitude__c||!s.Venue_Longitude__c)return;
+var mk=L.marker([s.Venue_Latitude__c,s.Venue_Longitude__c],{icon:redIcon}).addTo(facMap).bindPopup(`<b>${s.Name}</b><br>${s.Venue__c||''}<br>${s.Event_Date__c||''}<br><span class="sb ${sc(s.Progress_Status__c)}">${s.Progress_Status__c||''}</span>`);
+facMarkers.push(mk)});
+if(facMarkers.length){var g=L.featureGroup(facMarkers);facMap.fitBounds(g.getBounds().pad(0.1))}}
+
+
+// ===== Generic Object List =====
+function rObj(obj){
+  const recs=D[obj]||[];const keys=OK[obj]||['Name'];const kf=KF[obj];
+  const ps=pageState[obj]||{};
+  const totalSize=ps.totalSize||recs.length;
+  const page=ps.page||1;
+  const pageCount=ps.pageCount||1;
+  const searchVal=ps.q||'';
+  let h=`<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="text" id="searchInput" placeholder="検索..." value="${searchVal}" oninput="filt(this.value)" oncompositionstart="imeOn=true" oncompositionend="imeOn=false;filt(this.value)" onkeydown="if(!imeOn&&event.key==='Enter'){clearTimeout(searchTimeout);filt(this.value)}" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:13px"><button class="btn sm" onclick="clearTimeout(searchTimeout);filt(document.getElementById('searchInput').value)" style="padding:8px 16px">🔍 検索</button><span style="color:#888;font-size:12px">${totalSize}件</span>`;
+  if(kf)h+=`<button class="btn sm sec" onclick="tKan('${obj}','${kf}')">カンバン</button>`;
+  h+=`<button class="btn sm" id="btnNew" data-obj="${obj}">+ 新規作成</button>`;
+  h+=`</div><div id="kan"></div><table id="tbl"><thead><tr>`;
+  keys.forEach(k=>h+=`<th style="cursor:pointer" onclick="sortCol('${obj}','${k}')">${fl(k)}</th>`);
+  h+=`</tr></thead><tbody>`;
+  recs.forEach(r=>{h+=`<tr onclick="sd('${obj}','${r.Id}')">`;keys.forEach(k=>{let v=r[k];
+  if(['Doctor__c','Medical_Institution__c','Seminar__c','AccountId','ContactId','OpportunityId','CampaignId','OwnerId','Product2Id','WhoId','WhatId','ParentId'].includes(k))v=dn(v);
+  if(['Amount__c','Budget__c','Amount','UnitPrice','TotalPrice','BudgetedCost','ActualCost','ExpectedRevenue','Subtotal','Tax','GrandTotal','TotalAmount','AnnualRevenue','Speaker_Fee__c','Operation_Cost__c'].includes(k))v=v!=null?'¥'+Number(v).toLocaleString():'-';
+  if(k==='Is_KOL__c')v=v?'⭐':'-';if(typeof v==='boolean')v=v?'✓':'-';
+  const isSt=['Phase__c','Status__c','Specimen_Status__c','Adapter_Status__c','Relationship_Level__c','Meeting_Result__c','Progress_Status__c','Operation_Status__c','Compliance_Check__c','Attendance_Status__c','StageName','Status','Priority','Type','ForecastCategory','Origin','Role','Family'].includes(k);
+  h+=isSt&&v?`<td><span class="sb ${sc(v)}">${v}</span></td>`:`<td>${v!=null?v:'-'}</td>`});h+=`</tr>`});
+  h+=`</tbody></table>`;
+  // Pagination controls
+  if(pageCount>1){
+    h+=`<div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;padding:8px">`;
+    h+=`<button class="btn sm sec" onclick="gotoPage('${obj}',${page-1})" ${page<=1?'disabled':''}>← 前へ</button>`;
+    h+=`<span style="color:#666;font-size:13px">ページ ${page} / ${pageCount}</span>`;
+    h+=`<button class="btn sm sec" onclick="gotoPage('${obj}',${page+1})" ${page>=pageCount?'disabled':''}>次へ →</button>`;
+    h+=`</div>`;
+  }
+  return h;
+}
+async function gotoPage(obj,page){
+  if(page<1)return;
+  const ps=pageState[obj]||{};
+  if(ps.pageCount&&page>ps.pageCount)return;
+  await loadPage(obj,page);
+  R();
+}
+function sortCol(obj,field){
+  const ps=pageState[obj]||{};
+  const newDir=(ps.sortBy===field&&ps.sortDir==='ASC')?'DESC':'ASC';
+  loadPage(obj,1,{sortBy:field,sortDir:newDir}).then(()=>R());
+}
+let searchTimeout;
+var imeOn=false;
+function filt(q){
+  clearTimeout(searchTimeout);
+  if(imeOn)return;
+  searchTimeout=setTimeout(()=>{
+    const ps=pageState[co]||{};
+    ps.q=q;
+    loadPage(co,1,{q:q}).then(()=>R());
+  },300);
+}
+function tKan(obj,field){const a=document.getElementById('kan');if(a.innerHTML){a.innerHTML='';return}
+const recs=D[obj]||[];const vals=[...new Set(recs.map(r=>r[field]).filter(Boolean))];
+let h='<div class="kanban">';vals.forEach(v=>{const items=recs.filter(r=>r[field]===v);
+h+=`<div class="kanban-col"><div class="kanban-hdr">${v}<span class="cnt">${items.length}</span></div>`;
+items.forEach(r=>h+=`<div class="kcard" onclick="sd('${obj}','${r.Id}')"><strong>${r.Name||r.Subject||r.LastName||'-'}</strong><small>${OL[obj]||obj}</small></div>`);h+=`</div>`});
+a.innerHTML=h+'</div>'}
+async function sd(obj,id,skipPush){
+  co=obj;
+  try{
+    const resp=await fetch('/api/data/'+obj+'/'+id).then(r=>r.json());
+    cr=resp;
+  }catch(e){cr=(D[obj]||[]).find(r=>r.Id===id)}
+  cv='detail';
+  if(!skipPush)history.pushState({cv:'detail',co:obj,crId:id},'');
+  R();
+}
+
+// ===== Record Detail =====
+let isEditing=false;
+function rDet(){if(!cr)return'';
+let h=`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><h2 style="margin:0">${cr.Name||cr.Subject||cr.LastName||'-'}</h2><small style="color:#999">${OL[co]||co}</small></div><div style="display:flex;gap:8px" id="detActions">`;
+if(isEditing){h+=`<button class="btn" id="btnSave">保存</button><button class="btn sec" id="btnCancel">キャンセル</button>`}
+else{h+=`<button class="btn" id="btnEdit">編集</button><button class="btn danger" id="btnDel">削除</button><button class="btn sec" id="btnBack">← 戻る</button>`}
+h+=`</div></div><div class="card"><h3>詳細情報</h3><div class="detail-grid" id="detGrid">`;
+Object.keys(cr).forEach(k=>{if(k==='Id')return;
+if(isEditing){h+=`<div class="form-group"><label>${fl(k)}</label>${fieldInput(k,cr[k])}</div>`}
+else{let v=cr[k];if(['Doctor__c','Medical_Institution__c','Seminar__c','AccountId','ContactId','OpportunityId','CampaignId','OwnerId','Product2Id','WhoId','WhatId','ParentId'].includes(k))v=dn(v);if(['Amount__c','Budget__c','Speaker_Fee__c','Operation_Cost__c','Amount','UnitPrice','TotalPrice','BudgetedCost','ActualCost','ExpectedRevenue','Subtotal','Tax','GrandTotal','TotalAmount','AnnualRevenue'].includes(k))v=v!=null?'¥'+Number(v).toLocaleString():'-';if(typeof v==='boolean')v=v?'✓ はい':'✗ いいえ';h+=`<div class="detail-field"><label>${fl(k)}</label><div class="val">${v!=null?v:'-'}</div></div>`}});
+return h+'</div></div>'}
+function bindDetEvents(){
+const be=document.getElementById('btnEdit'),bs=document.getElementById('btnSave'),bc=document.getElementById('btnCancel'),bd=document.getElementById('btnDel'),bb=document.getElementById('btnBack');
+if(be)be.addEventListener('click',function(){isEditing=true;R()});
+if(bs)bs.addEventListener('click',function(){doSaveEdit()});
+if(bc)bc.addEventListener('click',function(){isEditing=false;R()});
+if(bd)bd.addEventListener('click',function(){doDelete()});
+if(bb)bb.addEventListener('click',function(){isEditing=false;history.back()})
+}
+
+// ===== ユーザー管理（代理ログイン） =====
+let adminUsersList=[];
+const PROFILES=['System_Admin','Sales_Rep','MSL','Lab_Manager','Read_Only'];
+function rAdminUsers(){
+let h='<div class="card" style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">ユーザー管理</h3><button class="btn" onclick="showAddUserModal()">+ ユーザー追加</button></div>';
+h+='<div class="card"><p style="font-size:12px;color:#888;margin-bottom:12px">ユーザーの「代理ログイン」ボタンで、そのユーザーの権限でシステムを閲覧できます</p>';
+h+='<table><thead><tr><th>名前</th><th>メール</th><th>プロファイル</th><th>有効</th><th>操作</th></tr></thead><tbody id="adminUsersBody">';
+if(adminUsersList.length===0){h+='<tr><td colspan="5" style="text-align:center;color:#999;padding:24px">読み込み中...</td></tr>'}
+else{adminUsersList.forEach(u=>{
+const name=(u.FirstName||'')+(u.FirstName?' ':'')+(u.LastName||u.Username||u.Email||'-');
+const email=u.Email||u.Username||'-';
+const profile=u.ProfileId||'-';
+const active=u.IsActive!==false?'<span class="sb sg">有効</span>':'<span class="sb sr">無効</span>';
+const esc=s=>(s||'').replace(/'/g,"\\'");
+h+=`<tr><td>${name}</td><td>${email}</td><td><span class="badge">${profile}</span></td><td>${active}</td><td style="display:flex;gap:4px"><button class="btn sm" onclick="startImpersonate('${esc(email)}','${esc(name)}')">代理ログイン</button>${u.Id?`<button class="btn sm danger" onclick="deleteUser('${u.Id}','${esc(name)}')">削除</button>`:''}</td></tr>`})}
+h+='</tbody></table></div>';
+return h}
+function showAddUserModal(){
+const o=document.createElement('div');o.className='modal-overlay';o.id='addUserOverlay';
+o.innerHTML=`<div class="modal"><div class="modal-hdr"><h3>ユーザー追加</h3><span style="cursor:pointer;font-size:20px" onclick="document.getElementById('addUserOverlay').remove()">✕</span></div><div class="modal-body">
+<div class="form-group"><label>姓 *</label><input id="nuLastName" placeholder="山田"></div>
+<div class="form-group"><label>名</label><input id="nuFirstName" placeholder="太郎"></div>
+<div class="form-group"><label>メールアドレス *</label><input id="nuEmail" type="email" placeholder="user@example.com"></div>
+<div class="form-group"><label>プロファイル</label><select id="nuProfile">${PROFILES.map(p=>`<option value="${p}">${p}</option>`).join('')}</select></div>
+</div><div class="modal-footer"><button class="btn sec" onclick="document.getElementById('addUserOverlay').remove()">キャンセル</button><button class="btn" onclick="createUser()">作成</button></div></div>`;
+document.body.appendChild(o)}
+async function createUser(){
+const LastName=document.getElementById('nuLastName').value.trim();
+const FirstName=document.getElementById('nuFirstName').value.trim();
+const Email=document.getElementById('nuEmail').value.trim();
+const ProfileId=document.getElementById('nuProfile').value;
+if(!LastName){alert('姓は必須です');return}
+if(!Email){alert('メールアドレスは必須です');return}
+try{const resp=await fetch('/api/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({LastName,FirstName,Email,ProfileId})});
+const data=await resp.json();if(data.success){document.getElementById('addUserOverlay').remove();bAdminUsers()}else{alert('作成失敗: '+(data.error||''))}}catch(e){alert('エラー: '+e.message)}}
+async function deleteUser(id,name){
+if(!confirm(name+' を削除しますか？'))return;
+try{const resp=await fetch('/api/admin/users/'+id,{method:'DELETE'});const data=await resp.json();if(data.success){bAdminUsers()}else{alert('削除失敗: '+(data.error||''))}}catch(e){alert('エラー: '+e.message)}}
+async function bAdminUsers(){
+try{
+const resp=await fetch('/api/data/User');
+const data=await resp.json();
+adminUsersList=data.records||[];
+}catch(e){adminUsersList=[]; console.error('Failed to load users:',e)}
+R()}
+async function startImpersonate(email,name){
+if(!confirm(name+' として代理ログインしますか？\n\nそのユーザーの権限でシステムが表示されます。'))return;
+try{const resp=await fetch('/api/admin/impersonate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+const data=await resp.json();if(data.success){location.reload()}else{alert('代理ログインに失敗しました: '+(data.error||''))}}catch(e){alert('エラー: '+e.message)}}
+async function stopImpersonate(){
+try{await fetch('/api/admin/stop-impersonate',{method:'POST',headers:{'Content-Type':'application/json'}});location.reload()}catch(e){alert('エラー: '+e.message)}}
+
+// ===== アクセス権限 =====
+function rAccess(){const objs=Object.keys(OL);
+const ps=[{n:'System_Admin',l:'システム管理者',p:Object.fromEntries(objs.map(o=>[o,{c:1,r:1,e:1,d:1}]))},{n:'Sales_Rep',l:'営業担当(MR)',p:{Medical_Institution__c:{c:1,r:1,e:1,d:0},Doctor__c:{c:1,r:1,e:1,d:0},Visit_Record__c:{c:1,r:1,e:1,d:1},Pharma_Opportunity__c:{c:1,r:1,e:1,d:0},Bento_Order__c:{c:1,r:1,e:1,d:0},Seminar_Attendee__c:{c:1,r:1,e:1,d:0},Genomic_Project__c:{c:0,r:1,e:0,d:0},Specimen__c:{c:0,r:1,e:0,d:0},MA_Activity__c:{c:0,r:1,e:0,d:0},Seminar__c:{c:0,r:1,e:0,d:0},Lab__c:{c:0,r:1,e:0,d:0},Joint_Research__c:{c:0,r:1,e:0,d:0}}},{n:'MSL',l:'MSL',p:{Medical_Institution__c:{c:0,r:1,e:0,d:0},Doctor__c:{c:1,r:1,e:1,d:0},MA_Activity__c:{c:1,r:1,e:1,d:1},Seminar__c:{c:1,r:1,e:1,d:0},Visit_Record__c:{c:1,r:1,e:1,d:0},Pharma_Opportunity__c:{c:0,r:1,e:0,d:0},Specimen__c:{c:0,r:1,e:0,d:0},Genomic_Project__c:{c:0,r:1,e:0,d:0},Lab__c:{c:0,r:1,e:0,d:0},Joint_Research__c:{c:1,r:1,e:1,d:0},Bento_Order__c:{c:1,r:1,e:1,d:0},Seminar_Attendee__c:{c:1,r:1,e:1,d:0}}},{n:'Lab_Manager',l:'ラボ管理者',p:{Specimen__c:{c:1,r:1,e:1,d:0},Lab__c:{c:1,r:1,e:1,d:0},Genomic_Project__c:{c:1,r:1,e:1,d:0},Medical_Institution__c:{c:0,r:1,e:0,d:0},Doctor__c:{c:0,r:1,e:0,d:0}}},{n:'PMDA_Manager',l:'PMDA担当',p:{Specimen__c:{c:0,r:1,e:0,d:0},Lab__c:{c:0,r:1,e:0,d:0},Genomic_Project__c:{c:0,r:1,e:0,d:0},Medical_Institution__c:{c:0,r:1,e:0,d:0},Doctor__c:{c:0,r:1,e:0,d:0}}},{n:'LSI_Manager',l:'LSI担当',p:{Specimen__c:{c:0,r:1,e:1,d:0},Lab__c:{c:0,r:1,e:0,d:0},Medical_Institution__c:{c:0,r:1,e:0,d:0}}}];
+let h='';ps.forEach(p=>{h+=`<div class="card"><h3>${p.l}（${p.n}）</h3><table class="perm-table"><thead><tr><th style="text-align:left">オブジェクト</th><th>作成</th><th>参照</th><th>編集</th><th>削除</th></tr></thead><tbody>`;
+objs.forEach(o=>{const pm=p.p[o]||{c:0,r:0,e:0,d:0};h+=`<tr><td style="text-align:left">${OL[o]}</td><td class="${pm.c?'py':'pn'}">${pm.c?'✓':'✗'}</td><td class="${pm.r?'py':'pn'}">${pm.r?'✓':'✗'}</td><td class="${pm.e?'py':'pn'}">${pm.e?'✓':'✗'}</td><td class="${pm.d?'py':'pn'}">${pm.d?'✓':'✗'}</td></tr>`});
+h+=`</tbody></table></div>`});
+h+=`<div class="card"><h3>ロール階層</h3><pre style="font-size:12px;line-height:2;padding:12px;background:#f8f8f8;border-radius:4px">📌 CEO
+  ├── 営業本部長
+  │   └── 営業マネージャー → MR ×5
+  ├── メディカル本部長
+  │   └── MSLマネージャー → MSL ×3
+  ├── ラボ統括部長
+  │   └── ラボ長 → 検査技師
+  ├── PMDA担当部長
+  └── LSI担当</pre></div>`;return h}
+
+// ===== メタデータ編集 =====
+function rEditor(){return`<div class="tab-bar"><div class="tab-btn active" onclick="eTab(this,'yt')">YAML</div><div class="tab-btn" onclick="eTab(this,'xt')">SFDX XML</div></div>
+<div id="yt"><textarea class="code" id="yv">apiVersion: "62.0"
+objects:
+  - apiName: Medical_Institution__c
+    label: 提携医療機関
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - {apiName: Facility_Type__c, label: 施設種別, type: Picklist, values: [大学病院, がん拠点病院, 一般病院]}
+      - {apiName: Adapter_Status__c, label: 導入状況, type: Picklist, values: [未導入, 導入中, 導入完了]}
+      - {apiName: Prefecture__c, label: 都道府県, type: Text}
+  - apiName: Doctor__c
+    label: ドクター管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - {apiName: Department__c, label: 診療科, type: Picklist, values: [腫瘍内科, 呼吸器内科, 消化器内科, 乳腺外科, 病理診断科]}
+      - {apiName: Relationship_Level__c, label: 関係構築度, type: Picklist, values: [未接触, 初回面談済, 関心あり, 検討中, 推進者, "ファン（KOL）"]}
+      - {apiName: Medical_Institution__c, label: 所属医療機関, type: Lookup, referenceTo: Medical_Institution__c}
+  - apiName: Pharma_Opportunity__c
+    label: 製薬商談
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - {apiName: Phase__c, label: フェーズ, type: Picklist, values: [リード, ヒアリング, 提案, セキュリティ審査, 契約交渉, 成約, 失注]}
+      - {apiName: Amount__c, label: 金額, type: Currency}
+      - {apiName: Owner_Name__c, label: 担当営業, type: Text}
+  - apiName: MA_Activity__c
+    label: MA活動管理
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - {apiName: Activity_Type__c, label: 活動種別, type: Picklist, values: [学術講演会, アドバイザリーボード, KOL面談, 院内勉強会]}
+      - {apiName: Status__c, label: ステータス, type: Picklist, values: [企画中, 準備中, 実施済, 完了]}
+      - {apiName: Assigned_MSL__c, label: 担当MSL, type: Text}
+      - {apiName: Budget__c, label: 予算, type: Currency}
+permissionSets:
+  - {apiName: SB_Tempus_Sales, label: 営業担当}
+  - {apiName: SB_Tempus_MSL, label: MSL}
+  - {apiName: SB_Tempus_Lab_Manager, label: ラボ管理者}</textarea>
+<div style="margin-top:8px"><button class="btn" onclick="genXML()">SFDX XML生成</button><button class="btn sec" style="margin-left:8px" onclick="expYAML()">エクスポート</button></div></div>
+<div id="xt" style="display:none"><div id="xo" class="xml-view">「SFDX XML生成」ボタンを押してください</div></div>`}
+function eTab(el,id){document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('yt').style.display=id==='yt'?'':'none';document.getElementById('xt').style.display=id==='xt'?'':'none'}
+function genXML(){try{const s=jsyaml.load(document.getElementById('yv').value);let x='';
+(s.objects||[]).forEach(obj=>{
+x+=`\n${'='.repeat(60)}\nforce-app/main/default/objects/${obj.apiName}/${obj.apiName}.object-meta.xml\n${'='.repeat(60)}\n`;
+x+=`<?xml version="1.0" encoding="UTF-8"?>\n<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">\n`;
+x+=`  <label>${obj.label}</label>\n  <sharingModel>${obj.sharingModel||'ReadWrite'}</sharingModel>\n  <deploymentStatus>${obj.deploymentStatus||'Deployed'}</deploymentStatus>\n`;
+(obj.fields||[]).forEach(f=>{x+=`  <fields>\n    <fullName>${f.apiName}</fullName>\n    <label>${f.label}</label>\n    <type>${f.type}</type>\n`;
+if(f.values){x+=`    <valueSet>\n      <restricted>true</restricted>\n      <valueSetDefinition>\n        <sorted>false</sorted>\n`;f.values.forEach(v=>x+=`        <value><fullName>${v}</fullName><label>${v}</label></value>\n`);x+=`      </valueSetDefinition>\n    </valueSet>\n`}
+if(f.referenceTo)x+=`    <referenceTo>${f.referenceTo}</referenceTo>\n    <relationshipName>${f.apiName.replace(/__c$/,'s')}</relationshipName>\n    <deleteConstraint>SetNull</deleteConstraint>\n`;
+x+=`  </fields>\n`});x+=`</CustomObject>\n`});
+(s.permissionSets||[]).forEach(ps=>{x+=`\n${'='.repeat(60)}\nforce-app/main/default/permissionsets/${ps.apiName}.permissionset-meta.xml\n${'='.repeat(60)}\n`;
+x+=`<?xml version="1.0" encoding="UTF-8"?>\n<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">\n  <label>${ps.label}</label>\n</PermissionSet>\n`});
+document.getElementById('xo').textContent=x;alert('SFDX XML生成完了！')}catch(e){alert('YAML解析エラー: '+e.message)}}
+function expYAML(){const b=new Blob([document.getElementById('yv').value],{type:'text/yaml'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='schema.yaml';a.click()}
+
+// ===== SOQL Console =====
+function rSOQL(){return`<div class="card">
+<h3>SOQL クエリ</h3>
+<textarea id="soqlInput" style="width:100%;height:100px;padding:12px;font-family:Monaco,Menlo,monospace;font-size:13px;border:1px solid #ccc;border-radius:4px;resize:vertical" placeholder="SELECT Id, Name FROM Account WHERE Industry = '医薬品' LIMIT 10">SELECT Id, Name, StageName, Amount FROM Opportunity WHERE StageName = 'Closed Won'</textarea>
+<div style="margin-top:8px"><button class="btn" onclick="execSOQL()">実行</button><span id="soqlTime" style="margin-left:12px;font-size:12px;color:#888"></span></div>
+</div><div id="soqlResult"></div>`}
+function execSOQL(){
+  const q=document.getElementById('soqlInput').value.trim();
+  if(!q)return;
+  const t0=performance.now();
+  fetch('/services/data/v62.0/query/?q='+encodeURIComponent(q))
+  .then(r=>r.json()).then(data=>{
+    const ms=Math.round(performance.now()-t0);
+    document.getElementById('soqlTime').textContent=data.totalSize+' 件 ('+ms+'ms)';
+    if(data.errorCode||data[0]?.errorCode){
+      document.getElementById('soqlResult').innerHTML='<div class="card" style="color:#c62828">'+JSON.stringify(data,null,2)+'</div>';
+      return;
+    }
+    const recs=data.records||[];
+    if(!recs.length){document.getElementById('soqlResult').innerHTML='<div class="card">結果なし</div>';return}
+    const keys=Object.keys(recs[0]).filter(k=>k!=='attributes');
+    let h='<div class="card"><table><thead><tr>';
+    keys.forEach(k=>h+='<th>'+fl(k)+'</th>');
+    h+='</tr></thead><tbody>';
+    recs.forEach(r=>{h+='<tr>';keys.forEach(k=>{
+      let v=r[k];if(typeof v==='boolean')v=v?'✓':'-';
+      h+='<td>'+(v!=null?v:'-')+'</td>'});h+='</tr>'});
+    h+='</tbody></table></div>';
+    document.getElementById('soqlResult').innerHTML=h;
+  }).catch(e=>{document.getElementById('soqlResult').innerHTML='<div class="card" style="color:#c62828">Error: '+e.message+'</div>'})
+}
+
+// ===== Metadata Management =====
+function rMetadata(){return`<div class="card">
+<h3>メタデータ管理</h3>
+<div class="tab-bar">
+<div class="tab-btn active" onclick="metaTab(this,'metaRetrieve')">Retrieve (エクスポート)</div>
+<div class="tab-btn" onclick="metaTab(this,'metaDeploy')">Deploy (インポート)</div>
+<div class="tab-btn" onclick="metaTab(this,'metaPkg')">package.xml</div>
+</div>
+<div id="metaRetrieve">
+<div style="margin:12px 0"><select id="metaObj"><option value="">全オブジェクト</option></select>
+<select id="metaFmt"><option value="xml">SFDX XML</option><option value="yaml">YAML</option></select>
+<button class="btn" onclick="doRetrieve()" style="margin-left:8px">Retrieve</button></div>
+<div id="metaOutput" class="xml-view" style="min-height:200px">Retrieveボタンを押してください</div>
+</div>
+<div id="metaDeploy" style="display:none">
+<p style="font-size:13px;color:#666;margin-bottom:12px">SalesforceからエクスポートしたCustomObject XMLを貼り付けてデプロイできます</p>
+<textarea id="deployXml" style="width:100%;height:300px;padding:12px;font-family:Monaco,Menlo,monospace;font-size:12px;border:1px solid #ccc;border-radius:4px;resize:vertical" placeholder="<?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#10;<CustomObject xmlns=&quot;http://soap.sforce.com/2006/04/metadata&quot;>&#10;  ...&#10;</CustomObject>"></textarea>
+<button class="btn" onclick="doDeploy()" style="margin-top:8px">Deploy</button>
+<div id="deployResult" style="margin-top:8px"></div>
+</div>
+<div id="metaPkg" style="display:none"><div id="pkgOutput" class="xml-view" style="min-height:200px">読み込み中...</div></div>
+</div>`}
+function metaTab(el,id){
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  ['metaRetrieve','metaDeploy','metaPkg'].forEach(t=>{document.getElementById(t).style.display=t===id?'':'none'});
+  if(id==='metaPkg')loadPkgXml();
+  if(id==='metaRetrieve'){const sel=document.getElementById('metaObj');if(sel.options.length<=1){Object.keys(OL).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=OL[k]+' ('+k+')';sel.appendChild(o)})}}
+}
+function doRetrieve(){
+  const obj=document.getElementById('metaObj').value;
+  const f=document.getElementById('metaFmt').value;
+  let url='/services/data/v62.0/metadata/retrieve/?format='+f;
+  if(obj)url+='&objectName='+obj;
+  fetch(url).then(r=>r.text()).then(t=>{document.getElementById('metaOutput').textContent=t}).catch(e=>{document.getElementById('metaOutput').textContent='Error: '+e.message})
+}
+function doDeploy(){
+  const xml=document.getElementById('deployXml').value.trim();
+  if(!xml){toast('XMLを入力してください','error');return}
+  fetch('/services/data/v62.0/metadata/deploy/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({xmlContent:xml})})
+  .then(r=>r.json()).then(res=>{
+    if(res.success){document.getElementById('deployResult').innerHTML='<div style="color:#2e7d32;font-weight:600">Deploy成功: '+res.numberComponentsDeployed+'コンポーネント</div>';toast('Deploy完了')}
+    else{document.getElementById('deployResult').innerHTML='<div style="color:#c62828">Deploy失敗: '+(res.errorMessage||'')+'</div>';toast('Deploy失敗','error')}
+  }).catch(e=>{toast(e.message,'error')})
+}
+function loadPkgXml(){
+  fetch('/services/data/v62.0/metadata/package.xml').then(r=>r.text()).then(t=>{document.getElementById('pkgOutput').textContent=t}).catch(e=>{document.getElementById('pkgOutput').textContent='Error: '+e.message})
+}
+
+// ===== Picklist values =====
+const PV={
+Facility_Type__c:['大学病院','がん拠点病院','一般病院'],
+Adapter_Status__c:['未導入','導入中','導入完了'],
+Prefecture__c:['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'],
+Department__c:['腫瘍内科','呼吸器内科','消化器内科','乳腺外科','病理診断科'],
+Title__c:['教授','准教授','講師','部長','医長','医員'],
+Relationship_Level__c:['未接触','初回面談済','関心あり','検討中','推進者','ファン（KOL）'],
+Phase__c:['リード','ヒアリング','提案','セキュリティ審査','契約交渉','成約','失注'],
+Status__c:['企画中','準備中','実施済','完了','検体待ち','解析中','レポート作成中','レポート完了','納品済','発注前','発注済','配達済'],
+Specimen_Status__c:['受領待ち','受領済','QC中','QC合格','QC不合格','解析中','解析完了','レポート発行済'],
+Cancer_Type__c:['肺がん','乳がん','大腸がん','胃がん','膵臓がん','前立腺がん','卵巣がん','肝臓がん'],
+Meeting_Result__c:['好感触','継続検討','保留','再訪問要'],
+Visit_Purpose__c:['定期訪問','新規紹介','情報提供','フォローアップ','契約確認'],
+Activity_Type__c:['学術講演会','アドバイザリーボード','KOL面談','院内勉強会'],
+Event_Format__c:['オンサイト','オンライン','ハイブリッド'],
+Progress_Status__c:['企画立案','講師確定','準備中','開催済'],
+Analysis_Panel__c:['F1CDx','NCC-OncoPanel','FoundationOne Liquid'],
+Operation_Status__c:['通常稼働','高負荷','立ち上げ中','メンテナンス中'],
+Lab_Type__c:['解析ラボ','バイオバンク','研究ラボ'],
+Compliance_Check__c:['承認済','確認中','未確認'],
+Service_Type__c:['XT(組織)','xF(リキッド)','xT+xF','データ解析のみ'],
+Menu_Type__c:['幕の内','松花堂','サンドイッチ','ベジタリアン','特別食'],
+Attendance_Status__c:['登録済','出席確認','出席','欠席','キャンセル'],
+Specialty__c:['腫瘍内科','呼吸器内科','消化器内科','乳腺外科','病理診断科','泌尿器科','婦人科'],
+StageName:['Prospecting','Qualification','Needs Analysis','Value Proposition','Negotiation/Review','Closed Won','Closed Lost'],
+Type:['新規','既存','更新','顧客','見込み客','パートナー','競合他社','その他'],
+Industry:['医薬品','医療機器','IT','製造業','金融','小売','教育','その他'],
+LeadSource:['Web','電話','パートナー','展示会','広告','紹介','その他'],
+ForecastCategory:['Pipeline','Best Case','Commit','Closed','Omitted'],
+Status:['新規','連絡済','適格','不適格','転換済','計画中','進行中','完了','中止','ドラフト','承認プロセス中','有効','終了','キャンセル','送信済','応答済','出席','欠席','ドラフト','送付済','受諾','拒否','未着手','進行中','完了','待機中','延期'],
+Priority:['高','中','低'],
+Origin:['電話','メール','Web'],
+Role:['意思決定者','評価者','経済的購入者','技術的購入者','その他'],
+Family:['ハードウェア','ソフトウェア','サービス','サブスクリプション']
+};
+const NUM_FIELDS=['Bed_Count__c','Amount__c','Budget__c','Probability__c','Visit_Count__c','Referred_Specimen_Count__c','KOL_Score__c','Sample_Count__c','Participant_Count__c','Attendee_Count__c','Speaker_Fee__c','Operation_Cost__c','Monthly_Capacity__c','Current_Processing__c','Amount','Quantity','UnitPrice','TotalPrice','Discount','Tax','Subtotal','GrandTotal','BudgetedCost','ActualCost','ExpectedRevenue','NumberOfEmployees','AnnualRevenue','ContractTerm','ContentSize','Probability','Quantity__c','Venue_Latitude__c','Venue_Longitude__c'];
+const BOOL_FIELDS=['Is_KOL__c','Is_Retest__c','IsActive','IsClosed','IsConverted','IsHighPriority','IsPrimary','IsAllDayEvent','IsStandard','UseStandardPrice','IsEscalated'];
+const DATE_FIELDS=['Contract_Start_Date__c','Visit_Date__c','Activity_Date__c','Event_Date__c','Received_Date__c','CloseDate','StartDate','EndDate','ActivityDate','ExpirationDate','EffectiveDate','Birthdate','ServiceDate','Order_Date__c','Registration_Date__c'];
+
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'success');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
+
+const LOOKUP_REFS={Medical_Institution__c:'Medical_Institution__c',Doctor__c:'Doctor__c',Seminar__c:'Seminar__c',AccountId:'Account',ContactId:'Contact',OpportunityId:'Opportunity',CampaignId:'Campaign',Product2Id:'Product2',OwnerId:'User',WhoId:'Contact',WhatId:'Account',ParentId:'Account',Specimen__c:'Specimen__c',Lab__c:'Lab__c'};
+function fieldInput(k,v){
+if(BOOL_FIELDS.includes(k))return`<select name="${k}"><option value="true" ${v?'selected':''}>はい</option><option value="false" ${!v?'selected':''}>いいえ</option></select>`;
+if(PV[k]){let h=`<select name="${k}"><option value="">--</option>`;PV[k].forEach(o=>h+=`<option ${v===o?'selected':''}>${o}</option>`);return h+'</select>'}
+if(LOOKUP_REFS[k]){const refObj=LOOKUP_REFS[k];const uid='lu_'+k+'_'+Date.now();let h=`<select name="${k}" id="${uid}"><option value="">-- 選択 --</option>`;
+// Load options from lookup endpoint asynchronously
+const recs=D[refObj]||[];recs.forEach(r=>{const rName=r.Name||r.LastName||r.Subject||r.Username||r.Id;h+=`<option value="${r.Id}" ${r.Id===v?'selected':''}>${rName}</option>`});
+setTimeout(()=>{fetch('/api/data/'+refObj+'/lookup?limit=500').then(r=>r.json()).then(resp=>{const sel=document.getElementById(uid);if(!sel)return;const existing=new Set();sel.querySelectorAll('option').forEach(o=>existing.add(o.value));(resp.records||[]).forEach(r=>{if(!existing.has(r.Id)){const opt=document.createElement('option');opt.value=r.Id;opt.textContent=r.Name;if(r.Id===v)opt.selected=true;sel.appendChild(opt)}})}).catch(()=>{})},0);
+return h+'</select>'}
+if(DATE_FIELDS.includes(k))return`<input type="date" name="${k}" value="${v||''}">`;
+if(NUM_FIELDS.includes(k))return`<input type="number" name="${k}" value="${v!=null?v:''}">`;
+return`<input type="text" name="${k}" value="${v!=null?String(v).replace(/"/g,'&quot;'):''}">`
+}
+
+function buildForm(obj,rec,defaults){
+var keys=rec?Object.keys(rec).filter(k=>k!=='Id'):Object.keys((D[obj]&&D[obj][0])||{}).filter(k=>k!=='Id');
+if(!keys.length&&OK[obj])keys=OK[obj];
+let h='';
+keys.forEach(k=>{var v=rec?rec[k]:(defaults&&defaults[k]!=null?defaults[k]:null);h+=`<div class="form-group"><label>${fl(k)}</label>${fieldInput(k,v)}</div>`});
+return h
+}
+
+function getFormData(form){
+const fd={};form.querySelectorAll('input,select,textarea').forEach(el=>{
+const k=el.name;if(!k)return;let v=el.value;
+if(BOOL_FIELDS.includes(k))v=v==='true';
+else if(NUM_FIELDS.includes(k))v=v?Number(v):null;
+else if(v==='')v=null;
+fd[k]=v});return fd}
+
+function closeModal(){const m=document.getElementById('modal');if(m)m.remove()}
+
+function openNew(obj,defaults){
+const m=document.createElement('div');m.className='modal-overlay';m.id='modal';
+const formH=buildForm(obj,null,defaults);
+m.innerHTML='<div class="modal"><div class="modal-hdr"><h3>'+(OL[obj]||obj)+' - 新規作成</h3><button class="btn sm sec" id="modalClose">✕</button></div><form id="recForm"><div class="modal-body">'+formH+'</div><div class="modal-footer"><button type="button" class="btn sec" id="modalCancel">キャンセル</button><button type="submit" class="btn">保存</button></div></form></div>';
+document.body.appendChild(m);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalCancel').addEventListener('click',closeModal);
+m.querySelector('form').addEventListener('submit',function(e){e.preventDefault();doSaveNew(obj)})
+}
+
+function doSaveNew(obj){
+const fd=getFormData(document.getElementById('recForm'));
+if(!fd.Name&&!fd.LastName&&!fd.Subject){toast('名前は必須です','error');return}
+fetch('/api/data/'+obj,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fd)})
+.then(function(r){if(!r.ok)throw new Error('作成に失敗');return r.json()})
+.then(async function(res){
+  closeModal();toast((OL[obj]||obj)+'を作成しました');
+  await loadPage(obj,1);nav('obj',obj);
+}).catch(function(e){toast(e.message,'error')})
+}
+
+function doSaveEdit(){
+if(!cr||!co){console.error('doSaveEdit: cr or co is null',cr,co);return}
+var grid=document.getElementById('detGrid');
+if(!grid){console.error('doSaveEdit: detGrid not found');toast('フォームが見つかりません','error');return}
+var fd=getFormData(grid);
+fetch('/api/data/'+co+'/'+cr.Id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(fd)})
+.then(function(r){
+  if(!r.ok)return r.json().then(function(b){throw new Error(b.error||'更新に失敗 ('+r.status+')')});
+  return r.json()
+})
+.then(async function(resp){
+  // Update current record from server response
+  if(resp.record)cr=resp.record;
+  else{for(var k in fd)cr[k]=fd[k]}
+  isEditing=false;toast('更新しました');R()
+}).catch(function(e){console.error('doSaveEdit error:',e);toast(e.message,'error')})
+}
+
+function doDelete(){
+if(!cr||!co)return;
+if(!confirm((cr.Name||cr.Subject||cr.LastName||'このレコード')+' を削除しますか？'))return;
+fetch('/api/data/'+co+'/'+cr.Id,{method:'DELETE'})
+.then(function(r){if(!r.ok)throw new Error('削除に失敗');return r.json()})
+.then(async function(){
+  isEditing=false;toast('削除しました');
+  await loadPage(co,(pageState[co]||{}).page||1);nav('obj',co);
+}).catch(function(e){toast(e.message,'error')})
+}
+
+// ===== エグゼクティブダッシュボード =====
+function rExecDash(){
+const opps=D.Pharma_Opportunity__c||[],tos=D.Testing_Order__c||[],specs=D.Specimen__c||[],insts=D.Medical_Institution__c||[],labs=D.Lab__c||[];
+const pipe=opps.filter(o=>!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+const won=opps.filter(o=>o.Phase__c==='成約').reduce((s,o)=>s+(o.Amount__c||0),0);
+const adopted=insts.filter(i=>i.Adapter_Status__c==='導入完了').length;
+const avgUtil=labs.length?Math.round(labs.reduce((s,l)=>s+(l.Current_Processing__c||0),0)/labs.reduce((s,l)=>s+(l.Monthly_Capacity__c||1),0)*100):0;
+return`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(pipe)}</div><div class="kl">パイプライン金額</div></div>
+<div class="kpi-card" onclick="nav('obj','Pharma_Opportunity__c')"><div class="kv">${fmt(won)}</div><div class="kl">成約金額</div></div>
+<div class="kpi-card" onclick="nav('obj','Medical_Institution__c')"><div class="kv">${adopted}/${insts.length}</div><div class="kl">導入済み施設</div></div>
+<div class="kpi-card" onclick="nav('obj','Lab__c')"><div class="kv">${avgUtil}%</div><div class="kl">平均ラボ稼働率</div></div>
+</div><div class="grid grid-2">
+<div class="chart-box"><h4>月次検査ボリューム推移</h4><canvas id="exec-testing"></canvas></div>
+<div class="chart-box"><h4>サービス別パイプライン</h4><canvas id="exec-service"></canvas></div>
+</div>
+<div class="card"><h3>チーム成績</h3><table><thead><tr><th>担当者</th><th>役割</th><th>パイプライン</th><th>成約金額</th><th>担当Dr</th></tr></thead><tbody>`+
+USERS.filter(u=>['Sales','MA'].includes(u.team)).map(u=>{
+const uOpps=opps.filter(o=>o.Owner_Name__c===u.name);
+const uPipe=uOpps.filter(o=>!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+const uWon=uOpps.filter(o=>o.Phase__c==='成約').reduce((s,o)=>s+(o.Amount__c||0),0);
+const uDocs=(D.Doctor__c||[]).filter(d=>d.Assigned_MR__c===u.name).length;
+return`<tr><td>${u.photo} ${u.name}</td><td>${u.role}</td><td>${fmt(uPipe)}</td><td>${fmt(uWon)}</td><td>${uDocs}</td></tr>`}).join('')+
+`</tbody></table></div>`}
+function iExecDash(){
+const mtd=MONTHLY_TESTING_DATA;
+mc('exec-testing',{type:'bar',data:{labels:mtd.map(m=>m.month.slice(5)+'月'),datasets:[{label:'出件数',data:mtd.map(m=>m.orders),backgroundColor:'#0176d3'},{label:'完了数',data:mtd.map(m=>m.completed),backgroundColor:'#2ecc71'}]},options:{responsive:true,plugins:{legend:{position:'top'}}}},'obj:Testing_Order__c');
+const svcs=[...new Set((D.Pharma_Opportunity__c||[]).map(o=>o.Service_Type__c).filter(Boolean))];
+mc('exec-service',{type:'doughnut',data:{labels:svcs.length?svcs:['データなし'],datasets:[{data:svcs.length?svcs.map(s=>(D.Pharma_Opportunity__c||[]).filter(o=>o.Service_Type__c===s).reduce((sum,o)=>sum+(o.Amount__c||0),0)):[1],backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}},'obj:Pharma_Opportunity__c')}
+
+// ===== MSLダッシュボード =====
+function rMSLDash(){
+const maUsers=USERS.filter(u=>u.team==='MA');
+let h='<div style="margin-bottom:16px"><select id="mslSelect" onchange="showMSL(this.value)" style="padding:8px 12px;border:1px solid #d8dde6;border-radius:6px;font-size:14px">';
+maUsers.forEach((u,i)=>h+=`<option value="${u.name}"${i===0?' selected':''}>${u.photo} ${u.name} (${u.role})</option>`);
+h+='</select></div><div id="mslContent"></div>';
+return h}
+function bMSLDash(){const maUsers=USERS.filter(u=>u.team==='MA');if(maUsers.length)showMSL(maUsers[0].name)}
+function showMSL(name){
+const ma=(D.MA_Activity__c||[]).filter(a=>a.Assigned_MSL__c===name);
+const docs=(D.Doctor__c||[]).filter(d=>d.Is_KOL__c);
+const vts=(D.Visit_Target__c||[]).filter(v=>{const u=USERS.find(u=>u.name===name);return u&&v.OwnerId===u.id});
+const jr=(D.Joint_Research__c||[]);
+const achieved=vts.filter(v=>v.Status__c==='達成').length;
+const achRate=vts.length?pct(achieved,vts.length):0;
+let h=`<div class="grid grid-6" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Doctor__c')"><div class="kv">${docs.length}</div><div class="kl">担当KOL</div></div>
+<div class="kpi-card" onclick="nav('obj','MA_Activity__c')"><div class="kv">${ma.length}</div><div class="kl">MA活動</div></div>
+<div class="kpi-card" onclick="nav('visit-target')"><div class="kv">${vts.length}</div><div class="kl">訪問ターゲット</div></div>
+<div class="kpi-card" onclick="nav('visit-target')"><div class="kv">${achRate}%</div><div class="kl">達成率</div></div>
+<div class="kpi-card" onclick="nav('obj','Joint_Research__c')"><div class="kv">${jr.length}</div><div class="kl">共同研究</div></div>
+<div class="kpi-card" onclick="nav('daily-report')"><div class="kv">${(D.Daily_Report__c||[]).filter(r=>{const u=USERS.find(u=>u.name===name);return u&&r.OwnerId===u.id&&r.Approval_Status__c==='提出済'}).length}</div><div class="kl">未承認日報</div></div>
+</div>`;
+if(vts.length){h+=`<div class="card"><h3>訪問ターゲット</h3><table><thead><tr><th>ターゲット</th><th>ドクター</th><th>目標</th><th>実績</th><th>達成率</th><th>状態</th></tr></thead><tbody>`;
+vts.forEach(v=>h+=`<tr><td>${v.Name}</td><td>${dn(v.Doctor__c)}</td><td>${v.Target_Visits__c}</td><td>${v.Actual_Visits__c}</td><td>${v.Achievement_Rate__c||0}%</td><td><span class="sb ${sc(v.Status__c)}">${v.Status__c}</span></td></tr>`);
+h+=`</tbody></table></div>`}
+h+=`<div class="card"><h3>MA活動 (${ma.length}件)</h3><table><thead><tr><th>活動名</th><th>種別</th><th>実施日</th><th>ドクター</th><th>状態</th></tr></thead><tbody>`;
+ma.sort((a,b)=>(b.Activity_Date__c||'').localeCompare(a.Activity_Date__c||'')).forEach(a=>h+=`<tr onclick="sd('MA_Activity__c','${a.Id}')"><td>${a.Name}</td><td>${a.Activity_Type__c||'-'}</td><td>${a.Activity_Date__c||'-'}</td><td>${dn(a.Doctor__c)}</td><td><span class="sb ${sc(a.Status__c)}">${a.Status__c||'-'}</span></td></tr>`);
+h+=`</tbody></table></div>`;
+document.getElementById('mslContent').innerHTML=h}
+
+// ===== コンプライアンスダッシュボード =====
+function rCompDash(){
+const ma=D.MA_Activity__c||[],sems=D.Seminar__c||[],ars=D.Approval_Request__c||[],exps=D.Expense_Report__c||[];
+const approved=ars.filter(a=>a.Status__c==='承認済').length;
+const compRate=ars.length?pct(approved,ars.length):0;
+const pending=ars.filter(a=>['申請中','承認待ち'].includes(a.Status__c)).length;
+const unapproved=exps.filter(e=>e.Status__c==='申請中').length;
+const highSem=sems.filter(s=>(s.Speaker_Fee__c||0)+(s.Operation_Cost__c||0)>500000).length;
+let h=`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('approval-queue')"><div class="kv">${compRate}%</div><div class="kl">承認完了率</div></div>
+<div class="kpi-card" onclick="nav('approval-queue')"><div class="kv">${pending}</div><div class="kl">未処理承認</div></div>
+<div class="kpi-card" onclick="nav('expense-report')"><div class="kv">${unapproved}</div><div class="kl">未承認経費</div></div>
+<div class="kpi-card" onclick="nav('obj','Seminar__c')"><div class="kv">${highSem}</div><div class="kl">高額勉強会</div></div>
+</div>`;
+h+=`<div class="card"><h3>コンプライアンスチェックリスト</h3><div style="padding:16px">`;
+const checks=[
+{item:'講演謝金上限（30万円/回）',ok:true,detail:'全案件で上限内'},
+{item:'アドバイザリーボード謝金上限（20万円/人）',ok:true,detail:'直近4件確認済み'},
+{item:'ケータリング上限（5,000円/人）',ok:true,detail:'弁当手配の全件が基準内'},
+{item:'会場適正性',ok:true,detail:'華美な会場使用なし'},
+{item:'透明性ガイドライン',ok:ma.filter(a=>a.Compliance_Check__c==='合格').length>=ma.filter(a=>a.Compliance_Check__c).length*0.8,detail:'MA活動の透明性報告'},
+{item:'COI管理',ok:true,detail:'利益相反管理の確認'}];
+checks.forEach(c=>h+=`<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid #eee"><span style="font-size:20px;margin-right:12px">${c.ok?'✅':'⚠️'}</span><div><div style="font-weight:600">${c.item}</div><div style="color:#888;font-size:12px">${c.detail}</div></div></div>`);
+h+=`</div></div>`;
+const highApprovals=ars.filter(a=>a.Amount__c>=500000);
+if(highApprovals.length){h+=`<div class="card"><h3>高額承認案件（50万円以上）</h3><table><thead><tr><th>申請名</th><th>種別</th><th>金額</th><th>申請者</th><th>状態</th></tr></thead><tbody>`;
+highApprovals.forEach(a=>h+=`<tr><td>${a.Name}</td><td>${a.Request_Type__c}</td><td>¥${(a.Amount__c||0).toLocaleString()}</td><td>${userName(a.Requested_By__c)}</td><td><span class="sb ${sc(a.Status__c)}">${a.Status__c}</span></td></tr>`);
+h+=`</tbody></table></div>`}
+return h}
+
+// ===== 日報管理 =====
+function rDailyRep(){
+const reps=D.Daily_Report__c||[];
+const submitted=reps.filter(r=>r.Approval_Status__c==='提出済').length;
+const approved=reps.filter(r=>r.Approval_Status__c==='承認済').length;
+const draft=reps.filter(r=>r.Approval_Status__c==='下書き').length;
+const rejected=reps.filter(r=>r.Approval_Status__c==='差戻し').length;
+let h=`<div class="grid grid-5" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Daily_Report__c')"><div class="kv">${reps.length}</div><div class="kl">日報総数</div></div>
+<div class="kpi-card" onclick="nav('obj','Daily_Report__c')"><div class="kv">${submitted}</div><div class="kl">提出済</div></div>
+<div class="kpi-card" onclick="nav('obj','Daily_Report__c')"><div class="kv">${approved}</div><div class="kl">承認済</div></div>
+<div class="kpi-card" onclick="nav('obj','Daily_Report__c')"><div class="kv">${draft}</div><div class="kl">下書き</div></div>
+<div class="kpi-card" onclick="nav('obj','Daily_Report__c')"><div class="kv">${rejected}</div><div class="kl">差戻し</div></div>
+</div>`;
+const pending=reps.filter(r=>r.Approval_Status__c==='提出済');
+if(pending.length){h+=`<div class="card"><h3>承認待ち日報</h3><table><thead><tr><th>日付</th><th>報告者</th><th>種別</th><th>訪問数</th><th>状態</th></tr></thead><tbody>`;
+pending.forEach(r=>h+=`<tr onclick="sd('Daily_Report__c','${r.Id}')"><td>${r.Report_Date__c}</td><td>${userName(r.OwnerId)}</td><td>${r.Report_Type__c}</td><td>${r.Visit_Summary__c||0}</td><td><span class="sb ${sc(r.Approval_Status__c)}">${r.Approval_Status__c}</span></td></tr>`);
+h+=`</tbody></table></div>`}
+h+=`<div class="card"><h3>日報一覧</h3><table><thead><tr><th>番号</th><th>日付</th><th>報告者</th><th>種別</th><th>訪問数</th><th>状態</th></tr></thead><tbody>`;
+reps.sort((a,b)=>(b.Report_Date__c||'').localeCompare(a.Report_Date__c||'')).forEach(r=>h+=`<tr onclick="sd('Daily_Report__c','${r.Id}')"><td>${r.Name}</td><td>${r.Report_Date__c}</td><td>${userName(r.OwnerId)}</td><td>${r.Report_Type__c}</td><td>${r.Visit_Summary__c||0}</td><td><span class="sb ${sc(r.Approval_Status__c)}">${r.Approval_Status__c}</span></td></tr>`);
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== 検査レポート =====
+function rTestRep(){
+const tos=D.Testing_Order__c||[],specs=D.Specimen__c||[],insts=D.Medical_Institution__c||[];
+return`<div class="grid grid-2" style="margin-bottom:20px">
+<div class="chart-box"><h4>月次オーダー推移</h4><canvas id="rpt-monthly"></canvas></div>
+<div class="chart-box"><h4>平均TAT推移</h4><canvas id="rpt-tat"></canvas></div>
+</div>
+<div class="card"><h3>施設別クロス集計</h3><table><thead><tr><th>施設</th><th>オーダー数</th><th>完了</th><th>進行中</th><th>平均TAT</th></tr></thead><tbody>`+
+insts.map(inst=>{
+const iOrders=tos.filter(t=>t.Institution__c===inst.Id);
+const completed=iOrders.filter(t=>t.Status__c==='完了');
+const inProgress=iOrders.filter(t=>!['完了','キャンセル'].includes(t.Status__c));
+const avgTAT=completed.length?Math.round(completed.reduce((s,t)=>s+(t.TAT_Days__c||0),0)/completed.length):'-';
+return iOrders.length?`<tr><td>${inst.Name}</td><td>${iOrders.length}</td><td>${completed.length}</td><td>${inProgress.length}</td><td>${avgTAT}日</td></tr>`:''}).join('')+
+`</tbody></table></div>
+<div class="card"><h3>がん種別クロス集計</h3><table><thead><tr><th>がん種</th><th>検体数</th><th>完了</th><th>解析中</th></tr></thead><tbody>`+
+[...new Set(specs.map(s=>s.Cancer_Type__c).filter(Boolean))].map(ct=>{
+const ctSpecs=specs.filter(s=>s.Cancer_Type__c===ct);
+const done=ctSpecs.filter(s=>['解析完了','レポート発行済'].includes(s.Specimen_Status__c));
+const analyzing=ctSpecs.filter(s=>s.Specimen_Status__c==='解析中');
+return`<tr><td>${ct}</td><td>${ctSpecs.length}</td><td>${done.length}</td><td>${analyzing.length}</td></tr>`}).join('')+
+`</tbody></table></div>`}
+function iTestRep(){
+const mtd=MONTHLY_TESTING_DATA;
+mc('rpt-monthly',{type:'bar',data:{labels:mtd.map(m=>m.month.slice(5)+'月'),datasets:[{label:'出件数',data:mtd.map(m=>m.orders),backgroundColor:'#0176d3'},{label:'完了数',data:mtd.map(m=>m.completed),backgroundColor:'#2ecc71'}]},options:{responsive:true,plugins:{legend:{position:'top'}}}},'obj:Testing_Order__c');
+mc('rpt-tat',{type:'line',data:{labels:mtd.map(m=>m.month.slice(5)+'月'),datasets:[{label:'平均TAT(日)',data:mtd.map(m=>m.avgTAT),borderColor:'#e74c3c',backgroundColor:'rgba(231,76,60,.1)',fill:true,tension:.3}]},options:{responsive:true,plugins:{legend:{display:false}}}},'obj:Testing_Order__c')}
+
+// ===== 営業チームレポート =====
+function rSalesTeam(){
+const opps=D.Pharma_Opportunity__c||[],vis=D.Visit_Record__c||[];
+const salesUsers=USERS.filter(u=>u.team==='Sales');
+let h='<div class="grid grid-3">';
+salesUsers.forEach(u=>{
+const uOpps=opps.filter(o=>o.Owner_Name__c===u.name);
+const uWon=uOpps.filter(o=>o.Phase__c==='成約').reduce((s,o)=>s+(o.Amount__c||0),0);
+const uPipe=uOpps.filter(o=>!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+const uVis=vis.filter(v=>{const docs=(D.Doctor__c||[]).filter(d=>d.Assigned_MR__c===u.name).map(d=>d.Id);return docs.includes(v.Doctor__c)}).length;
+h+=`<div class="card" style="text-align:center"><div style="font-size:36px">${u.photo}</div><div style="font-weight:600;margin:8px 0">${u.name}</div><div style="color:#888;font-size:12px;margin-bottom:12px">${u.role}</div>
+<div class="grid grid-3" style="gap:8px">
+<div style="background:#e8f5e9;padding:8px;border-radius:6px"><div style="font-size:18px;font-weight:700;color:#2e7d32">${fmt(uWon)}</div><div style="font-size:11px;color:#888">成約</div></div>
+<div style="background:#e3f2fd;padding:8px;border-radius:6px"><div style="font-size:18px;font-weight:700;color:#1565c0">${fmt(uPipe)}</div><div style="font-size:11px;color:#888">パイプライン</div></div>
+<div style="background:#fff3e0;padding:8px;border-radius:6px"><div style="font-size:18px;font-weight:700;color:#e65100">${uVis}</div><div style="font-size:11px;color:#888">訪問数</div></div>
+</div></div>`});
+h+='</div>';
+return h}
+
+// ===== 承認キュー =====
+function rApproval(){
+const ars=D.Approval_Request__c||[];
+const pending=ars.filter(a=>['申請中','承認待ち'].includes(a.Status__c)).length;
+const approved=ars.filter(a=>a.Status__c==='承認済').length;
+const totalApproved=ars.filter(a=>a.Status__c==='承認済').reduce((s,a)=>s+(a.Amount__c||0),0);
+let h=`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Approval_Request__c')"><div class="kv">${pending}</div><div class="kl">未処理</div></div>
+<div class="kpi-card" onclick="nav('obj','Approval_Request__c')"><div class="kv">${approved}</div><div class="kl">承認済</div></div>
+<div class="kpi-card" onclick="nav('obj','Approval_Request__c')"><div class="kv">¥${totalApproved.toLocaleString()}</div><div class="kl">承認済金額</div></div>
+<div class="kpi-card" onclick="nav('obj','Approval_Request__c')"><div class="kv">${ars.length}</div><div class="kl">全申請数</div></div>
+</div>`;
+const actionItems=ars.filter(a=>['申請中','承認待ち'].includes(a.Status__c));
+if(actionItems.length){h+=`<div class="card"><h3>対応が必要な申請</h3>`;
+actionItems.forEach(a=>{
+const prColor={'高':'#e74c3c','中':'#f39c12','低':'#3498db'}[a.Priority__c]||'#888';
+h+=`<div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px;margin-bottom:12px;border-left:4px solid ${prColor}">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<div style="font-weight:600">${a.Name}</div>
+<span class="sb ${sc(a.Priority__c)}">${a.Priority__c}</span>
+</div>
+<div style="color:#888;font-size:13px;margin-bottom:8px">${a.Request_Type__c} | ¥${(a.Amount__c||0).toLocaleString()} | 申請者: ${userName(a.Requested_By__c)} | ${a.Submitted_Date__c||'-'}</div>
+${a.Description__c?`<div style="font-size:13px;color:#555;margin-bottom:8px">${(a.Description__c||'').slice(0,200)}${(a.Description__c||'').length>200?'...':''}</div>`:''}
+</div>`});
+h+=`</div>`}
+h+=`<div class="card"><h3>承認履歴</h3><table><thead><tr><th>申請名</th><th>種別</th><th>金額</th><th>申請者</th><th>承認者</th><th>状態</th><th>日付</th></tr></thead><tbody>`;
+ars.forEach(a=>h+=`<tr><td>${a.Name}</td><td>${a.Request_Type__c}</td><td>¥${(a.Amount__c||0).toLocaleString()}</td><td>${userName(a.Requested_By__c)}</td><td>${userName(a.Approver__c)}</td><td><span class="sb ${sc(a.Status__c)}">${a.Status__c}</span></td><td>${a.Submitted_Date__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== ワークフロー管理 =====
+function rWorkflow(){
+const wfs=D.Workflow_Instance__c||[];
+const active=wfs.filter(w=>['進行中','承認待ち'].includes(w.Status__c));
+const overdue=active.filter(w=>w.Due_Date__c&&w.Due_Date__c<new Date().toISOString().slice(0,10));
+const completed=wfs.filter(w=>w.Status__c==='完了');
+let h=`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Workflow_Instance__c')"><div class="kv">${active.length}</div><div class="kl">進行中</div></div>
+<div class="kpi-card" onclick="nav('obj','Workflow_Instance__c')"><div class="kv">${wfs.filter(w=>w.Status__c==='承認待ち').length}</div><div class="kl">承認待ち</div></div>
+<div class="kpi-card" onclick="nav('obj','Workflow_Instance__c')"><div class="kv">${overdue.length}</div><div class="kl">期限超過</div><div class="ks" style="color:#e74c3c">${overdue.length?'要対応':''}</div></div>
+<div class="kpi-card" onclick="nav('obj','Workflow_Instance__c')"><div class="kv">${completed.length}</div><div class="kl">完了</div></div>
+</div>`;
+h+=`<div style="margin-bottom:16px"><button class="btn pri" onclick="nav('workflow-new')">＋ 新規ワークフロー</button></div>`;
+h+=`<div class="card"><h3>ワークフロー種別</h3><div class="grid grid-3" style="padding:16px">`;
+Object.entries(WORKFLOW_TEMPLATES).forEach(([type,tmpl])=>{
+const typeWfs=wfs.filter(w=>w.Workflow_Type__c===type);
+const typeActive=typeWfs.filter(w=>['進行中','承認待ち'].includes(w.Status__c)).length;
+h+=`<div style="border-left:4px solid ${tmpl.color};padding:12px;background:#f8f8f8;border-radius:6px">
+<div style="font-size:20px">${tmpl.icon}</div>
+<div style="font-weight:600;margin:4px 0">${tmpl.name}</div>
+<div style="color:#888;font-size:12px">進行中: ${typeActive} | 完了: ${typeWfs.filter(w=>w.Status__c==='完了').length} | ステップ: ${tmpl.steps.length}</div>
+</div>`});
+h+=`</div></div>`;
+h+=`<div class="card"><h3>ワークフロー一覧</h3><table><thead><tr><th>名前</th><th>種別</th><th>状態</th><th>優先度</th><th>進捗</th><th>期限</th></tr></thead><tbody>`;
+wfs.sort((a,b)=>{const so={'進行中':0,'承認待ち':1,'未開始':2,'完了':3,'中止':4};return(so[a.Status__c]||9)-(so[b.Status__c]||9)}).forEach(w=>{
+const prog=w.Total_Steps__c?Math.round(w.Current_Step__c/w.Total_Steps__c*100):0;
+const tmpl=WORKFLOW_TEMPLATES[w.Workflow_Type__c]||{icon:'📋',color:'#888'};
+const isOverdue=w.Due_Date__c&&w.Due_Date__c<new Date().toISOString().slice(0,10)&&w.Status__c!=='完了';
+h+=`<tr onclick="nav('workflow-detail','${w.Id}')" style="cursor:pointer"><td>${tmpl.icon} ${w.Name}</td><td>${w.Workflow_Type__c}</td><td><span class="sb ${sc(w.Status__c)}">${w.Status__c}</span></td><td><span class="sb ${sc(w.Priority__c)}">${w.Priority__c}</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:6px;background:#e0e0e0;border-radius:3px"><div style="width:${prog}%;height:100%;background:${tmpl.color};border-radius:3px"></div></div>${prog}%</div></td><td style="${isOverdue?'color:#e74c3c;font-weight:600':''}">${w.Due_Date__c||'-'}${isOverdue?' ⚠️':''}</td></tr>`});
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== ワークフロー詳細 =====
+function rWfDetail(){
+const wfId=co;
+const wf=(D.Workflow_Instance__c||[]).find(w=>w.Id===wfId);
+if(!wf)return`<div class="card"><p>ワークフローが見つかりません</p><button class="btn sec" onclick="nav('workflow')">← 戻る</button></div>`;
+const tmpl=WORKFLOW_TEMPLATES[wf.Workflow_Type__c]||{icon:'📋',color:'#888',steps:[]};
+const prog=wf.Total_Steps__c?Math.round(wf.Current_Step__c/wf.Total_Steps__c*100):0;
+const isOverdue=wf.Due_Date__c&&wf.Due_Date__c<new Date().toISOString().slice(0,10)&&wf.Status__c!=='完了';
+let h=`<div style="margin-bottom:16px"><button class="btn sec" onclick="nav('workflow')">← ワークフロー一覧</button></div>`;
+h+=`<div class="card" style="border-left:4px solid ${tmpl.color}">
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<div><h3 style="margin:0">${tmpl.icon} ${wf.Name}</h3>
+<div style="margin-top:8px"><span class="sb ${sc(wf.Status__c)}">${wf.Status__c}</span> <span class="sb ${sc(wf.Priority__c)}">${wf.Priority__c}</span></div>
+<div style="color:#888;margin-top:8px;font-size:13px">${wf.Description__c||''}</div>
+<div style="margin-top:12px;font-size:13px;color:#555">
+<div>申請者: ${userName(wf.Requested_By__c)} | 担当: ${userName(wf.Current_Assignee__c)}</div>
+<div>開始: ${wf.Start_Date__c||'-'} | 期限: <span style="${isOverdue?'color:#e74c3c;font-weight:600':''}">${wf.Due_Date__c||'-'}${isOverdue?' ⚠️':''}</span>${wf.Completed_Date__c?' | 完了: '+wf.Completed_Date__c:''}</div>
+</div></div>
+<div style="text-align:center"><div style="width:80px;height:80px;border-radius:50%;border:6px solid ${tmpl.color};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:${tmpl.color}">${prog}%</div><div style="font-size:12px;color:#888;margin-top:4px">${wf.Current_Step__c}/${wf.Total_Steps__c}ステップ</div></div>
+</div></div>`;
+h+=`<div class="card"><h3>ワークフローステップ</h3><div style="padding:16px">`;
+tmpl.steps.forEach((step,i)=>{
+const stepNum=i+1;
+const isDone=stepNum<wf.Current_Step__c;
+const isCurrent=stepNum===wf.Current_Step__c;
+const dotColor=isDone?'#2ecc71':isCurrent?tmpl.color:'#e0e0e0';
+const icon=isDone?'✓':isCurrent?'▶':stepNum;
+h+=`<div style="display:flex;align-items:flex-start;margin-bottom:${i<tmpl.steps.length-1?'0':'0'}px">
+<div style="display:flex;flex-direction:column;align-items:center;margin-right:16px">
+<div style="width:32px;height:32px;border-radius:50%;background:${dotColor};color:white;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">${icon}</div>
+${i<tmpl.steps.length-1?`<div style="width:2px;height:32px;background:${isDone?'#2ecc71':'#e0e0e0'}"></div>`:''}
+</div>
+<div style="padding:4px 0 16px"><div style="font-weight:${isCurrent?'700':'400'}">${step}</div>
+<div style="font-size:12px;color:#888">${isDone?'完了':isCurrent?'進行中':'未着手'}</div>
+</div></div>`});
+h+=`</div></div>`;
+return h}
+
+// ===== ワークフロー新規作成 =====
+function rWfNew(){
+let h=`<div style="margin-bottom:16px"><button class="btn sec" onclick="nav('workflow')">← ワークフロー一覧</button></div>`;
+h+=`<div class="card" style="max-width:800px"><h3>新規ワークフロー作成</h3><div style="padding:16px">
+<div style="margin-bottom:16px"><label style="font-weight:600;display:block;margin-bottom:4px">ワークフロー種別</label>
+<select id="wfType" onchange="wfTypeChanged()" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px">`;
+Object.entries(WORKFLOW_TEMPLATES).forEach(([type,tmpl])=>h+=`<option value="${type}">${tmpl.icon} ${tmpl.name}</option>`);
+h+=`</select></div>
+<div style="margin-bottom:16px"><label style="font-weight:600;display:block;margin-bottom:4px">ワークフロー名</label>
+<input type="text" id="wfName" placeholder="例: 佐藤花子 テリトリー引き継ぎ" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px"></div>
+<div class="grid grid-3" style="margin-bottom:16px">
+<div><label style="font-weight:600;display:block;margin-bottom:4px">優先度</label>
+<select id="wfPriority" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px"><option>中</option><option>高</option><option>緊急</option><option>低</option></select></div>
+<div><label style="font-weight:600;display:block;margin-bottom:4px">開始日</label>
+<input type="date" id="wfStart" value="${new Date().toISOString().slice(0,10)}" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px"></div>
+<div><label style="font-weight:600;display:block;margin-bottom:4px">期限日</label>
+<input type="date" id="wfDue" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px"></div>
+</div>
+<div style="margin-bottom:16px"><label style="font-weight:600;display:block;margin-bottom:4px">説明</label>
+<textarea id="wfDesc" rows="3" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px" placeholder="ワークフローの説明を入力..."></textarea></div>
+<div id="wfStepsPreview"></div>
+<div style="margin-top:20px;display:flex;gap:8px">
+<button class="btn pri" onclick="toast('ワークフロー作成機能は準備中です')">作成</button>
+<button class="btn sec" onclick="nav('workflow')">キャンセル</button>
+</div></div></div>`;
+return h}
+function bWfNew(){wfTypeChanged()}
+function wfTypeChanged(){
+const type=document.getElementById('wfType').value;
+const tmpl=WORKFLOW_TEMPLATES[type];
+if(!tmpl)return;
+const startEl=document.getElementById('wfStart');
+const dueEl=document.getElementById('wfDue');
+if(startEl&&dueEl){const start=new Date(startEl.value||Date.now());start.setDate(start.getDate()+tmpl.sla);dueEl.value=start.toISOString().slice(0,10)}
+const preview=document.getElementById('wfStepsPreview');
+if(preview){let h=`<div style="border-left:4px solid ${tmpl.color};padding:12px;background:#f8f8f8;border-radius:6px"><div style="font-weight:600;margin-bottom:8px">${tmpl.icon} ${tmpl.name} (SLA: ${tmpl.sla}日)</div><div style="display:flex;gap:4px;margin-bottom:8px">`;
+tmpl.steps.forEach((_,i)=>h+=`<div style="width:12px;height:12px;border-radius:50%;background:${tmpl.color};opacity:${0.3+i*0.1}"></div>`);
+h+=`</div><table style="width:100%;font-size:13px"><thead><tr><th>#</th><th>ステップ</th></tr></thead><tbody>`;
+tmpl.steps.forEach((s,i)=>h+=`<tr><td>${i+1}</td><td>${s}</td></tr>`);
+h+=`</tbody></table></div>`;
+preview.innerHTML=h}}
+
+// ===== KOLマップ =====
+function rKOLMap(){
+const docs=(D.Doctor__c||[]).filter(d=>d.KOL_Score__c>0).sort((a,b)=>(b.KOL_Score__c||0)-(a.KOL_Score__c||0));
+const t1=docs.filter(d=>d.KOL_Score__c>=80),t2=docs.filter(d=>d.KOL_Score__c>=50&&d.KOL_Score__c<80),t3=docs.filter(d=>d.KOL_Score__c>=20&&d.KOL_Score__c<50),t4=docs.filter(d=>d.KOL_Score__c<20);
+let h=`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" style="border-left:4px solid #e74c3c" onclick="nav('obj','Doctor__c')"><div class="kv">${t1.length}</div><div class="kl">Tier 1 (80+)</div></div>
+<div class="kpi-card" style="border-left:4px solid #f39c12" onclick="nav('obj','Doctor__c')"><div class="kv">${t2.length}</div><div class="kl">Tier 2 (50-79)</div></div>
+<div class="kpi-card" style="border-left:4px solid #3498db" onclick="nav('obj','Doctor__c')"><div class="kv">${t3.length}</div><div class="kl">Tier 3 (20-49)</div></div>
+<div class="kpi-card" style="border-left:4px solid #95a5a6" onclick="nav('obj','Doctor__c')"><div class="kv">${t4.length}</div><div class="kl">Others (<20)</div></div>
+</div>`;
+h+=`<div class="card"><h3>KOLマトリクス</h3><table><thead><tr><th>ドクター</th><th>施設</th><th>専門</th><th>KOLスコア</th><th>関係構築度</th><th>訪問回数</th><th>紹介検体</th></tr></thead><tbody>`;
+docs.forEach(d=>{
+const score=d.KOL_Score__c||0;
+const barColor=score>=80?'#e74c3c':score>=50?'#f39c12':score>=20?'#3498db':'#95a5a6';
+h+=`<tr onclick="sd('Doctor__c','${d.Id}')" style="cursor:pointer"><td>${d.Name}</td><td>${mi(d.Medical_Institution__c)}</td><td>${d.Department__c||'-'}</td>
+<td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:8px;background:#e0e0e0;border-radius:4px"><div style="width:${score}%;height:100%;background:${barColor};border-radius:4px"></div></div>${score}</div></td>
+<td><span class="sb ${sc(d.Relationship_Level__c)}">${d.Relationship_Level__c||'-'}</span></td><td>${d.Visit_Count__c||0}</td><td>${d.Referred_Specimen_Count__c||0}</td></tr>`});
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== 競合情報 =====
+function rCompIntel(){
+const cis=(D.Competitive_Intel__c||[]).sort((a,b)=>(b.Date__c||'').localeCompare(a.Date__c||''));
+const competitors=[...new Set(cis.map(c=>c.Competitor__c).filter(Boolean))];
+const highImpact=cis.filter(c=>c.Impact__c==='高').length;
+let h=`<div class="grid grid-${2+Math.min(competitors.length,2)}" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Competitive_Intel__c')"><div class="kv">${cis.length}</div><div class="kl">情報件数</div></div>
+<div class="kpi-card" onclick="nav('obj','Competitive_Intel__c')"><div class="kv">${highImpact}</div><div class="kl">高インパクト</div></div>`;
+competitors.slice(0,2).forEach(c=>h+=`<div class="kpi-card" onclick="nav('obj','Competitive_Intel__c')"><div class="kv">${cis.filter(ci=>ci.Competitor__c===c).length}</div><div class="kl">${c.slice(0,15)}</div></div>`);
+h+=`</div>`;
+h+=`<div class="card"><h3>競合情報タイムライン</h3>`;
+cis.forEach(c=>{
+const impColor={'高':'#e74c3c','中':'#f39c12','低':'#3498db'}[c.Impact__c]||'#888';
+h+=`<div style="border-left:4px solid ${impColor};padding:12px 16px;margin:12px 16px;background:#f8f8f8;border-radius:0 6px 6px 0">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+<div style="font-size:12px;color:#888">${c.Date__c||'-'} | ${c.Competitor__c||'-'} | ${c.Intel_Type__c||'-'}</div>
+<span class="sb ${sc(c.Impact__c)}">${c.Impact__c}</span>
+</div>
+<div style="font-weight:600;margin-bottom:4px">${c.Name}</div>
+${c.Action_Required__c?`<div style="font-size:13px;color:#555">${c.Action_Required__c}</div>`:''}
+</div>`});
+h+=`</div>`;
+return h}
+
+// ===== テリトリー分析 =====
+function rTerritory(){
+const insts=D.Medical_Institution__c||[],docs=D.Doctor__c||[],vis=D.Visit_Record__c||[];
+const prefs=[...new Set(insts.map(i=>i.Prefecture__c).filter(Boolean))].sort();
+let h=`<div class="card"><h3>都道府県別カバレッジ</h3><table><thead><tr><th>都道府県</th><th>施設数</th><th>導入済</th><th>Dr数</th><th>訪問数</th><th>カバレッジ</th></tr></thead><tbody>`;
+prefs.forEach(p=>{
+const pInsts=insts.filter(i=>i.Prefecture__c===p);
+const adopted=pInsts.filter(i=>i.Adapter_Status__c==='導入完了').length;
+const pInstIds=pInsts.map(i=>i.Id);
+const pDocs=docs.filter(d=>pInstIds.includes(d.Medical_Institution__c)).length;
+const pVis=vis.filter(v=>{const doc=(docs).find(d=>d.Id===v.Doctor__c);return doc&&pInstIds.includes(doc.Medical_Institution__c)}).length;
+const coverage=pInsts.length?pct(adopted,pInsts.length):0;
+const covColor=coverage>=75?'#2ecc71':coverage>=50?'#f39c12':'#e74c3c';
+h+=`<tr><td>${p}</td><td>${pInsts.length}</td><td>${adopted}</td><td>${pDocs}</td><td>${pVis}</td>
+<td><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:8px;background:#e0e0e0;border-radius:4px"><div style="width:${coverage}%;height:100%;background:${covColor};border-radius:4px"></div></div>${coverage}%</div></td></tr>`});
+h+=`</tbody></table></div>`;
+const salesUsers=USERS.filter(u=>u.team==='Sales');
+h+=`<div class="card"><h3>MR別テリトリー</h3><div class="grid grid-3" style="padding:16px">`;
+salesUsers.forEach(u=>{
+const uDocs=docs.filter(d=>d.Assigned_MR__c===u.name);
+const uInsts=[...new Set(uDocs.map(d=>d.Medical_Institution__c).filter(Boolean))].length;
+const uDocIds=uDocs.map(d=>d.Id);
+const uVis=vis.filter(v=>uDocIds.includes(v.Doctor__c)).length;
+const uPipe=(D.Pharma_Opportunity__c||[]).filter(o=>o.Owner_Name__c===u.name&&!['成約','失注'].includes(o.Phase__c)).reduce((s,o)=>s+(o.Amount__c||0),0);
+h+=`<div style="border:1px solid #e0e0e0;border-radius:8px;padding:16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:28px">${u.photo}</span><div><div style="font-weight:600">${u.name}</div><div style="color:#888;font-size:12px">${u.role}</div></div></div>
+<div class="grid grid-2" style="gap:8px;font-size:13px">
+<div>Dr: ${uDocs.length}名</div><div>施設: ${uInsts}</div><div>訪問: ${uVis}件</div><div>PL: ${fmt(uPipe)}</div>
+</div></div>`});
+h+=`</div></div>`;
+return h}
+
+// ===== 訪問ターゲット管理 =====
+function rVisitTarget(){
+const vts=D.Visit_Target__c||[];
+const achieved=vts.filter(v=>v.Status__c==='達成').length;
+const inProgress=vts.filter(v=>v.Status__c==='進行中').length;
+const notStarted=vts.filter(v=>v.Status__c==='未着手').length;
+const totalTarget=vts.reduce((s,v)=>s+(v.Target_Visits__c||0),0);
+const totalActual=vts.reduce((s,v)=>s+(v.Actual_Visits__c||0),0);
+const overallAch=totalTarget?pct(totalActual,totalTarget):0;
+let h=`<div class="grid grid-6" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Visit_Target__c')"><div class="kv">${vts.length}</div><div class="kl">総ターゲット</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Target__c')"><div class="kv">${achieved}</div><div class="kl">達成</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Target__c')"><div class="kv">${inProgress}</div><div class="kl">進行中</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Target__c')"><div class="kv">${notStarted}</div><div class="kl">未着手</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Record__c')"><div class="kv">${totalActual}/${totalTarget}</div><div class="kl">訪問数</div></div>
+<div class="kpi-card" onclick="nav('obj','Visit_Target__c')"><div class="kv">${overallAch}%</div><div class="kl">全体達成率</div></div>
+</div>`;
+const userIds=[...new Set(vts.map(v=>v.OwnerId).filter(Boolean))];
+userIds.forEach(uid=>{
+const u=USERS.find(u=>u.id===uid);
+if(!u)return;
+const uVts=vts.filter(v=>v.OwnerId===uid);
+const uAch=uVts.filter(v=>v.Status__c==='達成').length;
+const achRate=uVts.length?pct(uAch,uVts.length):0;
+const achColor=achRate>=80?'#2ecc71':achRate>=50?'#f39c12':'#e74c3c';
+h+=`<div class="card"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:28px">${u.photo}</span><div style="flex:1"><div style="font-weight:600">${u.name} <span style="color:#888;font-size:12px">${u.role}</span></div><div style="display:flex;align-items:center;gap:8px;margin-top:4px"><div style="flex:1;height:8px;background:#e0e0e0;border-radius:4px"><div style="width:${achRate}%;height:100%;background:${achColor};border-radius:4px"></div></div><span style="font-weight:600;color:${achColor}">${achRate}%</span></div></div></div>`;
+h+=`<table><thead><tr><th>優先度</th><th>ドクター</th><th>目的</th><th>目標</th><th>実績</th><th>達成率</th><th>次回</th><th>状態</th></tr></thead><tbody>`;
+uVts.sort((a,b)=>{const po={'A（最優先）':0,'B（重要）':1,'C（通常）':2,'D（低）':3};return(po[a.Priority__c]||9)-(po[b.Priority__c]||9)}).forEach(v=>{
+h+=`<tr><td><span class="sb ${sc(v.Priority__c)}">${v.Priority__c||'-'}</span></td><td>${dn(v.Doctor__c)}</td><td>${v.Visit_Purpose__c||'-'}</td><td>${v.Target_Visits__c}</td><td>${v.Actual_Visits__c}</td><td>${v.Achievement_Rate__c||0}%</td><td>${v.Next_Visit_Date__c||'-'}</td><td><span class="sb ${sc(v.Status__c)}">${v.Status__c}</span></td></tr>`});
+h+=`</tbody></table></div>`});
+return h}
+
+// ===== ドクターアサイン =====
+function rDocAssign(){
+const docs=D.Doctor__c||[];
+const salesUsers=USERS.filter(u=>['Sales','MA'].includes(u.team));
+let h=`<div class="card"><h3>担当者別ドクター数</h3><table><thead><tr><th>担当者</th><th>役割</th><th>ドクター数</th><th>KOL数</th></tr></thead><tbody>`;
+salesUsers.forEach(u=>{
+const uDocs=docs.filter(d=>d.Assigned_MR__c===u.name);
+const uKols=uDocs.filter(d=>d.Is_KOL__c);
+h+=`<tr><td>${u.photo} ${u.name}</td><td>${u.role}</td><td>${uDocs.length}</td><td>${uKols.length}</td></tr>`});
+h+=`</tbody></table></div>`;
+h+=`<div class="card"><h3>引き継ぎ・アサイン変更</h3><div style="padding:16px">
+<div class="grid grid-2" style="margin-bottom:16px">
+<div><label style="font-weight:600;display:block;margin-bottom:4px">引き継ぎ元</label>
+<select id="assignFrom" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px">
+<option value="">選択してください</option>`;
+salesUsers.forEach(u=>h+=`<option value="${u.name}">${u.photo} ${u.name} (${u.role})</option>`);
+h+=`</select></div>
+<div><label style="font-weight:600;display:block;margin-bottom:4px">引き継ぎ先</label>
+<select id="assignTo" style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px">
+<option value="">選択してください</option>`;
+salesUsers.forEach(u=>h+=`<option value="${u.name}">${u.photo} ${u.name} (${u.role})</option>`);
+h+=`</select></div></div>
+<div style="margin-bottom:16px"><label style="font-weight:600;display:block;margin-bottom:4px">理由</label>
+<select style="width:100%;padding:8px;border:1px solid #d8dde6;border-radius:6px">
+<option>退職</option><option>異動</option><option>担当変更</option><option>産休・育休</option><option>その他</option>
+</select></div>
+<button class="btn pri" onclick="toast('引き継ぎ機能は準備中です')">引き継ぎプレビュー</button>
+</div></div>`;
+return h}
+
+// ===== 検体トラッカー =====
+function rSpecTracker(){
+const specs=(D.Specimen__c||[]).sort((a,b)=>(b.Received_Date__c||'').localeCompare(a.Received_Date__c||''));
+const stages=['受領待ち','受領済','QC中','解析中','レポート発行済'];
+const stageColors={'受領待ち':'#95a5a6','受領済':'#3498db','QC中':'#f39c12','解析中':'#9b59b6','レポート発行済':'#2ecc71'};
+const stageProg={'受領待ち':0,'受領済':20,'QC中':40,'QC合格':45,'解析中':60,'解析完了':80,'レポート発行済':100};
+let h=`<div class="card"><h3>検体パイプライン</h3><div style="display:flex;align-items:center;justify-content:center;gap:4px;padding:20px;flex-wrap:wrap">`;
+stages.forEach((s,i)=>{
+const count=specs.filter(sp=>sp.Specimen_Status__c===s).length;
+h+=`<div style="text-align:center;padding:12px 20px;background:${stageColors[s]||'#888'};color:white;border-radius:8px;min-width:100px"><div style="font-size:24px;font-weight:700">${count}</div><div style="font-size:12px">${s}</div></div>`;
+if(i<stages.length-1)h+=`<div style="font-size:24px;color:#ccc">→</div>`});
+h+=`</div></div>`;
+h+=`<div class="card"><h3>検体一覧</h3>`;
+specs.forEach(sp=>{
+const prog=stageProg[sp.Specimen_Status__c]||0;
+const stColor=stageColors[sp.Specimen_Status__c]||'#888';
+h+=`<div onclick="sd('Specimen__c','${sp.Id}')" style="border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin:8px 16px;cursor:pointer">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<div><span style="font-weight:600">${sp.Name}</span> <span style="color:#888;font-size:12px">${sp.Cancer_Type__c||''} | ${sp.Analysis_Panel__c||''}</span></div>
+<span class="sb ${sc(sp.Specimen_Status__c)}">${sp.Specimen_Status__c}</span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="flex:1;height:6px;background:#e0e0e0;border-radius:3px"><div style="width:${prog}%;height:100%;background:${stColor};border-radius:3px"></div></div><span style="font-size:12px;color:#888">${prog}%</span></div>
+<div style="font-size:12px;color:#888">施設: ${mi(sp.Medical_Institution__c)} | 受領日: ${sp.Received_Date__c||'-'}</div>
+</div>`});
+h+=`</div>`;
+return h}
+
+// ===== 経費精算 =====
+function rExpense(){
+const exps=D.Expense_Report__c||[];
+const total=exps.reduce((s,e)=>s+(e.Amount__c||0),0);
+const pending=exps.filter(e=>e.Status__c==='申請中').reduce((s,e)=>s+(e.Amount__c||0),0);
+const approved=exps.filter(e=>['承認済','支払済'].includes(e.Status__c)).reduce((s,e)=>s+(e.Amount__c||0),0);
+const types=[...new Set(exps.map(e=>e.Expense_Type__c).filter(Boolean))];
+const maxTypeAmt=Math.max(...types.map(t=>exps.filter(e=>e.Expense_Type__c===t).reduce((s,e)=>s+(e.Amount__c||0),0)),1);
+let h=`<div class="grid grid-3" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Expense_Report__c')"><div class="kv">¥${total.toLocaleString()}</div><div class="kl">月間経費合計</div></div>
+<div class="kpi-card" onclick="nav('obj','Expense_Report__c')"><div class="kv">¥${pending.toLocaleString()}</div><div class="kl">申請中金額</div></div>
+<div class="kpi-card" onclick="nav('obj','Expense_Report__c')"><div class="kv">¥${approved.toLocaleString()}</div><div class="kl">承認済金額</div></div>
+</div>`;
+h+=`<div class="card"><h3>経費種別内訳</h3><div style="padding:16px">`;
+types.forEach(t=>{
+const tAmt=exps.filter(e=>e.Expense_Type__c===t).reduce((s,e)=>s+(e.Amount__c||0),0);
+const barW=pct(tAmt,maxTypeAmt);
+h+=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><div style="width:100px;font-size:13px;text-align:right">${t}</div><div style="flex:1;height:20px;background:#e0e0e0;border-radius:4px"><div style="width:${barW}%;height:100%;background:#0176d3;border-radius:4px"></div></div><div style="font-size:13px;width:80px">¥${tAmt.toLocaleString()}</div></div>`});
+h+=`</div></div>`;
+h+=`<div class="card"><h3>経費一覧</h3><table><thead><tr><th>番号</th><th>日付</th><th>種別</th><th>金額</th><th>説明</th><th>領収書</th><th>状態</th></tr></thead><tbody>`;
+exps.sort((a,b)=>(b.Report_Date__c||'').localeCompare(a.Report_Date__c||'')).forEach(e=>h+=`<tr><td>${e.Name}</td><td>${e.Report_Date__c||'-'}</td><td>${e.Expense_Type__c}</td><td>¥${(e.Amount__c||0).toLocaleString()}</td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.Description__c||'-'}</td><td>${e.Receipt_Attached__c?'✅':'❌'}</td><td><span class="sb ${sc(e.Status__c)}">${e.Status__c}</span></td></tr>`);
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== スケジュール =====
+let scheduleWeekOffset=0;
+function rSchedule(){
+const fieldUsers=USERS.filter(u=>u.team!=='External'&&u.team!=='Research');
+let h='<div class="tab-bar" id="schTabs">';
+fieldUsers.forEach((u,i)=>h+=`<div class="tab-btn${i===0?' active':''}" onclick="showSchedule('${u.id}',this)">${u.photo} ${u.name}</div>`);
+h+='</div><div style="display:flex;gap:8px;margin:12px 0"><button class="btn sec sm" onclick="scheduleWeekOffset--;showSchedule(document.querySelector(\'#schTabs .active\')?.textContent?.trim()?.split(\' \')[1]||\'U001\')">← 前週</button><button class="btn sec sm" onclick="scheduleWeekOffset=0;showSchedule(document.querySelector(\'#schTabs .active\')?.textContent?.trim()?.split(\' \')[1]||\'U001\')">今週</button><button class="btn sec sm" onclick="scheduleWeekOffset++;showSchedule(document.querySelector(\'#schTabs .active\')?.textContent?.trim()?.split(\' \')[1]||\'U001\')">次週 →</button></div><div id="schContent"></div>';
+return h}
+function bSchedule(){const fieldUsers=USERS.filter(u=>u.team!=='External'&&u.team!=='Research');if(fieldUsers.length)showSchedule(fieldUsers[0].id)}
+function showSchedule(userId,tab){
+if(tab){document.querySelectorAll('#schTabs .tab-btn').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
+const u=USERS.find(u=>u.id===userId);
+if(!u){const fieldUsers=USERS.filter(u=>u.team!=='External'&&u.team!=='Research');if(fieldUsers.length)userId=fieldUsers[0].id}
+const today=new Date();
+const startOfWeek=new Date(today);
+startOfWeek.setDate(today.getDate()-today.getDay()+1+scheduleWeekOffset*7);
+const vis=(D.Visit_Record__c||[]).filter(v=>{const doc=(D.Doctor__c||[]).find(d=>d.Id===v.Doctor__c);return doc&&doc.Assigned_MR__c===(USERS.find(uu=>uu.id===userId)||{}).name});
+const events=D.Event||[];
+const sems=D.Seminar__c||[];
+let h='<div class="grid grid-7" style="gap:8px">';
+for(let i=0;i<7;i++){
+const day=new Date(startOfWeek);
+day.setDate(startOfWeek.getDate()+i);
+const ds=day.toISOString().slice(0,10);
+const isToday=ds===today.toISOString().slice(0,10);
+const isWeekend=day.getDay()===0||day.getDay()===6;
+const dayVis=vis.filter(v=>v.Visit_Date__c===ds);
+const dayEvts=events.filter(e=>(e.StartDateTime||'').startsWith(ds));
+const daySems=sems.filter(s=>s.Event_Date__c===ds);
+const itemCount=dayVis.length+dayEvts.length+daySems.length;
+h+=`<div style="border:1px solid ${isToday?'#0176d3':'#e0e0e0'};border-radius:8px;padding:12px;min-height:150px;background:${isToday?'#f0f7ff':isWeekend?'#fafafa':'white'}">
+<div style="font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between"><span>${ds.slice(5)} ${'日月火水木金土'[day.getDay()]}</span>${itemCount?`<span style="background:#0176d3;color:white;border-radius:10px;padding:2px 8px;font-size:11px">${itemCount}</span>`:''}</div>`;
+dayVis.forEach(v=>h+=`<div style="font-size:12px;padding:4px 6px;margin-bottom:4px;background:#e3f2fd;border-radius:4px;border-left:3px solid #1565c0;cursor:pointer" onclick="sd('Visit_Record__c','${v.Id}')">🏥 ${dn(v.Doctor__c)}</div>`);
+daySems.forEach(s=>h+=`<div style="font-size:12px;padding:4px 6px;margin-bottom:4px;background:#f3e5f5;border-radius:4px;border-left:3px solid #6a1b9a;cursor:pointer" onclick="sd('Seminar__c','${s.Id}')">📚 ${s.Name}</div>`);
+dayEvts.forEach(e=>h+=`<div style="font-size:12px;padding:4px 6px;margin-bottom:4px;background:#e8f5e9;border-radius:4px;border-left:3px solid #2e7d32;cursor:pointer" onclick="sd('Event','${e.Id}')">📅 ${e.Subject||'-'}</div>`);
+h+=`</div>`}
+h+='</div>';
+document.getElementById('schContent').innerHTML=h}
+
+// ===== 勉強会出席者管理 =====
+function rSemAttendees(){
+const sems=D.Seminar__c||[],atts=D.Seminar_Attendee__c||[],bentos=D.Bento_Order__c||[];
+const totalAtts=atts.length;
+const confirmed=atts.filter(a=>a.Attendance_Status__c==='出席').length;
+const bentoCount=bentos.length;
+let h=`<div class="grid grid-4" style="margin-bottom:20px">
+<div class="kpi-card" onclick="nav('obj','Seminar__c')"><div class="kv">${sems.length}</div><div class="kl">勉強会数</div></div>
+<div class="kpi-card" onclick="nav('obj','Seminar_Attendee__c')"><div class="kv">${totalAtts}</div><div class="kl">登録者数</div></div>
+<div class="kpi-card" onclick="nav('obj','Seminar_Attendee__c')"><div class="kv">${confirmed}</div><div class="kl">出席確認済</div></div>
+<div class="kpi-card" onclick="nav('bento')"><div class="kv">${bentoCount}</div><div class="kl">弁当手配</div></div>
+</div>`;
+h+=`<div class="card"><h3>勉強会別出席者</h3><table><thead><tr><th>勉強会</th><th>日付</th><th>形式</th><th>登録数</th><th>出席</th><th>欠席</th><th>弁当</th></tr></thead><tbody>`;
+sems.forEach(s=>{
+const sAtts=atts.filter(a=>a.Seminar__c===s.Id);
+const attend=sAtts.filter(a=>a.Attendance_Status__c==='出席').length;
+const absent=sAtts.filter(a=>a.Attendance_Status__c==='欠席').length;
+const sBentos=bentos.filter(b=>b.Seminar__c===s.Id).reduce((sum,b)=>sum+(b.Quantity__c||0),0);
+h+=`<tr onclick="sd('Seminar__c','${s.Id}')"><td>${s.Name}</td><td>${s.Event_Date__c||'-'}</td><td>${s.Event_Format__c||'-'}</td><td>${sAtts.length}</td><td>${attend}</td><td>${absent}</td><td>${sBentos}</td></tr>`});
+h+=`</tbody></table></div>`;
+h+=`<div class="card"><h3>全出席者一覧</h3><table><thead><tr><th>氏名</th><th>勉強会</th><th>所属</th><th>メール</th><th>出欠</th><th>登録日</th></tr></thead><tbody>`;
+atts.forEach(a=>h+=`<tr><td>${a.Name}</td><td>${dn(a.Seminar__c)}</td><td>${a.Affiliation__c||'-'}</td><td>${a.Email__c||'-'}</td><td><span class="sb ${sc(a.Attendance_Status__c)}">${a.Attendance_Status__c}</span></td><td>${a.Registration_Date__c||'-'}</td></tr>`);
+h+=`</tbody></table></div>`;
+return h}
+
+// ===== INIT =====
+window.addEventListener('popstate',function(e){
+  if(e.state){
+    cv=e.state.cv||'dashboard';co=e.state.co||null;cr=null;isEditing=false;
+    if(e.state.crId&&e.state.co){sd(e.state.co,e.state.crId,true);return}
+    if(cv==='obj'&&co){loadPage(co,1,{q:''}).then(()=>R());return}
+    R();
+  }
+});
+async function init(){await loadData();fetch('/api/me').then(r=>r.json()).then(u=>{document.getElementById('userName').textContent=u.displayName||u.email;document.getElementById('userBadge').textContent=u.profile;
+if(u.isImpersonating){const b=document.getElementById('impersonateBanner');b.style.display='flex';document.getElementById('impersonateMsg').textContent='代理ログイン中: '+(u.displayName||u.email)+' ('+u.profile+') として閲覧中 — 管理者: '+(u.originalUser?.displayName||u.originalUser?.email||'')}
+}).catch(()=>{document.getElementById('userName').textContent='デモモード'});history.replaceState({cv:cv,co:co,crId:null},'');R()}
+init();
+</script>
+</body>
+</html>

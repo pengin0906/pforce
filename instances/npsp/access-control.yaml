@@ -1,0 +1,204 @@
+organizationSettings:
+  name: NPSP Nonprofit CRM
+  defaultLocale: en_US
+  currency: USD
+
+profiles:
+  - apiName: System_Admin
+    label: System Administrator
+    description: Full access to all objects
+    objectPermissions:
+      - object: '*'
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: true
+        modifyAllRecords: true
+
+  - apiName: Development_Director
+    label: Development Director
+    description: Full access to fundraising objects
+    objectPermissions:
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+      - object: Account
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+      - object: Opportunity
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+      - object: Campaign
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+        viewAllRecords: true
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Payment__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+      - object: Recurring_Donation__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+        viewAllRecords: true
+      - object: General_Accounting_Unit__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Allocation__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Engagement_Plan_Template__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Engagement_Plan__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Engagement_Plan_Task__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Level__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Event
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+
+  - apiName: Fundraiser
+    label: Fundraiser
+    description: Standard fundraiser access
+    objectPermissions:
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Opportunity
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Campaign
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Payment__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Recurring_Donation__c
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+
+  - apiName: Volunteer_Coordinator
+    label: Volunteer Coordinator
+    description: Manage volunteers and events
+    objectPermissions:
+      - object: Contact
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: Account
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+      - object: Campaign
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+      - object: CampaignMember
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Event
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Task
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: true
+      - object: Lead
+        allowCreate: true
+        allowRead: true
+        allowEdit: true
+        allowDelete: false
+
+  - apiName: Read_Only
+    label: Read Only
+    description: Read-only access to all objects
+    objectPermissions:
+      - object: '*'
+        allowCreate: false
+        allowRead: true
+        allowEdit: false
+        allowDelete: false
+
+profileAssignment:
+  defaultProfile: System_Admin
+
+permissionSets: []
+fieldLevelSecurity: []

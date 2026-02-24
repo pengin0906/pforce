@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DreamHouse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;background:#f0f4f3;color:#333}
+.app{display:flex;height:100vh}
+.sidebar{width:250px;background:#1b2e35;color:#fff;overflow-y:auto;flex-shrink:0}
+.sidebar-hdr{padding:16px 20px;border-bottom:1px solid #2a4a52;background:linear-gradient(135deg,#1b2e35 0%,#234a52 100%)}
+.sidebar-hdr h2{font-size:16px;color:#4ecdc4;letter-spacing:.5px}
+.sidebar-hdr small{color:#8aafb0;font-size:11px}
+.nav-sec{padding:8px 0;border-top:1px solid #2a4a52}
+.nav-sec-title{padding:8px 20px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6a9a9c;letter-spacing:.5px}
+.nav-item{padding:10px 20px;cursor:pointer;font-size:13px;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{background:#2a4a52;border-left-color:#4ecdc4}
+.nav-item.active{background:#2980b9;border-left-color:#4ecdc4;font-weight:600}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid #d4ddd8;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;height:56px}
+.topbar h1{font-size:17px;font-weight:600;color:#1b2e35}
+.user-area{display:flex;align-items:center;gap:12px;font-size:13px}
+.badge{background:#2980b9;color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.btn{padding:8px 16px;background:#2980b9;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600}
+.btn:hover{background:#1e6fa0}
+.btn.sec{background:#d4ddd8;color:#333}
+.btn.sm{padding:5px 10px;font-size:11px}
+.btn.danger{background:#e74c3c}.btn.danger:hover{background:#c0392b}
+.content{flex:1;overflow-y:auto;padding:24px;background:#f0f4f3}
+.card{background:#fff;border:1px solid #d4ddd8;border-radius:6px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:15px;font-weight:600;margin-bottom:12px;color:#1b2e35}
+.grid{display:grid;gap:16px}.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.kpi-card{background:#fff;border:1px solid #d4ddd8;border-radius:6px;padding:16px;text-align:center}
+.kpi-card .kv{font-size:28px;font-weight:700;color:#2980b9}
+.kpi-card .kl{font-size:11px;color:#888;margin-top:4px}
+.kpi-card .ks{font-size:11px;color:#27ae60;margin-top:2px}
+table{width:100%;border-collapse:collapse}
+thead{background:#f5f8f7;border-bottom:2px solid #d4ddd8}
+th{padding:10px 12px;text-align:left;font-weight:600;font-size:11px;color:#555;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:1px solid #eef2f0;font-size:13px}
+tbody tr:hover{background:#f5faf9;cursor:pointer}
+.sb{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.sg{background:#e8f5e9;color:#2e7d32}.sbl{background:#e3f2fd;color:#1565c0}.so{background:#fff3e0;color:#e65100}.sr{background:#ffebee;color:#c62828}.sgy{background:#f5f5f5;color:#666}
+.chart-box{background:#fff;border:1px solid #d4ddd8;border-radius:6px;padding:16px}
+.chart-box h4{font-size:13px;font-weight:600;margin-bottom:10px;color:#555}
+.chart-box canvas{max-height:300px}
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:12px 0}
+.kanban-col{background:#f5f8f7;border-radius:6px;padding:12px}
+.kanban-hdr{font-weight:600;font-size:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #2980b9;display:flex;justify-content:space-between}
+.kanban-hdr .cnt{background:#2980b9;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px}
+.kcard{background:#fff;border:1px solid #d4ddd8;border-radius:4px;padding:10px;margin-bottom:8px;cursor:pointer;font-size:12px}
+.kcard:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);transform:translateY(-1px)}
+.kcard strong{display:block;margin-bottom:3px}
+.kcard small{color:#999}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-field label{font-size:11px;color:#888;font-weight:600;display:block;margin-bottom:4px}
+.detail-field .val{background:#f5f8f7;padding:8px 12px;border-radius:4px;font-size:13px;min-height:36px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;color:#555;font-weight:600;margin-bottom:4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#2980b9;box-shadow:0 0 0 2px rgba(41,128,185,.15)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:8px;width:600px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #d4ddd8}
+.modal-hdr h3{margin:0;font-size:16px}
+.modal-body{padding:20px}
+.modal-footer{padding:12px 20px;border-top:1px solid #d4ddd8;display:flex;justify-content:flex-end;gap:8px}
+.toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:6px;color:#fff;font-size:13px;font-weight:500;z-index:2000;animation:fadeIn .3s}
+.toast.success{background:#27ae60}.toast.error{background:#e74c3c}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.pipeline-row{display:flex;align-items:center;margin:8px 0}
+.pipeline-label{width:130px;font-size:12px;color:#555;flex-shrink:0}
+.pipeline-bar{height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;min-width:40px;transition:width .3s}
+.pipeline-val{margin-left:8px;font-size:12px;color:#888;width:80px}
+@media(max-width:1200px){.grid-4{grid-template-columns:1fr 1fr}}
+/* Property Explorer */
+.prop-explorer{display:grid;grid-template-columns:1fr 1fr;gap:16px;height:calc(100vh - 140px)}
+.prop-list-panel{overflow-y:auto}
+.prop-map-panel{position:relative;border-radius:6px;overflow:hidden;border:1px solid #d4ddd8}
+.prop-map{height:100%;width:100%;min-height:400px}
+.prop-filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.prop-filter-bar select,.prop-filter-bar input{padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px}
+.prop-tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prop-tile{background:#fff;border:1px solid #d4ddd8;border-radius:6px;cursor:pointer;overflow:hidden;transition:all .15s}
+.prop-tile:hover{box-shadow:0 4px 12px rgba(0,0,0,.12);transform:translateY(-2px)}
+.prop-tile.selected{border-color:#2980b9;box-shadow:0 0 0 2px rgba(41,128,185,.3)}
+.prop-tile-img{width:100%;height:120px;object-fit:cover;background:#e8ede8}
+.prop-tile-body{padding:10px}
+.prop-tile-body h4{font-size:13px;margin-bottom:4px;color:#1b2e35}
+.prop-tile-body .price{font-size:14px;font-weight:700;color:#2980b9}
+.prop-tile-body .meta{font-size:11px;color:#888;margin-top:3px}
+.prop-summary{background:#fff;border:1px solid #d4ddd8;border-radius:6px;padding:16px;margin-top:12px}
+.prop-summary h3{font-size:15px;margin-bottom:8px;color:#1b2e35}
+.prop-summary .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prop-summary .sum-item label{font-size:10px;color:#888;font-weight:600;display:block}
+.prop-summary .sum-item .val{font-size:13px;color:#333}
+/* Property Finder */
+.prop-finder{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 140px);gap:0}
+.finder-sidebar{background:#fff;border-right:1px solid #d4ddd8;overflow-y:auto;display:flex;flex-direction:column}
+.finder-filter{padding:12px;border-bottom:1px solid #eef2f0}
+.finder-filter select,.finder-filter input{width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px;margin-top:4px}
+.finder-filter label{font-size:10px;color:#888;font-weight:600}
+.finder-list{flex:1;overflow-y:auto}
+.finder-item{padding:10px 12px;border-bottom:1px solid #eef2f0;cursor:pointer;display:flex;gap:10px;transition:background .1s}
+.finder-item:hover{background:#f5faf9}
+.finder-item.active{background:#e3f0fa;border-left:3px solid #2980b9}
+.finder-item img{width:60px;height:45px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.finder-item-info h4{font-size:12px;margin-bottom:2px;color:#1b2e35}
+.finder-item-info .price{font-size:12px;font-weight:700;color:#2980b9}
+.finder-item-info .addr{font-size:11px;color:#888}
+.finder-map-area{position:relative}
+.finder-map{height:100%;width:100%}
+.finder-detail-popup{position:absolute;bottom:16px;left:16px;right:16px;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);padding:16px;z-index:500;display:none}
+.finder-detail-popup.show{display:block}
+.finder-detail-popup h3{font-size:15px;margin-bottom:6px}
+.finder-detail-popup .close-popup{position:absolute;top:8px;right:12px;background:none;border:none;font-size:18px;cursor:pointer;color:#888}
+@media(max-width:768px){.sidebar{width:200px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.prop-explorer{grid-template-columns:1fr}.prop-finder{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+<div class="sidebar-hdr"><h2>DreamHouse</h2><small>Real Estate CRM</small></div>
+<div class="nav-sec">
+<div class="nav-item active" onclick="nav('dashboard')">Dashboard</div>
+</div>
+<div class="nav-sec">
+<div class="nav-sec-title">Objects</div>
+<div class="nav-item" onclick="nav('obj','Broker__c')">Brokers</div>
+<div class="nav-item" onclick="nav('obj','Property__c')">Properties</div>
+</div>
+<div class="nav-sec">
+<div class="nav-sec-title">Map Views</div>
+<div class="nav-item" onclick="nav('explorer')">Property Explorer</div>
+<div class="nav-item" onclick="nav('finder')">Property Finder</div>
+</div>
+<div class="nav-sec">
+<div class="nav-sec-title">Developer Tools</div>
+<div class="nav-item" onclick="nav('soql')">SOQL Console</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<h1 id="pageTitle">Dashboard</h1>
+<div class="user-area">
+<span id="userName">User</span>
+<span class="badge" id="userBadge">-</span>
+<button class="btn sm sec" onclick="location.href='/auth/logout'">Logout</button>
+</div>
+</div>
+<div class="content" id="C"></div>
+</div>
+</div>
+<script>
+/* ====================================================================
+   DreamHouse Real Estate CRM - Single-Page Application
+   ==================================================================== */
+
+const CL=['#2980b9','#27ae60','#f39c12','#e74c3c','#8e44ad','#1abc9c','#d35400','#2c3e50','#16a085','#c0392b'];
+
+// Status badge class resolver
+const sc=s=>({
+  'Available':'sg','Closed':'sg',
+  'Contracted':'sbl','Under Agreement':'sbl','Pre Market':'so',
+  'Active':'sg','Inactive':'sr','Pending':'so'
+})[s]||'sgy';
+
+// Global data cache
+let D={};
+let schema={};
+
+// Field labels for DreamHouse objects
+const FL={
+  Name:'Name',Id:'ID',
+  Broker_Id__c:'Broker ID',Email__c:'Email',Mobile_Phone__c:'Mobile Phone',
+  Phone__c:'Phone',Picture__c:'Picture URL',Title__c:'Title',
+  Address__c:'Address',Assessed_Value__c:'Assessed Value',Baths__c:'Baths',
+  Beds__c:'Beds',Broker__c:'Broker',City__c:'City',
+  Date_Agreement__c:'Date Agreement',Date_Closed__c:'Date Closed',
+  Date_Contracted__c:'Date Contracted',Date_Listed__c:'Date Listed',
+  Date_Pre_Market__c:'Date Pre Market',Days_On_Market__c:'Days on Market',
+  Description__c:'Description',Price_Sold__c:'Price Sold',
+  Price__c:'Asking Price',State__c:'State',Status__c:'Status',
+  Tags__c:'Tags',Thumbnail__c:'Thumbnail',Zip__c:'Zip',
+  FirstName:'First Name',LastName:'Last Name',Email:'Email',
+  Phone:'Phone',AccountId:'Account',Website:'Website',
+  Industry:'Industry',Type:'Type',Username:'Username',
+  IsActive:'Active',Alias:'Alias'
+};
+const fl=f=>FL[f]||f.replace(/__c$/,'').replace(/_/g,' ');
+
+// Object labels
+const OL={
+  Broker__c:'Brokers',Property__c:'Properties',
+  Account:'Accounts',Contact:'Contacts',User:'Users'
+};
+
+// Columns for list views
+const OK={
+  Broker__c:['Name','Title__c','Email__c','Phone__c'],
+  Property__c:['Name','City__c','State__c','Price__c','Beds__c','Baths__c','Status__c','Broker__c'],
+  Account:['Name','Industry','Type','Phone'],
+  Contact:['LastName','FirstName','Email','Phone'],
+  User:['Username','LastName','FirstName','Email','IsActive']
+};
+
+// Currency formatter
+const fmtCur=n=>{
+  if(n==null)return'-';
+  return '$'+Number(n).toLocaleString();
+};
+
+// Resolve an Id to a display name by looking across all cached data
+const dn=id=>{
+  if(!id)return '-';
+  for(const obj of Object.keys(D)){
+    const rec=(D[obj]||[]).find(r=>r.Id===id);
+    if(rec)return rec.Name||rec.LastName||rec.Subject||rec.Title||id;
+  }
+  return id;
+};
+
+// Chart management
+let charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id]}}
+function mc(id,cfg){dc(id);const ctx=document.getElementById(id);if(!ctx)return;charts[id]=new Chart(ctx,cfg)}
+
+// Currency fields, number fields, date fields, boolean fields
+const CUR_FIELDS=['Price__c','Price_Sold__c','Assessed_Value__c'];
+const NUM_FIELDS=['Beds__c','Baths__c','Days_On_Market__c','Broker_Id__c'];
+const DATE_FIELDS=['Date_Agreement__c','Date_Closed__c','Date_Contracted__c','Date_Listed__c','Date_Pre_Market__c'];
+const BOOL_FIELDS=['IsActive'];
+
+// Picklist values
+const PV={
+  Status__c:['Contracted','Pre Market','Available','Under Agreement','Closed'],
+  Title__c:['Senior Broker','Broker','Junior Broker','Managing Broker'],
+  Industry:['Real Estate','Technology','Finance','Other'],
+  Type:['Customer','Prospect','Partner','Other'],
+  State__c:['MA','CA','NY','TX','FL','IL','PA','OH','GA','NC']
+};
+
+// ====================================================================
+// Navigation
+// ====================================================================
+let cv='dashboard',co=null,cr=null,isEditing=false;
+
+function nav(v,o){
+  cv=v;co=o||null;cr=null;isEditing=false;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(event&&event.target)event.target.classList.add('active');
+  R();
+}
+
+function R(){
+  const c=document.getElementById('C'),t=document.getElementById('pageTitle');
+  // Adjust padding for map views
+  c.style.padding=(cv==='explorer'||cv==='finder')?'12px':'24px';
+  c.style.overflow=(cv==='explorer'||cv==='finder')?'hidden':'auto';
+  if(cv==='dashboard'){t.textContent='Dashboard';c.innerHTML=rDash();iDash()}
+  else if(cv==='obj'){t.textContent=OL[co]||co;c.innerHTML=rObj(co);bindObjEvents()}
+  else if(cv==='detail'){t.textContent='Record Detail';c.innerHTML=rDet();bindDetEvents()}
+  else if(cv==='explorer'){t.textContent='Property Explorer';c.innerHTML=rPropExplorer();iPropExplorer()}
+  else if(cv==='finder'){t.textContent='Property Finder';c.innerHTML=rPropFinder();iPropFinder()}
+  else if(cv==='soql'){t.textContent='SOQL Console';c.innerHTML=rSOQL()}
+}
+
+// ====================================================================
+// Dashboard
+// ====================================================================
+function rDash(){
+  const props=D.Property__c||[];
+  const brokers=D.Broker__c||[];
+  const totalProps=props.length;
+  const totalBrokers=brokers.length;
+  const prices=props.map(p=>p.Price__c||0);
+  const avgPrice=totalProps>0?Math.round(prices.reduce((a,b)=>a+b,0)/totalProps):0;
+  const available=props.filter(p=>p.Status__c==='Available').length;
+
+  // Status pipeline data
+  const statuses=['Pre Market','Available','Under Agreement','Contracted','Closed'];
+  const maxCount=Math.max(...statuses.map(s=>props.filter(p=>p.Status__c===s).length),1);
+  const pipelineColors=['#f39c12','#27ae60','#2980b9','#8e44ad','#2c3e50'];
+
+  let h=`<div class="grid grid-4" style="margin-bottom:20px">
+    <div class="kpi-card"><div class="kv">${totalProps}</div><div class="kl">Total Properties</div></div>
+    <div class="kpi-card"><div class="kv">${totalBrokers}</div><div class="kl">Total Brokers</div></div>
+    <div class="kpi-card"><div class="kv">${fmtCur(avgPrice)}</div><div class="kl">Avg Asking Price</div></div>
+    <div class="kpi-card"><div class="kv">${available}</div><div class="kl">Available</div><div class="ks">${totalProps>0?Math.round(available/totalProps*100):0}% of listings</div></div>
+  </div>`;
+
+  // Pipeline by Status__c
+  h+=`<div class="grid grid-2">
+    <div class="card"><h3>Property Pipeline by Status</h3>`;
+  statuses.forEach((s,i)=>{
+    const cnt=props.filter(p=>p.Status__c===s).length;
+    const w=Math.max(Math.round(cnt/maxCount*100),8);
+    h+=`<div class="pipeline-row">
+      <div class="pipeline-label">${s}</div>
+      <div class="pipeline-bar" style="width:${w}%;background:${pipelineColors[i]}">${cnt}</div>
+      <div class="pipeline-val">${cnt} listing${cnt!==1?'s':''}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+
+  // Chart: Price distribution
+  h+=`<div class="chart-box"><h4>Asking Price by Property</h4><canvas id="cd1"></canvas></div>`;
+  h+=`</div>`;
+
+  // Second row of charts
+  h+=`<div class="grid grid-2">
+    <div class="chart-box"><h4>Properties by City</h4><canvas id="cd2"></canvas></div>
+    <div class="chart-box"><h4>Status Distribution</h4><canvas id="cd3"></canvas></div>
+  </div>`;
+
+  // Properties table
+  h+=`<div class="card" style="margin-top:16px"><h3>Recent Properties</h3>
+    <table><thead><tr><th>Property</th><th>City</th><th>Price</th><th>Beds</th><th>Baths</th><th>Status</th><th>Broker</th></tr></thead><tbody>`;
+  props.slice(0,8).forEach(p=>{
+    h+=`<tr onclick="sd('Property__c','${p.Id}')">
+      <td><strong>${p.Name}</strong></td>
+      <td>${p.City__c||'-'}</td>
+      <td>${fmtCur(p.Price__c)}</td>
+      <td>${p.Beds__c||'-'}</td>
+      <td>${p.Baths__c||'-'}</td>
+      <td><span class="sb ${sc(p.Status__c)}">${p.Status__c||'-'}</span></td>
+      <td>${dn(p.Broker__c)}</td>
+    </tr>`;
+  });
+  h+=`</tbody></table></div>`;
+
+  return h;
+}
+
+function iDash(){
+  const props=D.Property__c||[];
+
+  // Bar chart: Asking price per property
+  const names=props.map(p=>p.Name);
+  const prices=props.map(p=>p.Price__c||0);
+  mc('cd1',{type:'bar',data:{labels:names,datasets:[{label:'Asking Price ($)',data:prices,backgroundColor:CL.slice(0,names.length)}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
+
+  // Doughnut: Properties by city
+  const cities=[...new Set(props.map(p=>p.City__c).filter(Boolean))];
+  mc('cd2',{type:'doughnut',data:{labels:cities,datasets:[{data:cities.map(c=>props.filter(p=>p.City__c===c).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}});
+
+  // Pie: Status distribution
+  const statuses=[...new Set(props.map(p=>p.Status__c).filter(Boolean))];
+  mc('cd3',{type:'pie',data:{labels:statuses,datasets:[{data:statuses.map(s=>props.filter(p=>p.Status__c===s).length),backgroundColor:CL}]},options:{responsive:true,plugins:{legend:{position:'right'}}}});
+}
+
+// ====================================================================
+// Object List View
+// ====================================================================
+function rObj(obj){
+  const recs=D[obj]||[];
+  const keys=OK[obj]||Object.keys(recs[0]||{}).filter(k=>k!=='Id').slice(0,6);
+  const kf=obj==='Property__c'?'Status__c':null;
+
+  let h=`<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+    <input type="text" id="searchInput" placeholder="Search..." oninput="filt(this.value)" oncompositionstart="imeOn=true" oncompositionend="imeOn=false;filt(this.value)" onkeydown="if(!imeOn&&event.key==='Enter'){filt(this.value)}" style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:13px">
+    <button class="btn sm" onclick="filt(document.getElementById('searchInput').value)" style="padding:8px 16px">🔍 Search</button>
+    <span style="color:#888;font-size:12px">${recs.length} records</span>`;
+  if(kf)h+=`<button class="btn sm sec" onclick="tKan('${obj}','${kf}')">Kanban</button>`;
+  h+=`<button class="btn sm" id="btnNew" data-obj="${obj}">+ New</button>`;
+  h+=`</div><div id="kan"></div><table id="tbl"><thead><tr>`;
+  keys.forEach(k=>h+=`<th>${fl(k)}</th>`);
+  h+=`</tr></thead><tbody>`;
+  recs.forEach(r=>{
+    h+=`<tr onclick="sd('${obj}','${r.Id}')">`;
+    keys.forEach(k=>{
+      let v=r[k];
+      // Resolve lookup IDs
+      if(k==='Broker__c'||k==='AccountId')v=dn(v);
+      // Format currency
+      if(CUR_FIELDS.includes(k))v=v!=null?fmtCur(v):'-';
+      // Boolean
+      if(typeof v==='boolean')v=v?'Yes':'No';
+      // Status badge
+      const isSt=['Status__c','Type','Industry'].includes(k);
+      h+=isSt&&v?`<td><span class="sb ${sc(v)}">${v}</span></td>`:`<td>${v!=null?v:'-'}</td>`;
+    });
+    h+=`</tr>`;
+  });
+  return h+`</tbody></table>`;
+}
+
+function bindObjEvents(){
+  const nb=document.getElementById('btnNew');
+  if(nb)nb.addEventListener('click',function(){openNew(this.dataset.obj)});
+}
+
+var imeOn=false;
+function filt(q){
+  if(imeOn)return;
+  document.querySelectorAll('#tbl tbody tr').forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+  });
+}
+
+function tKan(obj,field){
+  const a=document.getElementById('kan');
+  if(a.innerHTML){a.innerHTML='';return}
+  const recs=D[obj]||[];
+  const vals=[...new Set(recs.map(r=>r[field]).filter(Boolean))];
+  let h='<div class="kanban">';
+  vals.forEach(v=>{
+    const items=recs.filter(r=>r[field]===v);
+    h+=`<div class="kanban-col"><div class="kanban-hdr">${v}<span class="cnt">${items.length}</span></div>`;
+    items.forEach(r=>h+=`<div class="kcard" onclick="sd('${obj}','${r.Id}')"><strong>${r.Name||'-'}</strong><small>${fl(obj)}</small></div>`);
+    h+=`</div>`;
+  });
+  a.innerHTML=h+'</div>';
+}
+
+function sd(obj,id){co=obj;cr=(D[obj]||[]).find(r=>r.Id===id);cv='detail';R()}
+
+// ====================================================================
+// Detail View
+// ====================================================================
+function rDet(){
+  if(!cr)return '<div class="card">Record not found.</div>';
+  let h=`<div class="card" style="display:flex;justify-content:space-between;align-items:center">
+    <div><h2 style="margin:0">${cr.Name||cr.LastName||'-'}</h2>
+    <small style="color:#999">${OL[co]||co}</small></div>
+    <div style="display:flex;gap:8px" id="detActions">`;
+  if(isEditing){
+    h+=`<button class="btn" id="btnSave">Save</button><button class="btn sec" id="btnCancel">Cancel</button>`;
+  } else {
+    h+=`<button class="btn" id="btnEdit">Edit</button><button class="btn danger" id="btnDel">Delete</button><button class="btn sec" id="btnBack">Back</button>`;
+  }
+  h+=`</div></div><div class="card"><h3>Details</h3><div class="detail-grid" id="detGrid">`;
+  Object.keys(cr).forEach(k=>{
+    if(k==='Id')return;
+    if(isEditing){
+      h+=`<div class="form-group"><label>${fl(k)}</label>${fieldInput(k,cr[k])}</div>`;
+    } else {
+      let v=cr[k];
+      if(k==='Broker__c'||k==='AccountId')v=dn(v);
+      if(CUR_FIELDS.includes(k))v=v!=null?fmtCur(v):'-';
+      if(typeof v==='boolean')v=v?'Yes':'No';
+      const isSt=['Status__c'].includes(k);
+      if(isSt&&v){
+        h+=`<div class="detail-field"><label>${fl(k)}</label><div class="val"><span class="sb ${sc(v)}">${v}</span></div></div>`;
+      } else {
+        h+=`<div class="detail-field"><label>${fl(k)}</label><div class="val">${v!=null?v:'-'}</div></div>`;
+      }
+    }
+  });
+  return h+'</div></div>';
+}
+
+function bindDetEvents(){
+  const be=document.getElementById('btnEdit'),bs=document.getElementById('btnSave'),
+        bc=document.getElementById('btnCancel'),bd=document.getElementById('btnDel'),
+        bb=document.getElementById('btnBack');
+  if(be)be.addEventListener('click',function(){isEditing=true;R()});
+  if(bs)bs.addEventListener('click',function(){doSaveEdit()});
+  if(bc)bc.addEventListener('click',function(){isEditing=false;R()});
+  if(bd)bd.addEventListener('click',function(){doDelete()});
+  if(bb)bb.addEventListener('click',function(){isEditing=false;nav('obj',co)});
+}
+
+function fieldInput(k,v){
+  if(BOOL_FIELDS.includes(k))return`<select name="${k}"><option value="true" ${v?'selected':''}>Yes</option><option value="false" ${!v?'selected':''}>No</option></select>`;
+  if(PV[k]){let h=`<select name="${k}"><option value="">--</option>`;PV[k].forEach(o=>h+=`<option ${v===o?'selected':''}>${o}</option>`);return h+'</select>'}
+  if(DATE_FIELDS.includes(k))return`<input type="date" name="${k}" value="${v||''}">`;
+  if(CUR_FIELDS.includes(k)||NUM_FIELDS.includes(k))return`<input type="number" name="${k}" value="${v!=null?v:''}">`;
+  return`<input type="text" name="${k}" value="${v!=null?String(v).replace(/"/g,'&quot;'):''}">`;
+}
+
+function getFormData(form){
+  const fd={};
+  form.querySelectorAll('input,select,textarea').forEach(el=>{
+    const k=el.name;if(!k)return;let v=el.value;
+    if(BOOL_FIELDS.includes(k))v=v==='true';
+    else if(CUR_FIELDS.includes(k)||NUM_FIELDS.includes(k))v=v?Number(v):null;
+    else if(v==='')v=null;
+    fd[k]=v;
+  });
+  return fd;
+}
+
+function buildForm(obj,rec){
+  const keys=Object.keys(rec||(D[obj]&&D[obj][0])||{}).filter(k=>k!=='Id');
+  let h='';
+  keys.forEach(k=>{h+=`<div class="form-group"><label>${fl(k)}</label>${fieldInput(k,rec?rec[k]:null)}</div>`});
+  return h;
+}
+
+function closeModal(){const m=document.getElementById('modal');if(m)m.remove()}
+
+function openNew(obj){
+  const m=document.createElement('div');m.className='modal-overlay';m.id='modal';
+  const formH=buildForm(obj,null);
+  m.innerHTML=`<div class="modal"><div class="modal-hdr"><h3>${OL[obj]||obj} - New Record</h3><button class="btn sm sec" id="modalClose">X</button></div><form id="recForm"><div class="modal-body">${formH}</div><div class="modal-footer"><button type="button" class="btn sec" id="modalCancel">Cancel</button><button type="submit" class="btn">Save</button></div></form></div>`;
+  document.body.appendChild(m);
+  document.getElementById('modalClose').addEventListener('click',closeModal);
+  document.getElementById('modalCancel').addEventListener('click',closeModal);
+  m.querySelector('form').addEventListener('submit',function(e){e.preventDefault();doSaveNew(obj)});
+}
+
+function doSaveNew(obj){
+  const fd=getFormData(document.getElementById('recForm'));
+  if(!fd.Name&&!fd.LastName){toast('Name is required','error');return}
+  fetch('/api/data/'+obj,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fd)})
+  .then(function(r){if(!r.ok)throw new Error('Failed to create');return r.json()})
+  .then(function(res){
+    var newRec={Id:res.Id};for(var k in fd)newRec[k]=fd[k];
+    if(!D[obj])D[obj]=[];
+    D[obj].push(newRec);
+    closeModal();toast(fl(obj)+' created');nav('obj',obj);
+  }).catch(function(e){toast(e.message,'error')});
+}
+
+function doSaveEdit(){
+  if(!cr||!co)return;
+  var grid=document.getElementById('detGrid');
+  if(!grid){toast('Form not found','error');return}
+  var fd=getFormData(grid);
+  fetch('/api/data/'+co+'/'+cr.Id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(fd)})
+  .then(function(r){if(!r.ok)return r.json().then(function(b){throw new Error(b.error||'Update failed')});return r.json()})
+  .then(function(){
+    var idx=(D[co]||[]).findIndex(function(r){return r.Id===cr.Id});
+    if(idx!==-1){for(var k in fd)D[co][idx][k]=fd[k]}
+    for(var k in fd)cr[k]=fd[k];
+    isEditing=false;toast('Updated');R();
+  }).catch(function(e){toast(e.message,'error')});
+}
+
+function doDelete(){
+  if(!cr||!co)return;
+  if(!confirm('Delete "'+(cr.Name||cr.LastName||'this record')+'"?'))return;
+  fetch('/api/data/'+co+'/'+cr.Id,{method:'DELETE'})
+  .then(function(r){if(!r.ok)throw new Error('Delete failed');return r.json()})
+  .then(function(){
+    var idx=(D[co]||[]).findIndex(function(r){return r.Id===cr.Id});
+    if(idx!==-1)D[co].splice(idx,1);
+    isEditing=false;toast('Deleted');nav('obj',co);
+  }).catch(function(e){toast(e.message,'error')});
+}
+
+function toast(msg,type){
+  const t=document.createElement('div');
+  t.className='toast '+(type||'success');t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+
+// ====================================================================
+// Property Explorer (tile grid + map + filter + detail summary)
+// ====================================================================
+let explorerMap=null,explorerMarkers=[],explorerSelected=null;
+
+function rPropExplorer(){
+  const props=D.Property__c||[];
+  const statuses=[...new Set(props.map(p=>p.Status__c).filter(Boolean))];
+  const cities=[...new Set(props.map(p=>p.City__c).filter(Boolean))];
+  let h=`<div class="prop-filter-bar">
+    <select id="exFiltStatus" onchange="filterExplorer()"><option value="">All Statuses</option>${statuses.map(s=>`<option>${s}</option>`).join('')}</select>
+    <select id="exFiltCity" onchange="filterExplorer()"><option value="">All Cities</option>${cities.map(c=>`<option>${c}</option>`).join('')}</select>
+    <input type="text" id="exSearch" placeholder="Search properties..." oninput="filterExplorer()" oncompositionstart="imeOn=true" oncompositionend="imeOn=false;filterExplorer()" onkeydown="if(!imeOn&&event.key==='Enter'){filterExplorer()}" style="flex:1;min-width:150px">
+    <button class="btn sm" onclick="filterExplorer()" style="padding:6px 12px">🔍</button>
+    <span style="color:#888;font-size:12px" id="exCount">${props.length} properties</span>
+  </div>`;
+  h+=`<div class="prop-explorer">
+    <div class="prop-list-panel">
+      <div class="prop-tile-grid" id="exTiles"></div>
+      <div id="exSummary"></div>
+    </div>
+    <div class="prop-map-panel"><div id="explorerMap" class="prop-map"></div></div>
+  </div>`;
+  return h;
+}
+
+function iPropExplorer(){
+  explorerSelected=null;
+  renderExplorerTiles(D.Property__c||[]);
+  setTimeout(()=>{
+    if(explorerMap){explorerMap.remove();explorerMap=null}
+    const el=document.getElementById('explorerMap');
+    if(!el)return;
+    explorerMap=L.map('explorerMap').setView([42.355,-71.09],12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}).addTo(explorerMap);
+    updateExplorerMarkers(D.Property__c||[]);
+  },100);
+}
+
+function renderExplorerTiles(props){
+  const el=document.getElementById('exTiles');
+  if(!el)return;
+  let h='';
+  props.forEach(p=>{
+    const sel=explorerSelected&&explorerSelected.Id===p.Id?'selected':'';
+    h+=`<div class="prop-tile ${sel}" onclick="selectExplorerProp('${p.Id}')">
+      <img class="prop-tile-img" src="${p.Thumbnail__c||p.Picture__c||''}" onerror="this.style.background='#dde5dd'" alt="${p.Name}">
+      <div class="prop-tile-body">
+        <h4>${p.Name}</h4>
+        <div class="price">${fmtCur(p.Price__c)}</div>
+        <div class="meta">${p.Beds__c||0} bd / ${p.Baths__c||0} ba &bull; ${p.City__c||''}</div>
+        <span class="sb ${sc(p.Status__c)}" style="margin-top:4px">${p.Status__c||'-'}</span>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=h||'<div style="padding:20px;color:#888;text-align:center">No properties match your criteria</div>';
+  document.getElementById('exCount').textContent=props.length+' properties';
+}
+
+function updateExplorerMarkers(props){
+  explorerMarkers.forEach(m=>explorerMap.removeLayer(m));
+  explorerMarkers=[];
+  const bounds=[];
+  props.forEach(p=>{
+    if(!p.Latitude__c||!p.Longitude__c)return;
+    const ll=[p.Latitude__c,p.Longitude__c];
+    bounds.push(ll);
+    const m=L.marker(ll).addTo(explorerMap)
+      .bindPopup(`<strong>${p.Name}</strong><br>${fmtCur(p.Price__c)}<br>${p.Beds__c||0} bd / ${p.Baths__c||0} ba<br><span class="sb ${sc(p.Status__c)}">${p.Status__c||'-'}</span>`);
+    m._propId=p.Id;
+    m.on('click',()=>selectExplorerProp(p.Id));
+    explorerMarkers.push(m);
+  });
+  if(bounds.length)explorerMap.fitBounds(bounds,{padding:[30,30]});
+}
+
+function selectExplorerProp(id){
+  const props=D.Property__c||[];
+  explorerSelected=props.find(p=>p.Id===id)||null;
+  // Re-render tiles to show selection
+  const filtered=getFilteredExplorerProps();
+  renderExplorerTiles(filtered);
+  // Highlight marker
+  explorerMarkers.forEach(m=>{
+    if(m._propId===id){m.openPopup();if(explorerMap)explorerMap.panTo(m.getLatLng())}
+  });
+  // Show summary
+  renderExplorerSummary();
+}
+
+function renderExplorerSummary(){
+  const el=document.getElementById('exSummary');
+  if(!el)return;
+  if(!explorerSelected){el.innerHTML='';return}
+  const p=explorerSelected;
+  el.innerHTML=`<div class="prop-summary">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <h3>${p.Name}</h3>
+      <button class="btn sm" onclick="sd('Property__c','${p.Id}')">View Detail</button>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-item"><label>Address</label><div class="val">${p.Address__c||'-'}, ${p.City__c||''} ${p.State__c||''} ${p.Zip__c||''}</div></div>
+      <div class="sum-item"><label>Asking Price</label><div class="val" style="font-weight:700;color:#2980b9">${fmtCur(p.Price__c)}</div></div>
+      <div class="sum-item"><label>Beds / Baths</label><div class="val">${p.Beds__c||0} bd / ${p.Baths__c||0} ba</div></div>
+      <div class="sum-item"><label>Status</label><div class="val"><span class="sb ${sc(p.Status__c)}">${p.Status__c||'-'}</span></div></div>
+      <div class="sum-item"><label>Broker</label><div class="val">${dn(p.Broker__c)}</div></div>
+      <div class="sum-item"><label>Date Listed</label><div class="val">${p.Date_Listed__c||'-'}</div></div>
+    </div>
+    ${p.Description__c?`<div style="margin-top:8px"><label style="font-size:10px;color:#888;font-weight:600">Description</label><div style="font-size:13px;color:#555;margin-top:2px">${p.Description__c}</div></div>`:''}
+  </div>`;
+}
+
+function getFilteredExplorerProps(){
+  let props=D.Property__c||[];
+  const st=document.getElementById('exFiltStatus')?.value;
+  const ct=document.getElementById('exFiltCity')?.value;
+  const q=(document.getElementById('exSearch')?.value||'').toLowerCase();
+  if(st)props=props.filter(p=>p.Status__c===st);
+  if(ct)props=props.filter(p=>p.City__c===ct);
+  if(q)props=props.filter(p=>(p.Name||'').toLowerCase().includes(q)||(p.Address__c||'').toLowerCase().includes(q)||(p.Tags__c||'').toLowerCase().includes(q));
+  return props;
+}
+
+function filterExplorer(){
+  if(imeOn)return;
+  const props=getFilteredExplorerProps();
+  renderExplorerTiles(props);
+  if(explorerMap)updateExplorerMarkers(props);
+}
+
+// ====================================================================
+// Property Finder (map-centric + sidebar list + filter + detail popup)
+// ====================================================================
+let finderMap=null,finderMarkers=[],finderSelected=null;
+
+function rPropFinder(){
+  const props=D.Property__c||[];
+  const statuses=[...new Set(props.map(p=>p.Status__c).filter(Boolean))];
+  let h=`<div class="prop-finder">
+    <div class="finder-sidebar">
+      <div class="finder-filter">
+        <label>Status</label>
+        <select id="fnFiltStatus" onchange="filterFinder()"><option value="">All</option>${statuses.map(s=>`<option>${s}</option>`).join('')}</select>
+      </div>
+      <div class="finder-filter">
+        <label>Max Price</label>
+        <input type="number" id="fnMaxPrice" placeholder="No limit" oninput="filterFinder()">
+      </div>
+      <div class="finder-filter">
+        <label>Min Beds</label>
+        <input type="number" id="fnMinBeds" placeholder="Any" oninput="filterFinder()">
+      </div>
+      <div class="finder-filter" style="padding:8px 12px">
+        <span style="font-size:11px;color:#888" id="fnCount">${props.length} properties</span>
+      </div>
+      <div class="finder-list" id="fnList"></div>
+    </div>
+    <div class="finder-map-area">
+      <div id="finderMap" class="finder-map"></div>
+      <div class="finder-detail-popup" id="fnPopup">
+        <button class="close-popup" onclick="closeFinderPopup()">&times;</button>
+        <div id="fnPopupContent"></div>
+      </div>
+    </div>
+  </div>`;
+  return h;
+}
+
+function iPropFinder(){
+  finderSelected=null;
+  renderFinderList(D.Property__c||[]);
+  setTimeout(()=>{
+    if(finderMap){finderMap.remove();finderMap=null}
+    const el=document.getElementById('finderMap');
+    if(!el)return;
+    finderMap=L.map('finderMap').setView([42.355,-71.09],12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}).addTo(finderMap);
+    updateFinderMarkers(D.Property__c||[]);
+  },100);
+}
+
+function renderFinderList(props){
+  const el=document.getElementById('fnList');
+  if(!el)return;
+  let h='';
+  props.forEach(p=>{
+    const act=finderSelected&&finderSelected.Id===p.Id?'active':'';
+    h+=`<div class="finder-item ${act}" onclick="selectFinderProp('${p.Id}')">
+      <img src="${p.Thumbnail__c||p.Picture__c||''}" onerror="this.style.background='#dde5dd'" alt="">
+      <div class="finder-item-info">
+        <h4>${p.Name}</h4>
+        <div class="price">${fmtCur(p.Price__c)}</div>
+        <div class="addr">${p.Address__c||''}, ${p.City__c||''}</div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=h||'<div style="padding:20px;text-align:center;color:#888;font-size:12px">No matches</div>';
+  document.getElementById('fnCount').textContent=props.length+' properties';
+}
+
+function updateFinderMarkers(props){
+  finderMarkers.forEach(m=>finderMap.removeLayer(m));
+  finderMarkers=[];
+  const bounds=[];
+  props.forEach(p=>{
+    if(!p.Latitude__c||!p.Longitude__c)return;
+    const ll=[p.Latitude__c,p.Longitude__c];
+    bounds.push(ll);
+    const icon=L.divIcon({className:'',html:`<div style="background:#2980b9;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">${p.Beds__c||'?'}</div>`,iconSize:[28,28],iconAnchor:[14,14]});
+    const m=L.marker(ll,{icon}).addTo(finderMap);
+    m._propId=p.Id;
+    m.on('click',()=>selectFinderProp(p.Id));
+    finderMarkers.push(m);
+  });
+  if(bounds.length)finderMap.fitBounds(bounds,{padding:[30,30]});
+}
+
+function selectFinderProp(id){
+  const props=D.Property__c||[];
+  finderSelected=props.find(p=>p.Id===id)||null;
+  const filtered=getFilteredFinderProps();
+  renderFinderList(filtered);
+  // Pan map
+  finderMarkers.forEach(m=>{
+    if(m._propId===id&&finderMap)finderMap.panTo(m.getLatLng());
+  });
+  // Show popup
+  if(finderSelected)showFinderPopup(finderSelected);
+}
+
+function showFinderPopup(p){
+  const popup=document.getElementById('fnPopup');
+  const content=document.getElementById('fnPopupContent');
+  if(!popup||!content)return;
+  content.innerHTML=`<div style="display:flex;gap:16px">
+    <img src="${p.Picture__c||''}" style="width:140px;height:100px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.background='#dde5dd'">
+    <div style="flex:1">
+      <h3 style="margin:0 0 4px">${p.Name}</h3>
+      <div style="font-size:18px;font-weight:700;color:#2980b9;margin-bottom:4px">${fmtCur(p.Price__c)}</div>
+      <div style="font-size:12px;color:#555">${p.Address__c||''}, ${p.City__c||''} ${p.State__c||''} ${p.Zip__c||''}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">${p.Beds__c||0} bd / ${p.Baths__c||0} ba &bull; <span class="sb ${sc(p.Status__c)}">${p.Status__c||'-'}</span></div>
+      <div style="font-size:12px;color:#888;margin-top:2px">Broker: ${dn(p.Broker__c)}</div>
+      ${p.Description__c?`<div style="font-size:12px;color:#666;margin-top:4px">${p.Description__c}</div>`:''}
+      <button class="btn sm" style="margin-top:8px" onclick="sd('Property__c','${p.Id}')">View Full Detail</button>
+    </div>
+  </div>`;
+  popup.classList.add('show');
+}
+
+function closeFinderPopup(){
+  const popup=document.getElementById('fnPopup');
+  if(popup)popup.classList.remove('show');
+  finderSelected=null;
+  const filtered=getFilteredFinderProps();
+  renderFinderList(filtered);
+}
+
+function getFilteredFinderProps(){
+  let props=D.Property__c||[];
+  const st=document.getElementById('fnFiltStatus')?.value;
+  const mp=document.getElementById('fnMaxPrice')?.value;
+  const mb=document.getElementById('fnMinBeds')?.value;
+  if(st)props=props.filter(p=>p.Status__c===st);
+  if(mp)props=props.filter(p=>(p.Price__c||0)<=Number(mp));
+  if(mb)props=props.filter(p=>(p.Beds__c||0)>=Number(mb));
+  return props;
+}
+
+function filterFinder(){
+  const props=getFilteredFinderProps();
+  renderFinderList(props);
+  if(finderMap)updateFinderMarkers(props);
+  closeFinderPopup();
+}
+
+// ====================================================================
+// SOQL Console
+// ====================================================================
+function rSOQL(){
+  return`<div class="card">
+    <h3>SOQL Query</h3>
+    <textarea id="soqlInput" style="width:100%;height:120px;padding:12px;font-family:Monaco,Menlo,monospace;font-size:13px;border:1px solid #ccc;border-radius:4px;resize:vertical" placeholder="SELECT Id, Name, Price__c FROM Property__c WHERE Status__c = 'Available'">SELECT Id, Name, Price__c, Status__c, City__c, Beds__c, Baths__c FROM Property__c</textarea>
+    <div style="margin-top:8px">
+      <button class="btn" onclick="execSOQL()">Run Query</button>
+      <span id="soqlTime" style="margin-left:12px;font-size:12px;color:#888"></span>
+    </div>
+  </div><div id="soqlResult"></div>`;
+}
+
+function execSOQL(){
+  const q=document.getElementById('soqlInput').value.trim();
+  if(!q)return;
+  const t0=performance.now();
+  fetch('/services/data/v62.0/query/?q='+encodeURIComponent(q))
+  .then(r=>r.json()).then(data=>{
+    const ms=Math.round(performance.now()-t0);
+    document.getElementById('soqlTime').textContent=(data.totalSize||0)+' records ('+ms+'ms)';
+    if(data.errorCode||data[0]?.errorCode){
+      document.getElementById('soqlResult').innerHTML='<div class="card" style="color:#c62828"><pre>'+JSON.stringify(data,null,2)+'</pre></div>';
+      return;
+    }
+    const recs=data.records||[];
+    if(!recs.length){document.getElementById('soqlResult').innerHTML='<div class="card">No results</div>';return}
+    const keys=Object.keys(recs[0]).filter(k=>k!=='attributes');
+    let h='<div class="card"><table><thead><tr>';
+    keys.forEach(k=>h+='<th>'+fl(k)+'</th>');
+    h+='</tr></thead><tbody>';
+    recs.forEach(r=>{
+      h+='<tr>';
+      keys.forEach(k=>{
+        let v=r[k];
+        if(CUR_FIELDS.includes(k))v=v!=null?fmtCur(v):'-';
+        if(typeof v==='boolean')v=v?'Yes':'No';
+        h+='<td>'+(v!=null?v:'-')+'</td>';
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table></div>';
+    document.getElementById('soqlResult').innerHTML=h;
+  }).catch(e=>{
+    document.getElementById('soqlResult').innerHTML='<div class="card" style="color:#c62828">Error: '+e.message+'</div>';
+  });
+}
+
+// ====================================================================
+// Data Loading & Initialization
+// ====================================================================
+async function loadData(){
+  try{
+    const schemaResp=await fetch('/api/schema/full');
+    if(schemaResp.ok){
+      schema=await schemaResp.json();
+    }
+    // Determine objects to load from schema or fallback
+    let objectNames=[];
+    if(schema.objects){
+      objectNames=schema.objects.map(o=>o.apiName);
+    }
+    if(schema.standardObjects){
+      objectNames=objectNames.concat(schema.standardObjects.map(o=>o.apiName));
+    }
+    // Fallback if schema didn't provide object names
+    if(!objectNames.length){
+      try{
+        const namesResp=await fetch('/api/schema');
+        if(namesResp.ok){
+          const namesData=await namesResp.json();
+          objectNames=namesData.objects||[];
+        }
+      }catch(e2){}
+    }
+    // Ensure core DreamHouse objects are loaded
+    ['Broker__c','Property__c'].forEach(o=>{if(!objectNames.includes(o))objectNames.push(o)});
+
+    const results=await Promise.all(objectNames.map(n=>fetch('/api/data/'+n).then(r=>r.json()).catch(()=>({records:[]}))));
+    objectNames.forEach((n,i)=>{D[n]=results[i].records||[]});
+  }catch(e){console.error('Failed to load data:',e)}
+}
+
+async function init(){
+  await loadData();
+  fetch('/api/me').then(r=>r.json()).then(u=>{
+    document.getElementById('userName').textContent=u.displayName||u.email||'User';
+    document.getElementById('userBadge').textContent=u.profile||u.role||'Broker';
+  }).catch(()=>{
+    document.getElementById('userName').textContent='Demo Mode';
+    document.getElementById('userBadge').textContent='Broker';
+  });
+  R();
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,3185 @@
+apiVersion: '62.0'
+
+standardObjects:
+  - apiName: Account
+    label: Account
+    pluralLabel: Accounts
+    description: Organization/Household account
+    fields:
+      - apiName: Name
+        label: Account Name
+        type: Text
+        length: 255
+      - apiName: Phone
+        label: Phone
+        type: Phone
+      - apiName: Website
+        label: Website
+        type: Url
+      - apiName: Industry
+        label: Industry
+        type: Picklist
+        values:
+          - Nonprofit
+          - Education
+          - Government
+          - Healthcare
+          - Technology
+          - Finance
+          - Other
+      - apiName: Type
+        label: Type
+        type: Picklist
+        values: [Household, Organization, Foundation, Government, Other]
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: BillingStreet
+        label: Billing Street
+        type: Text
+        length: 255
+      - apiName: BillingCity
+        label: Billing City
+        type: Text
+        length: 40
+      - apiName: BillingState
+        label: Billing State
+        type: Text
+        length: 80
+      - apiName: BillingPostalCode
+        label: Billing Zip/Postal Code
+        type: Text
+        length: 20
+      - apiName: BillingCountry
+        label: Billing Country
+        type: Text
+        length: 80
+      - apiName: AnnualRevenue
+        label: Annual Revenue
+        type: Currency
+        precision: 18
+        scale: 0
+      - apiName: NumberOfEmployees
+        label: Number of Employees
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: All_Members_Deceased__c
+        label: All Household Members Deceased
+        type: Checkbox
+        defaultValue: false
+      - apiName: Batch__c
+        label: Batch
+        type: Lookup
+        referenceTo: Batch__c
+        relationshipLabel: Accounts
+        relationshipName: Accounts
+        deleteConstraint: SetNull
+      - apiName: CustomizableRollups_UseSkewMode__c
+        label: 'Customizable Rollups: Force Skew Mode'
+        type: Checkbox
+        defaultValue: false
+      - apiName: Funding_Focus__c
+        label: Funding Focus
+        type: MultiselectPicklist
+        visibleLines: 4
+        values:
+          - Animal Welfare
+          - Arts and Culture
+          - Capacity Building
+          - Education
+          - Environmental
+          - Health Services
+          - Human Services
+      - apiName: Grantmaker__c
+        label: Grantmaker
+        type: Checkbox
+        defaultValue: false
+      - apiName: Matching_Gift_Administrator_Name__c
+        label: Matching Gift Administrator Name
+        type: Text
+        length: 255
+      - apiName: Matching_Gift_Amount_Max__c
+        label: Matching Gift Amount Max
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Matching_Gift_Amount_Min__c
+        label: Matching Gift Amount Min
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Matching_Gift_Annual_Employee_Max__c
+        label: Matching Gift Annual Employee Max
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Matching_Gift_Comments__c
+        label: Matching Gift Comments
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Matching_Gift_Company__c
+        label: Matching Gift Company
+        type: Checkbox
+        defaultValue: false
+      - apiName: Matching_Gift_Email__c
+        label: Matching Gift Email
+        type: Email
+      - apiName: Matching_Gift_Info_Updated__c
+        label: Matching Gift Info Updated
+        type: Date
+      - apiName: Matching_Gift_Percent__c
+        label: Matching Gift Percent
+        type: Percent
+        precision: 5
+        scale: 2
+      - apiName: Matching_Gift_Phone__c
+        label: Matching Gift Phone
+        type: Phone
+      - apiName: Matching_Gift_Request_Deadline__c
+        label: Matching Gift Request Deadline
+        type: Text
+        length: 255
+      - apiName: Membership_Span__c
+        label: Membership Span
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Membership_Status__c
+        label: Membership Status
+        type: Text
+        length: 255
+      - apiName: Number_of_Household_Members__c
+        label: Number of Household Members
+        type: Number
+        precision: 10
+        scale: 0
+      - apiName: Sustainer__c
+        label: Sustainer
+        type: Picklist
+        values: [Active, Lapsed, Former]
+      - apiName: Undeliverable_Address__c
+        label: Undeliverable Billing Address
+        type: Checkbox
+        defaultValue: false
+
+  - apiName: Contact
+    label: Contact
+    pluralLabel: Contacts
+    description: Individual donor or constituent
+    fields:
+      - apiName: FirstName
+        label: First Name
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: Last Name
+        type: Text
+        length: 80
+      - apiName: Email
+        label: Email
+        type: Email
+      - apiName: Phone
+        label: Phone
+        type: Phone
+      - apiName: MobilePhone
+        label: Mobile Phone
+        type: Phone
+      - apiName: MailingStreet
+        label: Mailing Street
+        type: Text
+        length: 255
+      - apiName: MailingCity
+        label: Mailing City
+        type: Text
+        length: 40
+      - apiName: MailingState
+        label: Mailing State
+        type: Text
+        length: 80
+      - apiName: MailingPostalCode
+        label: Mailing Zip/Postal Code
+        type: Text
+        length: 20
+      - apiName: MailingCountry
+        label: Mailing Country
+        type: Text
+        length: 80
+      - apiName: Title
+        label: Title
+        type: Text
+        length: 128
+      - apiName: Department
+        label: Department
+        type: Text
+        length: 80
+      - apiName: Birthdate
+        label: Birthdate
+        type: Date
+      - apiName: AccountId
+        label: Account
+        type: Lookup
+        referenceTo: Account
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: Address_Verification_Status__c
+        label: Address Verification Status
+        type: Text
+        length: 255
+      - apiName: Batch__c
+        label: Batch
+        type: Lookup
+        referenceTo: Batch__c
+        relationshipLabel: Contacts
+        relationshipName: Contacts
+        deleteConstraint: SetNull
+      - apiName: Current_Address__c
+        label: Current Address
+        type: Lookup
+        referenceTo: Address__c
+        relationshipLabel: Contacts (Current Address)
+        relationshipName: Contacts1
+        deleteConstraint: SetNull
+      - apiName: CustomizableRollups_UseSkewMode__c
+        label: 'Customizable Rollups: Force Skew Mode'
+        type: Checkbox
+        defaultValue: false
+      - apiName: Deceased__c
+        label: Deceased
+        type: Checkbox
+        defaultValue: false
+      - apiName: Do_Not_Contact__c
+        label: Do Not Contact
+        type: Checkbox
+        defaultValue: false
+      - apiName: Exclude_from_Household_Formal_Greeting__c
+        label: Exclude from Household Formal Greeting
+        type: Checkbox
+        defaultValue: false
+      - apiName: Exclude_from_Household_Informal_Greeting__c
+        label: Exclude from Household Informal Greeting
+        type: Checkbox
+        defaultValue: false
+      - apiName: Exclude_from_Household_Name__c
+        label: Exclude from Household Name
+        type: Checkbox
+        defaultValue: false
+      - apiName: First_Soft_Credit_Amount__c
+        label: First Soft Credit Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: First_Soft_Credit_Date__c
+        label: First Soft Credit Date
+        type: Date
+      - apiName: HHId__c
+        label: HHId
+        type: Text
+        length: 255
+      - apiName: Largest_Soft_Credit_Amount__c
+        label: Largest Soft Credit Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Largest_Soft_Credit_Date__c
+        label: Largest Soft Credit Date
+        type: Date
+      - apiName: Last_Soft_Credit_Amount__c
+        label: Last Soft Credit Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Last_Soft_Credit_Date__c
+        label: Last Soft Credit Date
+        type: Date
+      - apiName: Number_of_Soft_Credits_Last_N_Days__c
+        label: Number of Soft Credits Last N Days
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Number_of_Soft_Credits_Last_Year__c
+        label: Number of Soft Credits Last Year
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Number_of_Soft_Credits_This_Year__c
+        label: Number of Soft Credits This Year
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Number_of_Soft_Credits_Two_Years_Ago__c
+        label: Number of Soft Credits Two Years Ago
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Number_of_Soft_Credits__c
+        label: Number of Soft Credits
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Primary_Affiliation__c
+        label: Primary Affiliation
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: Do Not Use.  Use Organization Affiliations.
+        relationshipName: PrimaryAffiliatedContacts
+        deleteConstraint: SetNull
+      - apiName: Primary_Contact__c
+        label: Primary Contact
+        type: Checkbox
+      - apiName: Soft_Credit_Last_N_Days__c
+        label: Soft Credit Last N Days
+        type: Currency
+        precision: 16
+        scale: 2
+        defaultValue: 0
+      - apiName: Sustainer__c
+        label: Sustainer
+        type: Picklist
+        values: [Active, Lapsed, Former]
+      - apiName: Undeliverable_Address__c
+        label: Undeliverable Mailing Address
+        type: Checkbox
+        defaultValue: false
+      - apiName: is_Address_Override__c
+        label: Address Override
+        type: Checkbox
+        defaultValue: false
+
+  - apiName: Opportunity
+    label: Donation
+    pluralLabel: Donations
+    description: Donation/grant/pledge
+    fields:
+      - apiName: Name
+        label: Donation Name
+        type: Text
+        length: 120
+      - apiName: Amount
+        label: Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: CloseDate
+        label: Close Date
+        type: Date
+      - apiName: StageName
+        label: Stage
+        type: Picklist
+        values: [Prospecting, Pledged, Received, Thanked, Closed Won, Closed Lost]
+      - apiName: Probability
+        label: Probability (%)
+        type: Percent
+        precision: 3
+        scale: 0
+      - apiName: AccountId
+        label: Account
+        type: Lookup
+        referenceTo: Account
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: Type
+        label: Type
+        type: Picklist
+        values:
+          - Individual
+          - Corporate
+          - Foundation
+          - Government
+          - In-Kind
+          - Major Gift
+          - Matching Gift
+      - apiName: LeadSource
+        label: Lead Source
+        type: Picklist
+        values: [Web, Phone Inquiry, Partner Referral, Purchased List, Event, Other]
+      - apiName: NextStep
+        label: Next Step
+        type: Text
+        length: 255
+      - apiName: CampaignId
+        label: Campaign
+        type: Lookup
+        referenceTo: Campaign
+      - apiName: Acknowledgment_Date__c
+        label: Acknowledgment Date
+        type: Date
+      - apiName: Acknowledgment_Status__c
+        label: Acknowledgment Status
+        type: Picklist
+        values: [To Be Acknowledged, Acknowledged, Do Not Acknowledge, Email Acknowledgment Now, Email Acknowledgment Not Sent]
+      - apiName: Ask_Date__c
+        label: Ask Date
+        type: Date
+      - apiName: Batch_Number__c
+        label: Batch Number
+        type: Text
+        length: 30
+      - apiName: Batch__c
+        label: Batch
+        type: Lookup
+        referenceTo: Batch__c
+        relationshipLabel: Opportunities
+        relationshipName: Opportunities
+        deleteConstraint: SetNull
+      - apiName: Closed_Lost_Reason__c
+        label: Closed Lost Reason
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: CommitmentId__c
+        label: Elevate Recurring Id
+        type: Text
+        length: 100
+      - apiName: DisableContactRoleAutomation__c
+        label: Disable Contact Role Automation
+        type: Checkbox
+        defaultValue: false
+      - apiName: Fair_Market_Value__c
+        label: Fair Market Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Gift_Strategy__c
+        label: Gift Strategy
+        type: Picklist
+        values: [New Donor, Renewal, Upgrade]
+      - apiName: Grant_Contract_Date__c
+        label: Grant Contract Date
+        type: Date
+      - apiName: Grant_Contract_Number__c
+        label: Grant Contract Number
+        type: Text
+        length: 255
+      - apiName: Grant_Period_End_Date__c
+        label: Grant Period End Date
+        type: Date
+      - apiName: Grant_Period_Start_Date__c
+        label: Grant Period Start Date
+        type: Date
+      - apiName: Grant_Program_Area_s__c
+        label: Program Areas
+        type: TextArea
+        length: 255
+      - apiName: Grant_Requirements_Website__c
+        label: Grant Requirements Website
+        type: Url
+      - apiName: Honoree_Contact__c
+        label: Honoree Contact
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: Opportunities (Honoree Contact)
+        relationshipName: Honoree_Opportunities
+        deleteConstraint: SetNull
+      - apiName: Honoree_Information__c
+        label: Honoree Information
+        type: LongTextArea
+        length: 32768
+        visibleLines: 10
+      - apiName: Honoree_Name__c
+        label: Honoree Name
+        type: Text
+        length: 255
+      - apiName: In_Kind_Description__c
+        label: In-Kind Description
+        type: LongTextArea
+        length: 32768
+        visibleLines: 10
+      - apiName: In_Kind_Donor_Declared_Value__c
+        label: In-Kind Donor Declared Value
+        type: Checkbox
+        defaultValue: false
+      - apiName: In_Kind_Type__c
+        label: In-Kind Type
+        type: Picklist
+        values: [Goods, Services]
+      - apiName: Is_Grant_Renewal__c
+        label: Is Grant Renewal
+        type: Checkbox
+        defaultValue: false
+      - apiName: Matching_Gift_Account__c
+        label: Matching Gift Account
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: Matched Gifts
+        relationshipName: Opportunities
+        deleteConstraint: SetNull
+      - apiName: Matching_Gift_Employer__c
+        label: Matching Gift Employer
+        type: Text
+        length: 255
+      - apiName: Matching_Gift_Status__c
+        label: Matching Gift Status
+        type: Picklist
+        values: [Potential, Submitted, Received]
+      - apiName: Matching_Gift__c
+        label: Matching Gift
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipLabel: Matched Gifts
+        relationshipName: MatchedGifts
+        deleteConstraint: SetNull
+      - apiName: Notification_Message__c
+        label: Notification Message
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Notification_Preference__c
+        label: Notification Preference
+        type: Picklist
+        values: [Email, Postal Mail, Phone, Do Not Notify]
+      - apiName: Notification_Recipient_Contact__c
+        label: Notification Recipient Contact
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: Opportunities (Notification Recipient)
+        relationshipName: Notification_Opportunities
+        deleteConstraint: SetNull
+      - apiName: Notification_Recipient_Email__c
+        label: Notification Recipient Email
+        type: Email
+      - apiName: Notification_Recipient_Information__c
+        label: Notification Recipient Information
+        type: TextArea
+        length: 255
+      - apiName: Notification_Recipient_Name__c
+        label: Notification Recipient Name
+        type: Text
+        length: 255
+      - apiName: Previous_Grant_Opportunity__c
+        label: Previous Grant/Gift Opportunity
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipLabel: Related Grants/Gifts
+        relationshipName: Previous_Grant_Opportunities
+        deleteConstraint: SetNull
+      - apiName: Primary_Contact_Campaign_Member_Status__c
+        label: Primary Contact Campaign Member Status
+        type: Text
+        length: 40
+      - apiName: Primary_Contact__c
+        label: Primary Contact
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: Opportunities
+        relationshipName: Opportunities
+        deleteConstraint: SetNull
+      - apiName: Qualified_Date__c
+        label: Qualified Date
+        type: Date
+      - apiName: Recurring_Donation_Installment_Name__c
+        label: Recurring Donation Installment Name
+        type: Text
+        length: 255
+      - apiName: Recurring_Donation_Installment_Number__c
+        label: Recurring Donation Installment Number
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Requested_Amount__c
+        label: Requested Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Tribute_Notification_Date__c
+        label: Tribute Notification Date
+        type: Date
+      - apiName: Tribute_Notification_Status__c
+        label: Tribute Notification Status
+        type: Picklist
+        values: [To Be Notified, Notified]
+      - apiName: Tribute_Type__c
+        label: Tribute Type
+        type: Picklist
+        values: [Honor, Memorial]
+
+  - apiName: Lead
+    label: Lead
+    pluralLabel: Leads
+    description: Prospective donor or volunteer
+    fields:
+      - apiName: FirstName
+        label: First Name
+        type: Text
+        length: 40
+      - apiName: LastName
+        label: Last Name
+        type: Text
+        length: 80
+      - apiName: Company
+        label: Company/Organization
+        type: Text
+        length: 255
+      - apiName: Email
+        label: Email
+        type: Email
+      - apiName: Phone
+        label: Phone
+        type: Phone
+      - apiName: Status
+        label: Status
+        type: Picklist
+        values: [Open, Contacted, Qualified, Unqualified, Converted]
+      - apiName: LeadSource
+        label: Lead Source
+        type: Picklist
+        values: [Web, Phone Inquiry, Partner Referral, Event, Other]
+      - apiName: Street
+        label: Street
+        type: Text
+        length: 255
+      - apiName: City
+        label: City
+        type: Text
+        length: 40
+      - apiName: State
+        label: State
+        type: Text
+        length: 80
+      - apiName: PostalCode
+        label: Zip/Postal Code
+        type: Text
+        length: 20
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: Batch__c
+        label: Batch
+        type: Lookup
+        referenceTo: Batch__c
+        relationshipLabel: Leads
+        relationshipName: Leads
+        deleteConstraint: SetNull
+      - apiName: CompanyCity__c
+        label: Company City
+        type: Text
+        length: 255
+      - apiName: CompanyCountry__c
+        label: Company Country
+        type: Text
+        length: 255
+      - apiName: CompanyPostalCode__c
+        label: Company Zip/Postal Code
+        type: Text
+        length: 255
+      - apiName: CompanyState__c
+        label: Company State/Province
+        type: Text
+        length: 255
+      - apiName: CompanyStreet__c
+        label: Company Street
+        type: TextArea
+        length: 255
+
+  - apiName: Campaign
+    label: Campaign
+    pluralLabel: Campaigns
+    description: Fundraising campaign or event
+    fields:
+      - apiName: Name
+        label: Campaign Name
+        type: Text
+        length: 80
+      - apiName: Type
+        label: Type
+        type: Picklist
+        values:
+          - Direct Mail
+          - Email
+          - Telemarketing
+          - Event
+          - Webinar
+          - Social Media
+          - Other
+      - apiName: Status
+        label: Status
+        type: Picklist
+        values: [Planned, In Progress, Completed, Aborted]
+      - apiName: StartDate
+        label: Start Date
+        type: Date
+      - apiName: EndDate
+        label: End Date
+        type: Date
+      - apiName: BudgetedCost
+        label: Budgeted Cost
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: ActualCost
+        label: Actual Cost
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: ExpectedRevenue
+        label: Expected Revenue
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: IsActive
+        label: Active
+        type: Checkbox
+        defaultValue: true
+      - apiName: NumberOfContacts
+        label: Contacts
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: NumberOfResponses
+        label: Responses
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: ParentId
+        label: Parent Campaign
+        type: Lookup
+        referenceTo: Campaign
+
+  - apiName: Task
+    label: Task
+    pluralLabel: Tasks
+    description: Activity/task record
+    fields:
+      - apiName: Subject
+        label: Subject
+        type: Picklist
+        values: [Call, Email, Send Letter, Send Quote, Other]
+      - apiName: Status
+        label: Status
+        type: Picklist
+        values: [Not Started, In Progress, Completed, Waiting on someone else, Deferred]
+      - apiName: Priority
+        label: Priority
+        type: Picklist
+        values: [High, Normal, Low]
+      - apiName: ActivityDate
+        label: Due Date
+        type: Date
+      - apiName: Description
+        label: Comments
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: WhoId
+        label: Name (Contact/Lead)
+        type: Lookup
+        referenceTo: Contact
+      - apiName: WhatId
+        label: Related To
+        type: Lookup
+        referenceTo: Account
+      - apiName: OwnerId
+        label: Assigned To
+        type: Lookup
+        referenceTo: User
+
+  - apiName: Event
+    label: Event
+    pluralLabel: Events
+    description: Calendar event
+    fields:
+      - apiName: Subject
+        label: Subject
+        type: Text
+        length: 255
+      - apiName: StartDateTime
+        label: Start Date/Time
+        type: DateTime
+      - apiName: EndDateTime
+        label: End Date/Time
+        type: DateTime
+      - apiName: Location
+        label: Location
+        type: Text
+        length: 255
+      - apiName: Description
+        label: Description
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: WhoId
+        label: Name (Contact/Lead)
+        type: Lookup
+        referenceTo: Contact
+      - apiName: WhatId
+        label: Related To
+        type: Lookup
+        referenceTo: Account
+      - apiName: OwnerId
+        label: Assigned To
+        type: Lookup
+        referenceTo: User
+
+  - apiName: CampaignMember
+    label: Campaign Member
+    pluralLabel: Campaign Members
+    description: Contact/Lead associated with a Campaign
+    fields:
+      - apiName: CampaignId
+        label: Campaign
+        type: Lookup
+        referenceTo: Campaign
+      - apiName: ContactId
+        label: Contact
+        type: Lookup
+        referenceTo: Contact
+      - apiName: LeadId
+        label: Lead
+        type: Lookup
+        referenceTo: Lead
+      - apiName: Status
+        label: Status
+        type: Picklist
+        values: [Sent, Responded, Attended, No Show]
+      - apiName: FirstRespondedDate
+        label: First Responded Date
+        type: Date
+
+  - apiName: User
+    label: User
+    pluralLabel: Users
+    description: System user
+    fields:
+      - apiName: Username
+        label: Username
+        type: Text
+        length: 80
+      - apiName: LastName
+        label: Last Name
+        type: Text
+        length: 80
+      - apiName: FirstName
+        label: First Name
+        type: Text
+        length: 40
+      - apiName: Email
+        label: Email
+        type: Email
+      - apiName: Title
+        label: Title
+        type: Text
+        length: 80
+      - apiName: IsActive
+        label: Active
+        type: Checkbox
+        defaultValue: true
+      - apiName: ProfileId
+        label: Profile
+        type: Text
+        length: 80
+      - apiName: Alias
+        label: Alias
+        type: Text
+        length: 8
+
+objects:
+  - apiName: Account_Soft_Credit__c
+    label: Account Soft Credit
+    pluralLabel: Account Soft Credits
+    description: ''
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Account Soft Credit Name
+      type: AutoNumber
+      displayFormat: Account SC-{0000}
+    fields:
+      - apiName: Account__c
+        label: Account
+        type: Lookup
+        required: true
+        referenceTo: Account
+        relationshipLabel: Account Soft Credits
+        relationshipName: Account_Soft_Credits
+        deleteConstraint: Restrict
+      - apiName: Amount__c
+        label: Amount
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Opportunity__c
+        label: Opportunity
+        type: MasterDetail
+        referenceTo: Opportunity
+        relationshipLabel: Account Soft Credits
+        relationshipName: Account_Soft_Credits
+      - apiName: Role__c
+        label: Role
+        type: Picklist
+        values: [Donation Source, Influencer, Match]
+
+  - apiName: Address__c
+    label: Address
+    pluralLabel: Addresses
+    description: Custom object for storing additional addresses for Household Accounts in the Nonprofit Success Pack.
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Address ID
+      type: AutoNumber
+      displayFormat: A-{00000}
+    fields:
+      - apiName: API_Response__c
+        label: API Response
+        type: LongTextArea
+        length: 32768
+        visibleLines: 6
+      - apiName: Address_Type__c
+        label: Address Type
+        type: Picklist
+        values: [Home, Work, Vacation Residence, Other]
+      - apiName: Administrative_Area__c
+        label: Administrative Area
+        type: Text
+        length: 255
+      - apiName: Ambiguous__c
+        label: Ambiguous
+        type: Checkbox
+        defaultValue: false
+      - apiName: Congressional_District__c
+        label: Congressional District
+        type: Text
+        length: 255
+      - apiName: County_Name__c
+        label: County Name
+        type: Text
+        length: 50
+      - apiName: Default_Address__c
+        label: Default Address
+        type: Checkbox
+        defaultValue: false
+      - apiName: Exclude_from_Updates__c
+        label: Exclude from Updates
+        type: Checkbox
+        defaultValue: false
+      - apiName: Formula_MailingAddress__c
+        label: Mailing Address
+        type: Text
+        length: 255
+      - apiName: Formula_MailingStreetAddress__c
+        label: Mailing Street Address
+        type: Text
+        length: 255
+      - apiName: Geolocation__c
+        label: Geolocation
+        type: Text
+        length: 255
+        scale: 6
+      - apiName: Household_Account__c
+        label: Account
+        type: MasterDetail
+        referenceTo: Account
+        relationshipLabel: Addresses
+        relationshipName: Addresses
+      - apiName: Latest_End_Date__c
+        label: Latest End Date
+        type: Date
+      - apiName: Latest_Start_Date__c
+        label: Latest Start Date
+        type: Date
+      - apiName: MailingCity__c
+        label: Mailing City
+        type: Text
+        length: 255
+      - apiName: MailingCountry__c
+        label: Mailing Country
+        type: Text
+        length: 255
+      - apiName: MailingPostalCode__c
+        label: Mailing Zip/Postal Code
+        type: Text
+        length: 255
+      - apiName: MailingState__c
+        label: Mailing State/Province
+        type: Text
+        length: 255
+      - apiName: MailingStreet2__c
+        label: Mailing Street2
+        type: TextArea
+        length: 255
+      - apiName: MailingStreet__c
+        label: Mailing Street
+        type: Text
+        length: 255
+      - apiName: NCOA_Evaluation_Date__c
+        label: NCOA Evaluation Date
+        type: DateTime
+      - apiName: NCOA_Result_Code__c
+        label: NCOA Result Code
+        type: Text
+        length: 80
+      - apiName: Pre_Verification_Address__c
+        label: Pre-Verification Address
+        type: TextArea
+        length: 255
+      - apiName: Seasonal_End_Day__c
+        label: Seasonal End Day
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - 31
+      - apiName: Seasonal_End_Month__c
+        label: Seasonal End Month
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+      - apiName: Seasonal_Start_Day__c
+        label: Seasonal Start Day
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - 31
+      - apiName: Seasonal_Start_Month__c
+        label: Seasonal Start Month
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+      - apiName: State_Lower_District__c
+        label: State Lower District
+        type: Text
+        length: 255
+      - apiName: State_Upper_District__c
+        label: State Upper District
+        type: Text
+        length: 255
+      - apiName: Undeliverable__c
+        label: Undeliverable
+        type: Checkbox
+        defaultValue: false
+      - apiName: Verification_Status__c
+        label: Verification Status
+        type: Text
+        length: 255
+      - apiName: Verified_Date__c
+        label: Verified Date
+        type: DateTime
+      - apiName: Verified__c
+        label: Verified
+        type: Checkbox
+        defaultValue: false
+
+  - apiName: Affiliation__c
+    label: Affiliation
+    pluralLabel: Affiliations
+    description: Contact-to-organization affiliation
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - apiName: Related_Opportunity_Contact_Role__c
+        label: Related Opportunity Contact Role
+        type: Picklist
+        values: [Soft Credit, Solicitor]
+
+  - apiName: Allocation__c
+    label: GAU Allocation
+    pluralLabel: GAU Allocations
+    description: ''
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: GAU Allocation Name
+      type: AutoNumber
+      displayFormat: ALL-{0}
+    fields:
+      - apiName: Amount__c
+        label: Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Campaign__c
+        label: Campaign
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: GAU Allocations
+        relationshipName: Allocations
+        deleteConstraint: SetNull
+      - apiName: General_Accounting_Unit__c
+        label: General Accounting Unit
+        type: Lookup
+        required: true
+        referenceTo: General_Accounting_Unit__c
+        relationshipLabel: GAU Allocations
+        relationshipName: Allocations
+        deleteConstraint: Restrict
+      - apiName: Opportunity__c
+        label: Opportunity
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipLabel: GAU Allocations
+        relationshipName: Allocations
+        deleteConstraint: SetNull
+      - apiName: Payment__c
+        label: Payment
+        type: Lookup
+        referenceTo: Payment__c
+        relationshipLabel: Payment Allocations
+        relationshipName: Allocations
+        deleteConstraint: SetNull
+      - apiName: Percent__c
+        label: Percent
+        type: Percent
+        precision: 9
+        scale: 6
+      - apiName: Recurring_Donation__c
+        label: Recurring Donation
+        type: Lookup
+        referenceTo: Recurring_Donation__c
+        relationshipLabel: GAU Allocations
+        relationshipName: Allocations
+        deleteConstraint: SetNull
+
+  - apiName: Batch__c
+    label: Batch
+    pluralLabel: Batches
+    description: The holding object for batch entry. Interaction with this object should occur only through the Batch Data Entry tab.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Batch Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Batch_Status__c
+        label: Batch Status
+        type: Picklist
+        values: [In Progress, Complete]
+      - apiName: Description__c
+        label: Description
+        type: TextArea
+        length: 255
+      - apiName: Number_of_Items__c
+        label: Number of Items
+        type: Number
+        precision: 4
+        scale: 0
+      - apiName: Object_Name__c
+        label: Object Name
+        type: Text
+        length: 100
+        required: true
+
+  - apiName: DataImport__c
+    label: NPSP Data Import
+    pluralLabel: NPSP Data Imports
+    description: Custom object to hold denormalized data records that can be imported into the Nonprofit Success Pack.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Data Import ID
+      type: AutoNumber
+      displayFormat: DI-{000000}
+    fields:
+      - apiName: ACH_Consent__c
+        label: Payment ACH Consent Message
+        type: LongTextArea
+        length: 2000
+        visibleLines: 3
+      - apiName: Account1ImportStatus__c
+        label: Account1 Import Status
+        type: Text
+        length: 255
+      - apiName: Account1Imported__c
+        label: Account1 Imported
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: NPSP Data Imports (Account1 Imported)
+        relationshipName: Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Account1_City__c
+        label: Account1 City
+        type: Text
+        length: 255
+      - apiName: Account1_Country__c
+        label: Account1 Country
+        type: Text
+        length: 255
+      - apiName: Account1_Name__c
+        label: Account1 Name
+        type: Text
+        length: 255
+      - apiName: Account1_Phone__c
+        label: Account1 Phone
+        type: Phone
+      - apiName: Account1_State_Province__c
+        label: Account1 State/Province
+        type: Text
+        length: 255
+      - apiName: Account1_Street__c
+        label: Account1 Street
+        type: TextArea
+        length: 255
+      - apiName: Account1_Website__c
+        label: Account1 Website
+        type: Url
+      - apiName: Account1_Zip_Postal_Code__c
+        label: Account1 Zip/Postal Code
+        type: Text
+        length: 255
+      - apiName: Account2ImportStatus__c
+        label: Account2 Import Status
+        type: Text
+        length: 255
+      - apiName: Account2Imported__c
+        label: Account2 Imported
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: NPSP Data Imports (Account2 Imported)
+        relationshipName: Data_Imports1
+        deleteConstraint: SetNull
+      - apiName: Account2_City__c
+        label: Account2 City
+        type: Text
+        length: 255
+      - apiName: Account2_Country__c
+        label: Account2 Country
+        type: Text
+        length: 255
+      - apiName: Account2_Name__c
+        label: Account2 Name
+        type: Text
+        length: 255
+      - apiName: Account2_Phone__c
+        label: Account2 Phone
+        type: Phone
+      - apiName: Account2_State_Province__c
+        label: Account2 State/Province
+        type: Text
+        length: 255
+      - apiName: Account2_Street__c
+        label: Account2 Street
+        type: TextArea
+        length: 255
+      - apiName: Account2_Website__c
+        label: Account2 Website
+        type: Url
+      - apiName: Account2_Zip_Postal_Code__c
+        label: Account2 Zip/Postal Code
+        type: Text
+        length: 255
+      - apiName: Additional_Object_JSON__c
+        label: Additional Object JSON
+        type: LongTextArea
+        length: 131072
+        visibleLines: 10
+      - apiName: ApexJobId__c
+        label: ApexJobId
+        type: Text
+        length: 18
+      - apiName: Campaign_Member_Status__c
+        label: Campaign Member Status
+        type: Text
+        length: 40
+      - apiName: Contact1ImportStatus__c
+        label: Contact1 Import Status
+        type: Text
+        length: 255
+      - apiName: Contact1Imported__c
+        label: Contact1 Imported
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: NPSP Data Imports (Contact1 Imported)
+        relationshipName: Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Contact1_Alternate_Email__c
+        label: Contact1 Alternate Email
+        type: Email
+      - apiName: Contact1_Birthdate__c
+        label: Contact1 Birthdate
+        type: Date
+      - apiName: Contact1_Consent_Message__c
+        label: Contact1 Consent Message
+        type: LongTextArea
+        length: 2000
+        visibleLines: 4
+      - apiName: Contact1_Consent_Opt_In__c
+        label: Contact1 Consent Opt-In
+        type: Checkbox
+        defaultValue: false
+      - apiName: Contact1_Firstname__c
+        label: Contact1 First Name
+        type: Text
+        length: 40
+      - apiName: Contact1_Home_Phone__c
+        label: Contact1 Home Phone
+        type: Phone
+      - apiName: Contact1_Lastname__c
+        label: Contact1 Last Name
+        type: Text
+        length: 80
+      - apiName: Contact1_Mobile_Phone__c
+        label: Contact1 Mobile Phone
+        type: Phone
+      - apiName: Contact1_Other_Phone__c
+        label: Contact1 Other Phone
+        type: Phone
+      - apiName: Contact1_Personal_Email__c
+        label: Contact1 Personal Email
+        type: Email
+      - apiName: Contact1_Preferred_Email__c
+        label: Contact1 Preferred Email
+        type: Picklist
+        values: [Personal, Work, Alternate]
+      - apiName: Contact1_Preferred_Phone__c
+        label: Contact1 Preferred Phone
+        type: Picklist
+        values: [Home, Work, Mobile, Other]
+      - apiName: Contact1_Salutation__c
+        label: Contact1 Salutation
+        type: Text
+        length: 20
+      - apiName: Contact1_Title__c
+        label: Contact1 Title
+        type: Text
+        length: 128
+      - apiName: Contact1_Work_Email__c
+        label: Contact1 Work Email
+        type: Email
+      - apiName: Contact1_Work_Phone__c
+        label: Contact1 Work Phone
+        type: Phone
+      - apiName: Contact2ImportStatus__c
+        label: Contact2 Import Status
+        type: Text
+        length: 255
+      - apiName: Contact2Imported__c
+        label: Contact2 Imported
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: NPSP Data Imports (Contact2 Imported)
+        relationshipName: Data_Imports1
+        deleteConstraint: SetNull
+      - apiName: Contact2_Alternate_Email__c
+        label: Contact2 Alternate Email
+        type: Email
+      - apiName: Contact2_Birthdate__c
+        label: Contact2 Birthdate
+        type: Date
+      - apiName: Contact2_Firstname__c
+        label: Contact2 First Name
+        type: Text
+        length: 40
+      - apiName: Contact2_Home_Phone__c
+        label: Contact2 Home Phone
+        type: Phone
+      - apiName: Contact2_Lastname__c
+        label: Contact2 Last Name
+        type: Text
+        length: 80
+      - apiName: Contact2_Mobile_Phone__c
+        label: Contact2 Mobile Phone
+        type: Phone
+      - apiName: Contact2_Other_Phone__c
+        label: Contact2 Other Phone
+        type: Phone
+      - apiName: Contact2_Personal_Email__c
+        label: Contact2 Personal Email
+        type: Email
+      - apiName: Contact2_Preferred_Email__c
+        label: Contact2 Preferred Email
+        type: Picklist
+        values: [Personal, Work, Alternate]
+      - apiName: Contact2_Preferred_Phone__c
+        label: Contact2 Preferred Phone
+        type: Picklist
+        values: [Home, Work, Mobile, Other]
+      - apiName: Contact2_Salutation__c
+        label: Contact2 Salutation
+        type: Text
+        length: 20
+      - apiName: Contact2_Title__c
+        label: Contact2 Title
+        type: Text
+        length: 128
+      - apiName: Contact2_Work_Email__c
+        label: Contact2 Work Email
+        type: Email
+      - apiName: Contact2_Work_Phone__c
+        label: Contact2 Work Phone
+        type: Phone
+      - apiName: DonationCampaignImportStatus__c
+        label: Donation Campaign Import Status
+        type: Text
+        length: 255
+      - apiName: DonationCampaignImported__c
+        label: Donation Campaign Source
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: NPSP Data Imports
+        relationshipName: Data_Imports
+        deleteConstraint: SetNull
+      - apiName: DonationImportStatus__c
+        label: Donation Import Status
+        type: Text
+        length: 255
+      - apiName: DonationImported__c
+        label: Donation Imported
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipLabel: NPSP Data Imports (Opportunity1 Imported)
+        relationshipName: Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Donation_Amount__c
+        label: Donation Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Donation_Campaign_Name__c
+        label: Campaign Name
+        type: Text
+        length: 255
+      - apiName: Donation_Date__c
+        label: Donation Date
+        type: Date
+      - apiName: Donation_Description__c
+        label: Donation Description
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Donation_Donor__c
+        label: Donation Donor
+        type: Picklist
+        values: [Contact1, Account1]
+      - apiName: Donation_Elevate_Recurring_ID__c
+        label: Donation Elevate Recurring ID
+        type: Text
+        length: 100
+      - apiName: Donation_Honoree_Information__c
+        label: Donation Honoree Information
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Donation_Honoree_Name__c
+        label: Donation Honoree Name
+        type: Text
+        length: 255
+      - apiName: Donation_Member_Level__c
+        label: Donation Member Level
+        type: Text
+        length: 255
+      - apiName: Donation_Membership_End_Date__c
+        label: Donation Membership End Date
+        type: Date
+      - apiName: Donation_Membership_Origin__c
+        label: Donation Membership Origin
+        type: Text
+        length: 255
+      - apiName: Donation_Membership_Start_Date__c
+        label: Donation Membership Start Date
+        type: Date
+      - apiName: Donation_Name__c
+        label: Donation Name
+        type: Text
+        length: 255
+      - apiName: Donation_Notification_Message__c
+        label: Donation Notification Message
+        type: LongTextArea
+        length: 32768
+        visibleLines: 10
+      - apiName: Donation_Notification_Preference__c
+        label: Donation Notification Preference
+        type: Picklist
+        values: [Email, Postal Mail, Phone, Do Not Notify]
+      - apiName: Donation_Notification_Recipient_Email__c
+        label: Donation Notification Recipient Email
+        type: Text
+        length: 80
+      - apiName: Donation_Notification_Recipient_Info__c
+        label: Donation Notification Recipient Info
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Donation_Notification_Recipient_Name__c
+        label: Donation Notification Recipient Name
+        type: Text
+        length: 255
+      - apiName: Donation_Possible_Matches__c
+        label: Donation Possible Matches
+        type: Text
+        length: 255
+      - apiName: Donation_Record_Type_Name__c
+        label: Donation Record Type Name
+        type: Text
+        length: 255
+      - apiName: Donation_Stage__c
+        label: Donation Stage
+        type: Text
+        length: 255
+      - apiName: Donation_Tribute_Type__c
+        label: Donation Tribute Type
+        type: Picklist
+        values: [Honor, Memorial]
+      - apiName: Donation_Type__c
+        label: Donation Type
+        type: Text
+        length: 255
+      - apiName: Elevate_Custom_Metadata__c
+        label: Elevate Custom Metadata
+        type: LongTextArea
+        length: 131072
+        visibleLines: 6
+      - apiName: Elevate_Payment_Status__c
+        label: Elevate Payment Status
+        type: Text
+        length: 255
+      - apiName: FailureInformation__c
+        label: Failure Information
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: GAU_Allocation_1_Amount__c
+        label: 'GAU Allocation 1: Amount'
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: GAU_Allocation_1_GAU__c
+        label: 'GAU Allocation 1: GAU'
+        type: Lookup
+        referenceTo: General_Accounting_Unit__c
+        relationshipLabel: NPSP Data Imports (GAU 1)
+        relationshipName: NPSP_Data_Imports_GAU1
+        deleteConstraint: SetNull
+      - apiName: GAU_Allocation_1_Import_Status__c
+        label: 'GAU Allocation 1: Import Status'
+        type: Text
+        length: 255
+      - apiName: GAU_Allocation_1_Imported__c
+        label: 'GAU Allocation 1: Imported'
+        type: Lookup
+        referenceTo: Allocation__c
+        relationshipLabel: NPSP Data Imports (GAU 1)
+        relationshipName: NPSP_Data_Imports_GAU1
+        deleteConstraint: SetNull
+      - apiName: GAU_Allocation_1_Percent__c
+        label: 'GAU Allocation 1: Percent'
+        type: Percent
+        precision: 9
+        scale: 6
+      - apiName: GAU_Allocation_2_Amount__c
+        label: 'GAU Allocation 2: Amount'
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: GAU_Allocation_2_GAU__c
+        label: 'GAU Allocation 2: GAU'
+        type: Lookup
+        referenceTo: General_Accounting_Unit__c
+        relationshipLabel: NPSP Data Imports (GAU 2)
+        relationshipName: NPSP_Data_Imports_GAU2
+        deleteConstraint: SetNull
+      - apiName: GAU_Allocation_2_Import_Status__c
+        label: 'GAU Allocation 2: Import Status'
+        type: Text
+        length: 255
+      - apiName: GAU_Allocation_2_Imported__c
+        label: 'GAU Allocation 2: Imported'
+        type: Lookup
+        referenceTo: Allocation__c
+        relationshipLabel: NPSP Data Imports (GAU 2)
+        relationshipName: NPSP_Data_Imports_GAU2
+        deleteConstraint: SetNull
+      - apiName: GAU_Allocation_2_Percent__c
+        label: 'GAU Allocation 2: Percent'
+        type: Percent
+        precision: 9
+        scale: 6
+      - apiName: HomeAddressImportStatus__c
+        label: Home Address Import Status
+        type: Text
+        length: 255
+      - apiName: HomeAddressImported__c
+        label: Home Address Imported
+        type: Lookup
+        referenceTo: Address__c
+        relationshipLabel: NPSP Data Imports
+        relationshipName: Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Home_City__c
+        label: Home City
+        type: Text
+        length: 255
+      - apiName: Home_Country__c
+        label: Home Country
+        type: Text
+        length: 255
+      - apiName: Home_State_Province__c
+        label: Home State/Province
+        type: Text
+        length: 255
+      - apiName: Home_Street__c
+        label: Home Street
+        type: TextArea
+        length: 255
+      - apiName: Home_Zip_Postal_Code__c
+        label: Home Zip/Postal Code
+        type: Text
+        length: 255
+      - apiName: HouseholdAccountImported__c
+        label: Household Account Imported
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: NPSP Data Imports
+        relationshipName: NPSP_Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Household_Phone__c
+        label: Household Phone
+        type: Phone
+      - apiName: ImportedDate__c
+        label: Imported Date
+        type: DateTime
+      - apiName: NPSP_Data_Import_Batch__c
+        label: NPSP Data Import Batch
+        type: Lookup
+        referenceTo: DataImportBatch__c
+        relationshipLabel: NPSP Data Imports
+        relationshipName: NPSP_Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Opportunity_Contact_Role_1_ImportStatus__c
+        label: 'Opportunity Contact Role 1: ImportStatus'
+        type: Text
+        length: 255
+      - apiName: Opportunity_Contact_Role_1_Imported__c
+        label: 'Opportunity Contact Role 1: Imported'
+        type: Text
+        length: 18
+      - apiName: Opportunity_Contact_Role_1_Role__c
+        label: 'Opportunity Contact Role 1: Role'
+        type: Text
+        length: 255
+      - apiName: Opportunity_Contact_Role_2_ImportStatus__c
+        label: 'Opportunity Contact Role 2: ImportStatus'
+        type: Text
+        length: 255
+      - apiName: Opportunity_Contact_Role_2_Imported__c
+        label: 'Opportunity Contact Role 2: Imported'
+        type: Text
+        length: 18
+      - apiName: Opportunity_Contact_Role_2_Role__c
+        label: 'Opportunity Contact Role 2: Role'
+        type: Text
+        length: 255
+      - apiName: PaymentImportStatus__c
+        label: Payment Import Status
+        type: Text
+        length: 255
+      - apiName: PaymentImported__c
+        label: Payment Imported
+        type: Lookup
+        referenceTo: Payment__c
+        relationshipLabel: NPSP Data Imports
+        relationshipName: NPSP_Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Payment_ACH_Code__c
+        label: Payment ACH Code
+        type: Picklist
+      - apiName: Payment_ACH_Last_4__c
+        label: Payment ACH Last 4
+        type: Text
+        length: 4
+      - apiName: Payment_Authorization_Token__c
+        label: Payment Authorization Token
+        type: Text
+        length: 255
+      - apiName: Payment_Authorized_Date__c
+        label: Payment Authorized Date
+        type: DateTime
+      - apiName: Payment_Authorized_UTC_Timestamp__c
+        label: Payment Authorized UTC Timestamp
+        type: Text
+        length: 30
+      - apiName: Payment_Card_Expiration_Month__c
+        label: Payment Card Expiration Month
+        type: Text
+        length: 2
+      - apiName: Payment_Card_Expiration_Year__c
+        label: Payment Card Expiration Year
+        type: Text
+        length: 4
+      - apiName: Payment_Card_Last_4__c
+        label: Payment Card Last 4
+        type: Text
+        length: 4
+      - apiName: Payment_Card_Network__c
+        label: Payment Card Network
+        type: Text
+        length: 20
+      - apiName: Payment_Check_Reference_Number__c
+        label: Payment Check/Reference Number
+        type: Text
+        length: 255
+      - apiName: Payment_Declined_Reason__c
+        label: Payment Elevate API Declined Reason
+        type: Text
+        length: 255
+      - apiName: Payment_Donor_Cover_Amount__c
+        label: Payment Donor Cover Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Payment_Elevate_Batch_ID__c
+        label: Payment Elevate Batch ID
+        type: Text
+        length: 40
+      - apiName: Payment_Elevate_Created_Date__c
+        label: Payment Elevate Created Date
+        type: DateTime
+      - apiName: Payment_Elevate_Created_UTC_Timestamp__c
+        label: Payment Elevate Created UTC  Timestamp
+        type: Text
+        length: 30
+      - apiName: Payment_Elevate_ID__c
+        label: Payment Elevate ID
+        type: Text
+        length: 40
+      - apiName: Payment_Elevate_Original_Payment_ID__c
+        label: Payment Elevate Original Payment ID
+        type: Text
+        length: 40
+      - apiName: Payment_Elevate_Transaction_Fee__c
+        label: Payment Elevate Transaction Fee
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Payment_Gateway_ID__c
+        label: Payment Gateway ID
+        type: Text
+        length: 40
+      - apiName: Payment_Gateway_Payment_ID__c
+        label: Payment Gateway Payment ID
+        type: Text
+        length: 255
+      - apiName: Payment_Gateway_Transaction_Fee__c
+        label: Payment Gateway Transaction Fee
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Payment_Method__c
+        label: Payment Method
+        type: Text
+        length: 255
+      - apiName: Payment_Origin_ID__c
+        label: Payment Origin ID
+        type: Text
+        length: 255
+      - apiName: Payment_Origin_Name__c
+        label: Payment Origin Name
+        type: Text
+        length: 255
+      - apiName: Payment_Origin_Type__c
+        label: Payment Origin Type
+        type: Text
+        length: 40
+      - apiName: Payment_Paid__c
+        label: Payment Paid
+        type: Picklist
+        values: [True, False]
+      - apiName: Payment_Possible_Matches__c
+        label: Payment Possible Matches
+        type: Text
+        length: 255
+      - apiName: Payment_Status__c
+        label: Payment Elevate API Status
+        type: Text
+        length: 255
+      - apiName: Payment_Total_Transaction_Fees__c
+        label: Payment Total Transaction Fees
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Payment_Type__c
+        label: Payment Type
+        type: Text
+        length: 40
+      - apiName: RecurringDonationImportStatus__c
+        label: Recurring Donation Import Status
+        type: Text
+        length: 255
+      - apiName: RecurringDonationImported__c
+        label: Recurring Donation Imported
+        type: Lookup
+        referenceTo: Recurring_Donation__c
+        relationshipLabel: NPSP Data Imports
+        relationshipName: NPSP_Data_Imports
+        deleteConstraint: SetNull
+      - apiName: Recurring_Donation_ACH_Last_4__c
+        label: Recurring Donation ACH Last 4
+        type: Text
+        length: 4
+      - apiName: Recurring_Donation_Amount__c
+        label: Recurring Donation Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Recurring_Donation_Card_Expiration_Month__c
+        label: Recurring Donation Card Expiration Month
+        type: Text
+        length: 2
+      - apiName: Recurring_Donation_Card_Expiration_Year__c
+        label: Recurring Donation Card Expiration Year
+        type: Text
+        length: 4
+      - apiName: Recurring_Donation_Card_Last_4__c
+        label: Recurring Donation Card Last 4
+        type: Text
+        length: 4
+      - apiName: Recurring_Donation_Change_Type__c
+        label: Recurring Donation Change Type
+        type: Text
+        length: 80
+      - apiName: Recurring_Donation_Date_Established__c
+        label: Recurring Donation Date Established
+        type: Date
+      - apiName: Recurring_Donation_Day_of_Month__c
+        label: Recurring Donation Day of Month
+        type: Text
+        length: 10
+      - apiName: Recurring_Donation_Effective_Date__c
+        label: Recurring Donation Effective Date
+        type: Date
+      - apiName: Recurring_Donation_Elevate_Event_Version__c
+        label: Recurring Donation Elevate Event Version
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Recurring_Donation_Elevate_Recurring_ID__c
+        label: Recurring Donation Elevate Recurring ID
+        type: Text
+        length: 100
+        externalId: true
+      - apiName: Recurring_Donation_End_Date__c
+        label: Recurring Donation End Date
+        type: Date
+      - apiName: Recurring_Donation_Installment_Frequency__c
+        label: Recurring Donation Installment Frequency
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: Recurring_Donation_Installment_Period__c
+        label: Recurring Donation Installment Period
+        type: Text
+        length: 20
+      - apiName: Recurring_Donation_Name__c
+        label: Recurring Donation Name
+        type: Text
+        length: 80
+      - apiName: Recurring_Donation_Payment_Method__c
+        label: Recurring Donation Payment Method
+        type: Text
+        length: 40
+      - apiName: Recurring_Donation_Planned_Installments__c
+        label: Recurring Donation Planned Installments
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Recurring_Donation_Recurring_Type__c
+        label: Recurring Donation Recurring Type
+        type: Text
+        length: 40
+      - apiName: Recurring_Donation_Status_Reason__c
+        label: Recurring Donation Status Reason
+        type: Text
+        length: 80
+      - apiName: Recurring_Donation_Status__c
+        label: Recurring Donation Status
+        type: Text
+        length: 40
+      - apiName: Status__c
+        label: Status
+        type: Picklist
+        values: [Ready To Process, Imported, Dry Run - Validated, Dry Run - Error, Failed, Processing]
+      - apiName: UTM_Campaign__c
+        label: UTM Campaign
+        type: Text
+        length: 255
+      - apiName: UTM_Content__c
+        label: UTM Content
+        type: Text
+        length: 255
+      - apiName: UTM_Keyword_Terms__c
+        label: UTM Keyword Terms
+        type: Text
+        length: 255
+      - apiName: UTM_Medium__c
+        label: UTM Medium
+        type: Text
+        length: 255
+      - apiName: UTM_Source__c
+        label: UTM Source
+        type: Text
+        length: 255
+
+  - apiName: DataImportBatch__c
+    label: NPSP Data Import Batch
+    pluralLabel: NPSP Data Import Batches
+    description: ''
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Batch Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Account_Custom_Unique_ID__c
+        label: Account Custom Unique ID
+        type: Text
+        length: 255
+      - apiName: Active_Fields__c
+        label: Active Fields
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Allow_Recurring_Donations__c
+        label: Allow Recurring Donations
+        type: Checkbox
+        defaultValue: false
+      - apiName: Batch_Defaults__c
+        label: Batch Defaults
+        type: LongTextArea
+        length: 50000
+        visibleLines: 3
+      - apiName: Batch_Description__c
+        label: Batch Description
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Batch_Gift_Entry_Version__c
+        label: Batch Gift Entry Version
+        type: Number
+        precision: 4
+        scale: 2
+      - apiName: Batch_Number__c
+        label: Batch Number
+        type: Text
+        length: 30
+        externalId: true
+      - apiName: Batch_Process_Size__c
+        label: Batch Process Size
+        type: Number
+        precision: 3
+        scale: 0
+        required: true
+        defaultValue: 50
+      - apiName: Batch_Status__c
+        label: Batch Status
+        type: Picklist
+        values: [Open, Completed, Failed - Needs Review]
+      - apiName: Batch_Table_Columns__c
+        label: Batch Table Columns
+        type: LongTextArea
+        length: 55000
+        visibleLines: 5
+      - apiName: Contact_Custom_Unique_ID__c
+        label: Contact Custom Unique ID
+        type: Text
+        length: 255
+      - apiName: Contact_Matching_Rule__c
+        label: Contact Matching Rule
+        type: Text
+        length: 255
+        required: true
+        defaultValue: '"Firstname,Lastname,Email"'
+      - apiName: Donation_Date_Range__c
+        label: Number of Days from Donation Date
+        type: Number
+        precision: 2
+        scale: 0
+        required: true
+        defaultValue: 0
+      - apiName: Donation_Matching_Behavior__c
+        label: Donation Matching Behavior
+        type: Picklist
+        required: true
+        defaultValue: '"Do Not Match"'
+        values: [Do Not Match, No Match, Single Match, Single Match or Create, Best Match, Best Match or Create]
+      - apiName: Donation_Matching_Implementing_Class__c
+        label: Donation Matching Implementing Class
+        type: Text
+        length: 255
+      - apiName: Donation_Matching_Rule__c
+        label: Donation Matching Rule
+        type: Text
+        length: 255
+        required: true
+        defaultValue: '"npsp__Donation_Amount__c;npsp__Donation_Date__c"'
+      - apiName: Expected_Count_of_Gifts__c
+        label: Expected Count of Gifts
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Expected_Total_Batch_Amount__c
+        label: Expected Total Batch Amount
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Form_Template__c
+        label: Form Template
+        type: Lookup
+        referenceTo: Form_Template__c
+        relationshipLabel: NPSP Data Import Batches
+        relationshipName: NPSP_Data_Import_Batches
+        deleteConstraint: SetNull
+      - apiName: GiftBatch__c
+        label: Gift Batch
+        type: Checkbox
+        defaultValue: false
+      - apiName: Last_Processed_On__c
+        label: Last Processed On
+        type: DateTime
+      - apiName: Latest_Apex_Job_Id__c
+        label: Latest Apex Job Id
+        type: Text
+        length: 255
+      - apiName: Post_Process_Implementing_Class__c
+        label: Post Process Implementing Class
+        type: Text
+        length: 255
+      - apiName: Process_Using_Scheduled_Job__c
+        label: Process Using Scheduled Job
+        type: Checkbox
+        defaultValue: false
+      - apiName: Records_Failed__c
+        label: Records Failed
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: Records_Successfully_Processed__c
+        label: Records Successfully Processed
+        type: Number
+        precision: 8
+        scale: 0
+      - apiName: RequireTotalMatch__c
+        label: Require Expected Totals Match
+        type: Checkbox
+        defaultValue: false
+      - apiName: Run_Opportunity_Rollups_while_Processing__c
+        label: Calculate Donation Rollups with Batch
+        type: Checkbox
+        defaultValue: false
+
+  - apiName: Engagement_Plan__c
+    label: Engagement Plan
+    pluralLabel: Engagement Plans
+    description: An Engagement Plan is a set of tasks that helps you engage with your constituents.
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Engagement Plan Number
+      type: AutoNumber
+      displayFormat: EP-{0000}
+    fields:
+      - apiName: Account__c
+        label: Account
+        type: Lookup
+        referenceTo: Account
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Campaign__c
+        label: Campaign
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Case__c
+        label: Case
+        type: Lookup
+        referenceTo: Case
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Completed_Tasks__c
+        label: Completed Tasks
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Contact__c
+        label: Contact
+        type: Lookup
+        referenceTo: Contact
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Engagement_Plan_Template__c
+        label: Engagement Plan Template
+        type: MasterDetail
+        referenceTo: Engagement_Plan_Template__c
+        relationshipLabel: Engagement Plans
+        relationshipName: Engagement_Plans
+      - apiName: Opportunity__c
+        label: Opportunity
+        type: Lookup
+        referenceTo: Opportunity
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Recurring_Donation__c
+        label: Recurring Donation
+        type: Lookup
+        referenceTo: Recurring_Donation__c
+        relationshipLabel: Engagement Plans
+        relationshipName: Action_Plans
+        deleteConstraint: SetNull
+      - apiName: Status__c
+        label: Status
+        type: Text
+        length: 255
+      - apiName: Total_EP_Tasks__c
+        label: Total EP Tasks
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: Total_Tasks__c
+        label: Total Tasks
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+
+  - apiName: Engagement_Plan_Task__c
+    label: Engagement Plan Task
+    pluralLabel: Engagement Plan Tasks
+    description: An Engagement Plan Task defines the details of each task that is created when applying an Engagement Plan to a record.
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Subject
+      type: Text
+      length: 80
+    fields:
+      - apiName: Assigned_To__c
+        label: Assigned To
+        type: Lookup
+        referenceTo: User
+        relationshipName: Action_Plan_Tasks
+        deleteConstraint: SetNull
+      - apiName: Comments__c
+        label: Comments
+        type: LongTextArea
+        length: 32000
+        visibleLines: 3
+      - apiName: Days_After__c
+        label: Days After
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: Engagement_Plan_Template__c
+        label: Engagement Plan Template
+        type: MasterDetail
+        referenceTo: Engagement_Plan_Template__c
+        relationshipLabel: Engagement Plan Tasks
+        relationshipName: Engagement_Plan_Tasks
+      - apiName: Parent_Task__c
+        label: Parent Task
+        type: Lookup
+        referenceTo: Engagement_Plan_Task__c
+        relationshipLabel: Engagement Plan Tasks
+        relationshipName: Engagement_Plan_Tasks
+        deleteConstraint: SetNull
+      - apiName: Priority__c
+        label: Priority
+        type: Picklist
+        values: [High, Medium, Low]
+      - apiName: Reminder_Time__c
+        label: Reminder Time
+        type: Text
+        length: 4
+      - apiName: Reminder__c
+        label: Reminder
+        type: Checkbox
+        defaultValue: false
+      - apiName: Send_Email__c
+        label: Send Email
+        type: Checkbox
+        defaultValue: false
+      - apiName: Status__c
+        label: Status
+        type: Picklist
+        values: [Not Started, In Progress, Completed, Waiting on someone else, Deferred]
+      - apiName: Type__c
+        label: Type
+        type: Picklist
+        values: [Call, Meeting, Other, Email]
+
+  - apiName: Engagement_Plan_Template__c
+    label: Engagement Plan Template
+    pluralLabel: Engagement Plan Templates
+    description: An Engagement Plan Template defines the process and associated set of tasks required to complete an Engagement Plan. To apply the process to a particular record, you must assign the Engagement Plan to the record.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Engagement Plan Template Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Automatically_Update_Child_Task_Due_Date__c
+        label: Automatically Update Child Task Due Date
+        type: Checkbox
+        defaultValue: true
+      - apiName: Default_Assignee__c
+        label: Default Assignee
+        type: Picklist
+        values: [Owner of Object for Engagement Plan, User Creating Engagement Plan]
+      - apiName: Description__c
+        label: Description
+        type: TextArea
+        length: 255
+      - apiName: Reschedule_To__c
+        label: Reschedule To
+        type: Picklist
+        values: [Monday, Friday]
+      - apiName: Skip_Weekends__c
+        label: Skip Weekends
+        type: Checkbox
+        defaultValue: true
+
+  - apiName: Error__c
+    label: Error
+    pluralLabel: Errors
+    description: Contains errors generated from the NPSP package during normal operations.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Error Number
+      type: AutoNumber
+      displayFormat: '{000000}'
+    fields:
+      - apiName: Context_Type__c
+        label: Context Type
+        type: TextArea
+        length: 255
+      - apiName: Datetime__c
+        label: Datetime
+        type: DateTime
+        defaultValue: now()
+      - apiName: Email_Sent__c
+        label: Email Sent
+        type: Checkbox
+        defaultValue: false
+      - apiName: Error_Type__c
+        label: Error Type
+        type: TextArea
+        length: 255
+      - apiName: Full_Message__c
+        label: Full Message
+        type: LongTextArea
+        length: 32768
+        visibleLines: 5
+      - apiName: Object_Type__c
+        label: Object Type
+        type: TextArea
+        length: 255
+      - apiName: Posted_in_Chatter__c
+        label: Posted in Chatter
+        type: Checkbox
+        defaultValue: false
+      - apiName: Record_URL__c
+        label: Record URL
+        type: Url
+      - apiName: Related_Record_ID__c
+        label: Related Record ID
+        type: Text
+        length: 18
+        externalId: true
+      - apiName: Retry_Pending__c
+        label: Retry Pending?
+        type: Checkbox
+        defaultValue: false
+      - apiName: Stack_Trace__c
+        label: Stack Trace
+        type: LongTextArea
+        length: 32768
+        visibleLines: 10
+
+  - apiName: Fund__c
+    label: DEPRECATED-Fund
+    pluralLabel: DEPRECATED-Funds
+    description: ''
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: DEPRECATED-Fund Name
+      type: Text
+      length: 80
+
+  - apiName: General_Accounting_Unit__c
+    label: General Accounting Unit
+    pluralLabel: General Accounting Units
+    description: Accounting units used for allocating Opportunities.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: General Accounting Unit Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Active__c
+        label: Active
+        type: Checkbox
+        defaultValue: true
+      - apiName: Average_Allocation__c
+        label: Average Allocation
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Description__c
+        label: Description
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: First_Allocation_Date__c
+        label: First Allocation Date
+        type: Date
+      - apiName: Largest_Allocation__c
+        label: Largest Allocation
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Last_Allocation_Date__c
+        label: Last Allocation Date
+        type: Date
+      - apiName: Number_of_Allocations_Last_N_Days__c
+        label: Number of Allocations Last N Days
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Number_of_Allocations_Last_Year__c
+        label: Number of Allocations Last Year
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Number_of_Allocations_This_Year__c
+        label: Number of Allocations This Year
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Number_of_Allocations_Two_Years_Ago__c
+        label: Number of Allocations Two Years Ago
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+      - apiName: Smallest_Allocation__c
+        label: Smallest Allocation
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Allocations_Last_N_Days__c
+        label: Total Allocations Last N Days
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Allocations_Last_Year__c
+        label: Total Allocations Last Year
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Allocations_This_Year__c
+        label: Total Allocations This Year
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Allocations_Two_Years_Ago__c
+        label: Total Allocations Two Years Ago
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Allocations__c
+        label: Total Allocations
+        type: Currency
+        precision: 18
+        scale: 2
+        defaultValue: 0
+      - apiName: Total_Number_of_Allocations__c
+        label: Total Number of Allocations
+        type: Number
+        precision: 18
+        scale: 0
+        defaultValue: 0
+
+  - apiName: Grant_Deadline__c
+    label: Deliverable
+    pluralLabel: Deliverables
+    description: A custom object for tracking various grant/gift seeking deliverables such as the LOI delivery date, application date, and report due dates.
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Deliverable Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Grant_Deadline_Due_Date__c
+        label: Due Date
+        type: Date
+      - apiName: Grant_Deliverable_Close_Date__c
+        label: Close Date
+        type: Date
+      - apiName: Grant_Deliverable_Requirements__c
+        label: Requirements
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Opportunity__c
+        label: Opportunity
+        type: MasterDetail
+        referenceTo: Opportunity
+        relationshipLabel: Deliverables
+        relationshipName: Grant_Deadlines
+      - apiName: Type__c
+        label: Type
+        type: Picklist
+        values: [LOI, Application, Interim Report, Final Report]
+
+  - apiName: Household__c
+    label: Household
+    pluralLabel: Households
+    description: Household group
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - apiName: Number_of_Household_Members__c
+        label: Number of Household Members
+        type: Number
+        precision: 10
+        scale: 0
+
+  - apiName: Level__c
+    label: Level
+    pluralLabel: Levels
+    description: Tracks the definition of levels, for any object.
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Level Name
+      type: Text
+      length: 80
+    fields:
+      - apiName: Active__c
+        label: Active
+        type: Checkbox
+        defaultValue: true
+      - apiName: Description__c
+        label: Description
+        type: LongTextArea
+        length: 32768
+        visibleLines: 3
+      - apiName: Engagement_Plan_Template__c
+        label: Engagement Plan Template
+        type: Lookup
+        referenceTo: Engagement_Plan_Template__c
+        relationshipLabel: Levels
+        relationshipName: Levels
+        deleteConstraint: SetNull
+      - apiName: Level_Field__c
+        label: Level Field
+        type: Text
+        length: 255
+        required: true
+      - apiName: Maximum_Amount__c
+        label: Maximum Amount (<)
+        type: Number
+        precision: 18
+        scale: 2
+      - apiName: Minimum_Amount__c
+        label: Minimum Amount (>=)
+        type: Number
+        precision: 18
+        scale: 2
+      - apiName: Previous_Level_Field__c
+        label: Previous Level Field
+        type: Text
+        length: 255
+      - apiName: Source_Field__c
+        label: Source Field
+        type: Text
+        length: 255
+        required: true
+      - apiName: Target__c
+        label: Target
+        type: Picklist
+        values: [Account, Contact]
+
+  - apiName: Partial_Soft_Credit__c
+    label: Partial Soft Credit
+    pluralLabel: Partial Soft Credits
+    description: ''
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Partial Soft Credit Name
+      type: AutoNumber
+      displayFormat: PSC-{0000}
+    fields:
+      - apiName: Amount__c
+        label: Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Contact_Name__c
+        label: Contact Name
+        type: Text
+        length: 255
+      - apiName: Contact_Role_ID__c
+        label: Contact Role ID
+        type: Text
+        length: 18
+      - apiName: Contact__c
+        label: Contact
+        type: MasterDetail
+        referenceTo: Contact
+        relationshipLabel: Partial Soft Credits
+        relationshipName: Partial_Soft_Credits
+      - apiName: Opportunity__c
+        label: Opportunity
+        type: MasterDetail
+        referenceTo: Opportunity
+        relationshipLabel: Partial Soft Credits
+        relationshipName: Partial_Soft_Credits
+      - apiName: Role_Name__c
+        label: Role Name
+        type: Text
+        length: 255
+
+  - apiName: Payment__c
+    label: Payment
+    pluralLabel: Payments
+    description: Donation payment
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - apiName: ACH_Code__c
+        label: ACH Code
+        type: Picklist
+      - apiName: ACH_Last_4__c
+        label: ACH Last 4
+        type: Text
+        length: 4
+      - apiName: Authorized_Date__c
+        label: Authorized Date
+        type: DateTime
+      - apiName: Authorized_UTC_Timestamp__c
+        label: Authorized UTC Timestamp
+        type: Text
+        length: 30
+      - apiName: Batch_Number__c
+        label: Batch Number
+        type: Text
+        length: 30
+      - apiName: Card_Expiration_Month__c
+        label: Card Expiration Month
+        type: Text
+        length: 2
+      - apiName: Card_Expiration_Year__c
+        label: Card Expiration Year
+        type: Text
+        length: 4
+      - apiName: Card_Last_4__c
+        label: Card Last 4
+        type: Text
+        length: 4
+      - apiName: Card_Network__c
+        label: Card Network
+        type: Text
+        length: 20
+      - apiName: DebitType__c
+        label: Debit Type
+        type: Picklist
+        values: [Refund, Partial Refund, Chargeback]
+      - apiName: Donor_Cover_Amount__c
+        label: Donor Cover Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Elevate_Original_Payment_ID__c
+        label: Elevate Original Payment ID
+        type: Text
+        length: 40
+      - apiName: Elevate_Payment_API_Declined_Reason__c
+        label: Elevate Payment API Declined Reason
+        type: Text
+        length: 255
+      - apiName: Elevate_Payment_API_Status__c
+        label: Elevate Payment API Status
+        type: Text
+        length: 80
+      - apiName: Elevate_Payment_Created_Date__c
+        label: Elevate Payment Created Date
+        type: DateTime
+      - apiName: Elevate_Payment_Created_UTC_Timestamp__c
+        label: Elevate Payment Created  UTC Timestamp
+        type: Text
+        length: 30
+      - apiName: Elevate_Payment_ID__c
+        label: Elevate Payment ID
+        type: Text
+        length: 40
+      - apiName: Elevate_Transaction_Fee__c
+        label: Elevate Transaction Fee
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Gateway_ID__c
+        label: Gateway ID
+        type: Text
+        length: 40
+      - apiName: Gateway_Payment_ID__c
+        label: Gateway Payment ID
+        type: Text
+        length: 255
+      - apiName: Gateway_Transaction_Fee__c
+        label: Gateway Transaction Fee
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Origin_ID__c
+        label: Origin ID
+        type: Text
+        length: 255
+      - apiName: Origin_Name__c
+        label: Origin Name
+        type: Text
+        length: 255
+      - apiName: Origin_Type__c
+        label: Origin Type
+        type: Text
+        length: 40
+      - apiName: OriginalPayment__c
+        label: Original Payment
+        type: Lookup
+        referenceTo: OppPayment__c
+        relationshipLabel: Refunds
+        relationshipName: Refunds
+      - apiName: Payment_Acknowledged_Date__c
+        label: Payment Acknowledged Date
+        type: Date
+      - apiName: Payment_Acknowledgment_Status__c
+        label: Payment Acknowledgment Status
+        type: Picklist
+        values: [To Be Acknowledged, Acknowledged, Do Not Acknowledge]
+      - apiName: Total_Transaction_Fees__c
+        label: Total Transaction Fees
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Type__c
+        label: Type
+        type: Text
+        length: 40
+
+  - apiName: Recurring_Donation__c
+    label: Recurring Donation
+    pluralLabel: Recurring Donations
+    description: Recurring donation schedule
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - apiName: ACH_Last_4__c
+        label: ACH Last 4
+        type: Text
+        length: 4
+      - apiName: Always_Use_Last_Day_Of_Month__c
+        label: Always use last day of month
+        type: Checkbox
+      - apiName: CardExpirationMonth__c
+        label: Card Expiration Month
+        type: Text
+        length: 2
+      - apiName: CardExpirationYear__c
+        label: Card Expiration Year
+        type: Text
+        length: 4
+      - apiName: CardLast4__c
+        label: Card Last 4
+        type: Text
+        length: 4
+      - apiName: ChangeType__c
+        label: Change Type
+        type: Picklist
+        values: [Upgrade, Downgrade]
+      - apiName: ClosedReason__c
+        label: Status Reason
+        type: Picklist
+        values: [Card Expired, Commitment Completed, Deceased Donor, Financial Difficulty, No Longer Interested, Unknown]
+      - apiName: CommitmentId__c
+        label: Elevate Recurring Id
+        type: Text
+        length: 100
+      - apiName: CurrentYearValue__c
+        label: Current Year Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: Day_of_Month__c
+        label: Day of Month
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - 31
+      - apiName: DisableFirstInstallment__c
+        label: Disable First Installment
+        type: Checkbox
+      - apiName: EndDate__c
+        label: End Date
+        type: Date
+      - apiName: InstallmentFrequency__c
+        label: Installment Frequency
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: LastElevateEventPlayed__c
+        label: Last Elevate Event Played
+        type: Text
+        length: 255
+      - apiName: LastElevateVersionPlayed__c
+        label: Last Elevate Version Played
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: NextYearValue__c
+        label: Next Year Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: PaymentMethod__c
+        label: Payment Method
+        type: Picklist
+        values: [Credit Card, Check, ACH]
+      - apiName: RecurringType__c
+        label: Recurring Type
+        type: Picklist
+        values: [Open, Fixed]
+      - apiName: StartDate__c
+        label: Effective Date
+        type: Date
+      - apiName: Status__c
+        label: Status
+        type: Picklist
+        values: [Active, Lapsed, Closed, Paused]
+
+  - apiName: RecurringDonationChangeLog__c
+    label: Recurring Donation Change Log
+    pluralLabel: Recurring Donation Change Logs
+    description: 'When "Enable Recurring Donation Change Log" in NPSP Settings is enabled, NPSP creates a Recurring Donation Change Log record each time the amount, schedule, or campaign fields of a Recurring Donation are updated.'
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Recurring Donation Change Log Num
+      type: AutoNumber
+      displayFormat: RDCH-{0000000}
+    fields:
+      - apiName: ChangeType__c
+        label: Change Type
+        type: Picklist
+        values: [Upgrade, Downgrade]
+      - apiName: EffectiveDate__c
+        label: Effective Date
+        type: Date
+        required: true
+      - apiName: NewAmount__c
+        label: New Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: NewAnnualValue__c
+        label: New Annual Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: NewCampaign__c
+        label: New Campaign
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: Recurring Donation Change Log (New Campaign)
+        relationshipName: RDChangeLogNewCampaign
+        deleteConstraint: SetNull
+      - apiName: NewExpectedTotalValue__c
+        label: New Expected Total Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: NewInstallmentFrequency__c
+        label: New Installment Frequency
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: NewInstallmentPeriod__c
+        label: New Installment Period
+        type: Text
+        length: 255
+      - apiName: NewPaymentMethod__c
+        label: New Payment Method
+        type: Text
+        length: 255
+      - apiName: NewPlannedInstallments__c
+        label: New Number of Planned Installments
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: NewRecurringType__c
+        label: New Recurring Type
+        type: Text
+        length: 255
+      - apiName: NewStatusReason__c
+        label: New Status Reason
+        type: Text
+        length: 255
+      - apiName: NewStatus__c
+        label: New Status
+        type: Text
+        length: 255
+      - apiName: PreviousAmount__c
+        label: Previous Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: PreviousAnnualValue__c
+        label: Previous Annual Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: PreviousCampaign__c
+        label: Previous Campaign
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: Recurring Donation Change Log (Previous Campaign)
+        relationshipName: RDChangeLogPreviousCampaign
+        deleteConstraint: SetNull
+      - apiName: PreviousExpectedTotalValue__c
+        label: Previous Expected Total Value
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: PreviousInstallmentFrequency__c
+        label: Previous Installment Frequency
+        type: Number
+        precision: 3
+        scale: 0
+      - apiName: PreviousInstallmentPeriod__c
+        label: Previous Installment Period
+        type: Text
+        length: 255
+      - apiName: PreviousPaymentMethod__c
+        label: Previous Payment Method
+        type: Text
+        length: 255
+      - apiName: PreviousPlannedInstallments__c
+        label: Previous Number of Planned Installments
+        type: Number
+        precision: 18
+        scale: 0
+      - apiName: PreviousRecurringType__c
+        label: Previous Recurring Type
+        type: Text
+        length: 255
+      - apiName: PreviousStatusReason__c
+        label: Previous Status Reason
+        type: Text
+        length: 255
+      - apiName: PreviousStatus__c
+        label: Previous Status
+        type: Text
+        length: 255
+      - apiName: RecurringDonation__c
+        label: Recurring Donation
+        type: MasterDetail
+        referenceTo: Recurring_Donation__c
+        relationshipLabel: Recurring Donation Change Log
+        relationshipName: RDChangeLog
+
+  - apiName: RecurringDonationSchedule__c
+    label: Recurring Donation Schedule
+    pluralLabel: Recurring Donation Schedules
+    description: Contains the current and past schedule(s) for each Recurring Donation. Records in this object are system maintained and should never be edited directly.
+    sharingModel: ControlledByParent
+    deploymentStatus: Deployed
+    nameField:
+      apiName: Name
+      label: Recurring Schedule Num
+      type: AutoNumber
+      displayFormat: RD-Schedule-{0000000000}
+    fields:
+      - apiName: Active__c
+        label: Active
+        type: Checkbox
+      - apiName: Campaign__c
+        label: Related Campaign
+        type: Lookup
+        referenceTo: Campaign
+        relationshipLabel: Recurring Donation Schedules
+        relationshipName: RecurringDonationSchedules
+        deleteConstraint: SetNull
+      - apiName: DayOfMonth__c
+        label: Day of Month
+        type: Picklist
+        values:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
+          - 15
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          - 21
+          - 22
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - Last_Day
+      - apiName: EndDate__c
+        label: Schedule End Date
+        type: Date
+      - apiName: ExternalId__c
+        label: External Schedule Id
+        type: Text
+        length: 128
+        externalId: true
+      - apiName: InstallmentAmount__c
+        label: Amount
+        type: Currency
+        precision: 18
+        scale: 2
+      - apiName: InstallmentFrequency__c
+        label: Installment Frequency
+        type: Number
+        precision: 3
+        scale: 0
+        defaultValue: 1
+      - apiName: InstallmentPeriod__c
+        label: Installment Period
+        type: Picklist
+        values: [Monthly, Yearly, Weekly, Daily, 1st and 15th]
+      - apiName: IsPause__c
+        label: Is Pause
+        type: Checkbox
+        defaultValue: false
+      - apiName: PaymentMethod__c
+        label: Payment Method
+        type: Picklist
+        values: [Credit Card, Check, ACH]
+      - apiName: RecurringDonation__c
+        label: Recurring Donation
+        type: MasterDetail
+        referenceTo: Recurring_Donation__c
+        relationshipLabel: Recurring Donation Schedules
+        relationshipName: RecurringDonationSchedules
+      - apiName: StartDate__c
+        label: Effective Date
+        type: Date
+      - apiName: StatusReason__c
+        label: Status Reason
+        type: Text
+        length: 255
+
+  - apiName: Relationship__c
+    label: Relationship
+    pluralLabel: Relationships
+    description: Contact-to-contact relationship
+    sharingModel: ReadWrite
+    deploymentStatus: Deployed
+    fields:
+      - apiName: Related_Opportunity_Contact_Role__c
+        label: Related Opportunity Contact Role
+        type: Picklist
+        values: [Soft Credit, Solicitor, Tribute]
+
+dashboard:
+  title: NPSP Nonprofit Dashboard
+  widgets:
+    - type: pipeline
+      object: Opportunity
+      field: StageName
+      title: Donation Pipeline
+    - type: count
+      object: Contact
+      title: Total Constituents
+    - type: count
+      object: Opportunity
+      title: Total Donations
+    - type: count
+      object: Account
+      title: Total Organizations
+    - type: count
+      object: Campaign
+      title: Active Campaigns
+    - type: count
+      object: Recurring_Donation__c
+      title: Recurring Donors
+    - type: pipeline
+      object: Campaign
+      field: Status
+      title: Campaign Status
+    - type: count
+      object: Payment__c
+      title: Total Payments

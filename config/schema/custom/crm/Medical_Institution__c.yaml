@@ -1,0 +1,91 @@
+apiName: Medical_Institution__c
+label: 提携医療機関
+pluralLabel: 提携医療機関
+description: SB TEMPUS提携医療機関の管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+enableActivities: true
+enableHistory: true
+enableReports: true
+nameField:
+  apiName: Name
+  label: 病院名
+  type: Text
+  length: 80
+fields:
+  - apiName: Facility_Type__c
+    label: 施設種別
+    type: Picklist
+    required: false
+    values:
+      - 大学病院
+      - がん拠点病院
+      - 一般病院
+      - クリニック
+  - apiName: Adapter_Status__c
+    label: アダプター導入状況
+    type: Picklist
+    required: false
+    values:
+      - 未導入
+      - 導入中
+      - 導入完了
+  - apiName: Contact_Person__c
+    label: 担当者名
+    type: Text
+    length: 80
+  - apiName: Prefecture__c
+    label: 都道府県
+    type: Text
+    length: 40
+  - apiName: Contract_Start_Date__c
+    label: 契約開始日
+    type: Date
+  - apiName: Phone__c
+    label: 電話番号
+    type: Phone
+  - apiName: Email__c
+    label: メールアドレス
+    type: Email
+  - apiName: Website__c
+    label: Webサイト
+    type: Url
+  - apiName: Bed_Count__c
+    label: 病床数
+    type: Number
+    precision: 18
+    scale: 0
+  - apiName: Note__c
+    label: 備考
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: Latitude__c
+    label: 緯度
+    type: Number
+    precision: 10
+    scale: 7
+  - apiName: Longitude__c
+    label: 経度
+    type: Number
+    precision: 11
+    scale: 7
+validationRules:
+  - apiName: Require_Prefecture
+    active: true
+    description: 都道府県は必須
+    errorConditionFormula: ISBLANK(Prefecture__c)
+    errorMessage: 都道府県を入力してください
+recordTypes:
+  - apiName: University_Hospital
+    label: 大学病院
+    description: 大学附属病院
+    active: true
+  - apiName: Cancer_Center
+    label: がん拠点病院
+    description: がん診療連携拠点病院
+    active: true
+  - apiName: General
+    label: 一般病院・クリニック
+    description: 一般病院およびクリニック
+    active: true

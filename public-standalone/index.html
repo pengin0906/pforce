@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>genmine CRM</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<div id="app">
+  <nav id="sidebar" class="sidebar"></nav>
+  <main class="main">
+    <header id="topbar" class="topbar"></header>
+    <div id="content" class="content"></div>
+  </main>
+</div>
+<div id="modal-overlay" class="modal-overlay hidden"></div>
+<div id="modal" class="modal hidden"></div>
+<div id="toast" class="toast hidden"></div>
+<!-- Schema & Sample Data -->
+<script src="js/schema.js"></script>
+
+<!-- Core -->
+<script src="js/core/utils.js"></script>
+
+<!-- Components -->
+<script src="js/components/sidebar.js"></script>
+<script src="js/components/topbar.js"></script>
+<script src="js/components/modal.js"></script>
+<script src="js/components/table.js"></script>
+<script src="js/components/detail-view.js"></script>
+<script src="js/components/kanban.js"></script>
+<script src="js/components/calendar.js"></script>
+<script src="js/components/map-view.js"></script>
+
+<!-- Views: CRM -->
+<script src="js/views/crm/home.js"></script>
+<script src="js/views/crm/sales-dashboard.js"></script>
+<script src="js/views/crm/ma-dashboard.js"></script>
+<script src="js/views/crm/testing-dashboard.js"></script>
+<script src="js/views/crm/reports.js"></script>
+<script src="js/views/crm/specialized.js"></script>
+<script src="js/views/crm/individual-dashboards.js"></script>
+<script src="js/views/crm/doctor-management.js"></script>
+<script src="js/views/crm/visit-management.js"></script>
+<script src="js/views/crm/workflow.js"></script>
+<script src="js/views/crm/seminar-attendees.js"></script>
+<script src="js/views/crm/notifications.js"></script>
+
+<!-- App Entry Point -->
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+apiName: Workflow_Instance__c
+label: ワークフロー
+pluralLabel: ワークフロー
+description: ワークフローインスタンスの管理
+sharingModel: ReadWrite
+deploymentStatus: Deployed
+nameField:
+  apiName: Name
+  label: ワークフロー名
+  type: Text
+  length: 255
+fields:
+  - apiName: Workflow_Type__c
+    label: ワークフロー種別
+    type: Picklist
+    values:
+      - 引き継ぎ
+      - 検査オーダー
+      - 経費承認
+      - 勉強会開催
+      - 商談承認
+      - PMDA申請
+  - apiName: Status__c
+    label: ステータス
+    type: Picklist
+    values:
+      - 未開始
+      - 進行中
+      - 承認待ち
+      - 完了
+      - 中止
+      - 差戻し
+  - apiName: Current_Step__c
+    label: 現在ステップ
+    type: Number
+    precision: 3
+    scale: 0
+  - apiName: Total_Steps__c
+    label: 総ステップ数
+    type: Number
+    precision: 3
+    scale: 0
+  - apiName: Priority__c
+    label: 優先度
+    type: Picklist
+    values:
+      - 緊急
+      - 高
+      - 中
+      - 低
+  - apiName: Requested_By__c
+    label: 申請者
+    type: Lookup
+    referenceTo: User
+  - apiName: Current_Assignee__c
+    label: 現在の担当者
+    type: Lookup
+    referenceTo: User
+  - apiName: Start_Date__c
+    label: 開始日
+    type: Date
+  - apiName: Due_Date__c
+    label: 期限日
+    type: Date
+  - apiName: Completed_Date__c
+    label: 完了日
+    type: Date
+  - apiName: Related_Record__c
+    label: 関連レコード
+    type: Text
+    length: 255
+  - apiName: Description__c
+    label: 説明
+    type: LongTextArea
+    length: 3000
+    visibleLines: 3
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User

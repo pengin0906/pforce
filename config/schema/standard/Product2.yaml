@@ -1,0 +1,31 @@
+apiName: Product2
+label: 商品
+pluralLabel: 商品
+description: 販売商品の管理
+fields:
+  - apiName: Name
+    label: 商品名
+    type: Text
+    length: 255
+    required: true
+  - apiName: ProductCode
+    label: 商品コード
+    type: Text
+    length: 255
+  - apiName: Description
+    label: 商品説明
+    type: LongTextArea
+    length: 32768
+    visibleLines: 5
+  - apiName: IsActive
+    label: 有効
+    type: Checkbox
+    defaultValue: true
+  - apiName: Family
+    label: 商品ファミリ
+    type: Picklist
+    values:
+      - ハードウェア
+      - ソフトウェア
+      - サービス
+      - サブスクリプション

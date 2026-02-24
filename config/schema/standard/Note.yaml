@@ -1,0 +1,28 @@
+apiName: Note
+label: メモ
+pluralLabel: メモ
+description: レコードに関連するメモの管理
+fields:
+  - apiName: Title
+    label: タイトル
+    type: Text
+    length: 80
+    required: true
+  - apiName: Body
+    label: 本文
+    type: LongTextArea
+    length: 32768
+    visibleLines: 10
+  - apiName: ParentId
+    label: 親レコード
+    type: Text
+    length: 18
+  - apiName: IsPrivate
+    label: 非公開
+    type: Checkbox
+    defaultValue: false
+  - apiName: OwnerId
+    label: 所有者
+    type: Lookup
+    referenceTo: User
+    relationshipName: OwnedNotes

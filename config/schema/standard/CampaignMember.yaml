@@ -1,0 +1,31 @@
+apiName: CampaignMember
+label: キャンペーンメンバー
+pluralLabel: キャンペーンメンバー
+description: キャンペーンに関連する連絡先・リードの管理
+fields:
+  - apiName: CampaignId
+    label: キャンペーン
+    type: Lookup
+    referenceTo: Campaign
+    relationshipName: CampaignMembers
+    relationshipLabel: キャンペーンメンバー
+  - apiName: ContactId
+    label: 取引先責任者
+    type: Lookup
+    referenceTo: Contact
+    relationshipName: CampaignMembers
+    relationshipLabel: キャンペーンメンバー
+  - apiName: LeadId
+    label: リード
+    type: Lookup
+    referenceTo: Lead
+    relationshipName: CampaignMembers
+    relationshipLabel: キャンペーンメンバー
+  - apiName: Status
+    label: 状況
+    type: Picklist
+    values:
+      - 送信済
+      - 応答済
+      - 出席
+      - 欠席
