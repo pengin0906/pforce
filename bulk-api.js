@@ -651,7 +651,7 @@ function createBulkApiRoutes(app, config) {
   app.put(
     `${prefix}/jobs/ingest/:jobId/batches`,
     ensureAuthenticated,
-    express.text({ type: 'text/csv', limit: '150mb' }),
+    express.text({ type: 'text/csv', limit: '10mb' }),
     (req, res) => {
       try {
         const { jobId } = req.params;
@@ -674,6 +674,11 @@ function createBulkApiRoutes(app, config) {
         // Append CSV data (Salesforce allows multiple PUT calls)
         const body = typeof req.body === 'string' ? req.body : String(req.body);
         job.csvData += body;
+        // Security: limit total CSV data per job to 10MB
+        if (job.csvData.length > 10 * 1024 * 1024) {
+          job.csvData = job.csvData.slice(0, 10 * 1024 * 1024);
+          return res.status(413).json({ message: "CSV data exceeds maximum size (10MB)", errorCode: "SIZE_LIMIT_EXCEEDED" });
+        }
 
         return res.status(201).send();
       } catch (err) {

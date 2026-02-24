@@ -36,9 +36,11 @@ function setupMiddleware(app, ctx) {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "unpkg.com"],
-        scriptSrcAttr: ["'unsafe-inline'"],
+        scriptSrc: ["'self'", "cdnjs.cloudflare.com", "unpkg.com"],
+        scriptSrcAttr: ["'none'"],
         styleSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "unpkg.com"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'"],
         fontSrc: ["'self'"],
@@ -49,12 +51,20 @@ function setupMiddleware(app, ctx) {
     },
     xContentTypeOptions: true,
     xFrameOptions: { action: 'deny' },
-    referrerPolicy: { policy: 'strict-origin' }
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    strictTransportSecurity: { maxAge: 31536000, includeSubDomains: true }
   }));
 
   // CORS Configuration
   const corsOptions = {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:8080'],
+    origin: function (origin, callback) {
+      const allowed = process.env.ALLOWED_ORIGINS?.split(',').map(s => s.trim()) || ['http://localhost:3000'];
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -69,9 +79,9 @@ function setupMiddleware(app, ctx) {
   });
 
   // Body parsing and cookies
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ limit: '10mb', extended: true }));
-  app.use(express.text({ type: ['text/xml', 'application/xml', 'application/soap+xml'], limit: '10mb' }));
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ limit: '2mb', extended: true }));
+  app.use(express.text({ type: ['text/xml', 'application/xml', 'application/soap+xml'], limit: '1mb' }));
   app.use(cookieParser());
 
   // Rate limiting
@@ -88,24 +98,27 @@ function setupMiddleware(app, ctx) {
     max: 100,
     message: 'Too many API requests, please try again later',
     standardHeaders: true,
-    legacyHeaders: false,
-    skip: (req) => req.user && req.user.profile === 'System_Admin'
+    legacyHeaders: false
+    // Rate limits apply to all users (no admin bypass)
   });
 
   app.use('/auth/', authLimiter);
-  // apiLimiter is applied after session/passport init so req.user is available for skip check
+  app.use('/services/oauth2/token', authLimiter);
+  app.use('/services/Soap/', authLimiter);
 
   // Session configuration
   app.use(session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
-    store: new MemoryStore(),
+    name: '_pforce_sid',
+    store: new MemoryStore({ checkPeriod: 86400000 }),
     cookie: {
       httpOnly: true,
       secure: nodeEnv === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000
+      sameSite: 'strict',
+      maxAge: 8 * 60 * 60 * 1000,
+      path: '/'
     }
   }));
 
@@ -125,14 +138,16 @@ function setupMiddleware(app, ctx) {
     next();
   });
 
-  // API rate limiter (after session/passport so req.user is available for skip)
+  // API rate limiter (after session/passport so req.user is available)
   app.use('/api/', apiLimiter);
   app.use('/services/', apiLimiter);
 
-  // Request logging middleware
+  // Request logging (no PII in production)
   app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.path} - User: ${req.user?.email || 'anonymous'}`);
+    if (nodeEnv !== 'production') {
+      const timestamp = new Date().toISOString();
+      console.log(`[${timestamp}] ${req.method} ${req.path}`);
+    }
     next();
   });
 }

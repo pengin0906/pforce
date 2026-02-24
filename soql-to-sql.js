@@ -319,7 +319,7 @@ function translateCondition(cond, ctx) {
   // But we can still try to filter at DB level on the first part
   if (isDottedField) {
     // For dotted paths, fall back to always true and let JS handle it
-    return 'TRUE';
+    return 'FALSE'; // Security: deny rather than expose all records
   }
 
   // Date literal handling

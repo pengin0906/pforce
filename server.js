@@ -177,17 +177,18 @@ app.use((req, res) => {
 
 app.use((err, req, res, _next) => {
   console.error('[ERROR]', err);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: NODE_ENV === 'development' ? err.message : undefined,
-  });
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // ============================================================================
 // Server Startup
 // ============================================================================
 
-const seedModule = require(process.env.PFORCE_SEED_DATA || './seed-data');
+const seedDataPath = process.env.PFORCE_SEED_DATA || './seed-data';
+if (seedDataPath.includes('..') || seedDataPath.startsWith('/')) {
+  throw new Error('PFORCE_SEED_DATA must be a relative path');
+}
+const seedModule = require(seedDataPath);
 
 async function seedIfEmptyWithPrefix() {
   const { demoData } = seedModule;
@@ -233,8 +234,7 @@ async function startServer() {
       await seedModule.seedIfEmpty();
     }
   } catch (error) {
-    console.error('[ERROR] Failed to initialize database:', error.message);
-    console.error('[HINT] Is PostgreSQL running? Check PGHOST/PGPORT/PGDATABASE env vars');
+    console.error('[ERROR] Failed to initialize database. Check DATABASE_URL or PGHOST/PGPORT settings.');
   }
 
   app.listen(PORT, () => {
@@ -245,7 +245,7 @@ async function startServer() {
 ║ Instance: ${INSTANCE_NAME}
 ║ Port: ${PORT}
 ║ Environment: ${NODE_ENV}
-║ Database: PostgreSQL (${process.env.PGHOST || 'localhost'}:${process.env.PGPORT || '5432'}/${process.env.PGDATABASE || 'sfa'})
+║ Database: PostgreSQL (connected)
 ║ SF API: /services/data/v${SF_API_VERSION}/
 ║ Timestamp: ${new Date().toISOString()}
 ╚════════════════════════════════════════╝

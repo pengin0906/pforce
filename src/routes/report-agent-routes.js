@@ -11,7 +11,7 @@ function createReportAgentRoutes(app, ctx) {
   const NOVASEC_URL = process.env.NOVASEC_URL || `http://localhost:${process.env.NOVASEC_PORT || 8081}`;
 
   // Agent型レポート生成 -- Claude APIで複数ステップ思考
-  app.post('/api/report/generate/:resultId', async (req, res) => {
+  app.post('/api/report/generate/:resultId', ctx.ensureAuthenticated, async (req, res) => {
     const resultId = req.params.resultId;
 
     // Step 1: NovaSeq Pforceからソースデータ取得
@@ -353,7 +353,7 @@ HTMLのみ出力。<!DOCTYPE html>から始めてください。`
   });
 
   // レポート生成モード確認
-  app.get('/api/report/mode', (req, res) => {
+  app.get('/api/report/mode', ctx.ensureAuthenticated, (req, res) => {
     const hasGemini = !!process.env.GOOGLE_AI_KEY;
     res.json({
       mode: hasGemini ? 'agent' : 'template',

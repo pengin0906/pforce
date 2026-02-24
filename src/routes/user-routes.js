@@ -112,7 +112,7 @@ function createUserRoutes(app, ctx) {
   });
 
   // Stop impersonating
-  app.post('/api/admin/stop-impersonate', ensureAuthenticated, (req, res) => {
+  app.post('/api/admin/stop-impersonate', ensureAdmin, (req, res) => {
     if (!req.session.originalUser) {
       return res.status(400).json({ error: 'Not currently impersonating' });
     }

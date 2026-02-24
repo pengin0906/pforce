@@ -15,7 +15,7 @@ const pool = new Pool({
   database: connStr ? undefined : (process.env.PGDATABASE || 'sfa'),
   user: connStr ? undefined : (process.env.PGUSER || 'postgres'),
   password: connStr ? undefined : (process.env.PGPASSWORD || 'postgres'),
-  ssl: isSSL ? { rejectUnauthorized: false } : false,
+  ssl: isSSL ? { rejectUnauthorized: process.env.PGSSL_REJECT_UNAUTHORIZED !== 'false' } : false,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000

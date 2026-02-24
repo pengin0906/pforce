@@ -2,18 +2,18 @@
 
 /**
  * BaseSpace Routes - /api/basespace/*, /api/novasec/* proxy routes
- * Also includes getBsBase, bsProxyFetch, lab instrument proxy
+ * All endpoints require authentication.
  */
 
 function createBasespaceRoutes(app, ctx) {
-  const { INSTANCE_NAME } = ctx;
+  const { INSTANCE_NAME, ensureAuthenticated } = ctx;
 
   const BASESPACE_API = process.env.BASESPACE_API_URL || 'https://api.basespace.illumina.com';
   const BASESPACE_TOKEN = process.env.BASESPACE_ACCESS_TOKEN || '';
   const NOVASEC_URL = process.env.NOVASEC_URL || `http://localhost:${process.env.NOVASEC_PORT || 8081}`;
   const BASESPACE_MODE = process.env.BASESPACE_MODE || (BASESPACE_TOKEN ? 'live' : 'novasec');
 
-  console.log(`[INFO] BaseSpace mode: ${BASESPACE_MODE}${BASESPACE_MODE === 'novasec' ? ` (NovaSeq Pforce @ ${NOVASEC_URL})` : ''}`);
+  console.log(`[INFO] BaseSpace mode: ${BASESPACE_MODE}${BASESPACE_MODE === 'novasec' ? ` (NovaSeq Pforce)` : ''}`);
 
   const LAB_INSTRUMENT_PORTS = {
     'visionmate':       process.env.VISIONMATE_PORT || 8082,
@@ -26,7 +26,21 @@ function createBasespaceRoutes(app, ctx) {
     'novaseq-6000':     process.env.NOVASEC_PORT || 8081
   };
 
-  // --- プロキシ: NovaSeq Pforce or 本物のBaseSpaceを自動選択 ---
+  // Input validation helpers
+  const SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
+  function validateId(id) {
+    if (!id || !SAFE_ID_RE.test(id)) throw new Error('Invalid ID parameter');
+    return id;
+  }
+  function safeInt(val, defaultVal, max) {
+    const n = parseInt(val);
+    return (Number.isFinite(n) && n >= 0 && n <= (max || 1000)) ? n : defaultVal;
+  }
+  const SAFE_STATUS_VALUES = ['all', 'pending', 'running', 'completed', 'failed', 'delivered'];
+  function safeStatus(val) {
+    return SAFE_STATUS_VALUES.includes(val) ? val : 'all';
+  }
+
   function getBsBase() {
     return BASESPACE_MODE === 'live' ? BASESPACE_API : NOVASEC_URL;
   }
@@ -38,15 +52,16 @@ function createBasespaceRoutes(app, ctx) {
     if (BASESPACE_MODE === 'live' && BASESPACE_TOKEN) {
       headers['Authorization'] = `Bearer ${BASESPACE_TOKEN}`;
     }
-    const r = await fetch(url, { headers });
-    if (!r.ok) throw new Error(`BaseSpace ${r.status}: ${await r.text()}`);
+    const r = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error(`BaseSpace error: ${r.status}`);
     return r.json();
   }
 
-  // 機器ステータス取得プロキシ
-  app.get('/api/instruments/:instId/status', async (req, res) => {
-    const port = LAB_INSTRUMENT_PORTS[req.params.instId];
-    if (!port) return res.status(404).json({ error: 'Unknown instrument: ' + req.params.instId });
+  // 機器ステータス取得プロキシ (authenticated)
+  app.get('/api/instruments/:instId/status', ensureAuthenticated, async (req, res) => {
+    const instId = req.params.instId;
+    const port = LAB_INSTRUMENT_PORTS[instId];
+    if (!port) return res.status(404).json({ error: 'Unknown instrument' });
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 3000);
@@ -55,12 +70,12 @@ function createBasespaceRoutes(app, ctx) {
       const data = await r.json();
       res.json({ connected: true, port, data });
     } catch (e) {
-      res.json({ connected: false, port, error: e.message });
+      res.json({ connected: false, port, error: 'Connection failed' });
     }
   });
 
-  // 機器一覧ステータス
-  app.get('/api/instruments/all/status', async (req, res) => {
+  // 機器一覧ステータス (authenticated)
+  app.get('/api/instruments/all/status', ensureAuthenticated, async (req, res) => {
     const results = {};
     const promises = Object.entries(LAB_INSTRUMENT_PORTS).map(async ([id, port]) => {
       try {
@@ -70,146 +85,139 @@ function createBasespaceRoutes(app, ctx) {
         clearTimeout(timeout);
         results[id] = { connected: true, port };
       } catch (e) {
-        results[id] = { connected: false, port, error: e.message };
+        results[id] = { connected: false, port };
       }
     });
     await Promise.allSettled(promises);
     res.json(results);
   });
 
-  // 接続ステータス
-  app.get('/api/basespace/status', async (req, res) => {
+  // 接続ステータス (authenticated)
+  app.get('/api/basespace/status', ensureAuthenticated, async (req, res) => {
     try {
       const data = await bsProxyFetch('/v2/users/current');
       const user = data.Response ? data.Response.Name : data.Name;
       res.json({
         connected: true,
-        mock: false,
         mode: BASESPACE_MODE,
-        server: getBsBase(),
         user,
         lastCheck: new Date().toISOString()
       });
     } catch (err) {
-      res.json({ connected: false, mock: false, error: err.message, mode: BASESPACE_MODE });
+      res.json({ connected: false, mode: BASESPACE_MODE });
     }
   });
 
-  // ラン一覧
-  app.get('/api/basespace/runs', async (req, res) => {
+  // ラン一覧 (authenticated, sanitized params)
+  app.get('/api/basespace/runs', ensureAuthenticated, async (req, res) => {
     try {
-      const limit = req.query.limit || 20;
-      const offset = req.query.offset || 0;
+      const limit = safeInt(req.query.limit, 20, 100);
+      const offset = safeInt(req.query.offset, 0, 10000);
       const data = await bsProxyFetch(`/v2/users/current/runs?limit=${limit}&offset=${offset}&SortBy=DateCreated&SortDir=Desc`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch runs' }); }
   });
 
-  // ラン詳細
-  app.get('/api/basespace/runs/:runId', async (req, res) => {
+  // ラン詳細 (authenticated, validated ID)
+  app.get('/api/basespace/runs/:runId', ensureAuthenticated, async (req, res) => {
     try {
-      const data = await bsProxyFetch(`/v2/runs/${req.params.runId}`);
+      const runId = validateId(req.params.runId);
+      const data = await bsProxyFetch(`/v2/runs/${runId}`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch run' }); }
   });
 
-  // ランQCメトリクス
-  app.get('/api/basespace/runs/:runId/sequencingstats', async (req, res) => {
+  // ランQCメトリクス (authenticated, validated ID)
+  app.get('/api/basespace/runs/:runId/sequencingstats', ensureAuthenticated, async (req, res) => {
     try {
-      const data = await bsProxyFetch(`/v2/runs/${req.params.runId}/sequencingstats`);
+      const runId = validateId(req.params.runId);
+      const data = await bsProxyFetch(`/v2/runs/${runId}/sequencingstats`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch stats' }); }
   });
 
-  // プロジェクト一覧
-  app.get('/api/basespace/projects', async (req, res) => {
+  // プロジェクト一覧 (authenticated)
+  app.get('/api/basespace/projects', ensureAuthenticated, async (req, res) => {
     try {
-      const limit = req.query.limit || 20;
+      const limit = safeInt(req.query.limit, 20, 100);
       const data = await bsProxyFetch(`/v2/users/current/projects?limit=${limit}&SortBy=DateCreated&SortDir=Desc`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch projects' }); }
   });
 
-  // プロジェクト詳細
-  app.get('/api/basespace/projects/:projectId', async (req, res) => {
+  // プロジェクト詳細 (authenticated, validated ID)
+  app.get('/api/basespace/projects/:projectId', ensureAuthenticated, async (req, res) => {
     try {
-      const data = await bsProxyFetch(`/v2/projects/${req.params.projectId}`);
+      const projectId = validateId(req.params.projectId);
+      const data = await bsProxyFetch(`/v2/projects/${projectId}`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch project' }); }
   });
 
-  // サンプル一覧
-  app.get('/api/basespace/projects/:projectId/samples', async (req, res) => {
+  // サンプル一覧 (authenticated, validated ID)
+  app.get('/api/basespace/projects/:projectId/samples', ensureAuthenticated, async (req, res) => {
     try {
-      const data = await bsProxyFetch(`/v2/projects/${req.params.projectId}/samples?limit=50`);
+      const projectId = validateId(req.params.projectId);
+      const data = await bsProxyFetch(`/v2/projects/${projectId}/samples?limit=50`);
       res.json(data.Response || data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { res.status(500).json({ error: 'Failed to fetch samples' }); }
   });
 
-  // --- NovaSeq Pforce 固有APIプロキシ ---
-  // NovaSeq機器ステータス
-  app.get('/api/novasec/status', async (req, res) => {
+  // --- NovaSeq Pforce 固有APIプロキシ (all authenticated) ---
+  app.get('/api/novasec/status', ensureAuthenticated, async (req, res) => {
     try {
-      const r = await fetch(`${NOVASEC_URL}/api/instrument/status`);
+      const r = await fetch(`${NOVASEC_URL}/api/instrument/status`, { signal: AbortSignal.timeout(5000) });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeq検査結果一覧
-  app.get('/api/novasec/results', async (req, res) => {
+  app.get('/api/novasec/results', ensureAuthenticated, async (req, res) => {
     try {
-      const status = req.query.status || 'all';
-      const r = await fetch(`${NOVASEC_URL}/api/results?status=${status}`);
+      const status = safeStatus(req.query.status);
+      const r = await fetch(`${NOVASEC_URL}/api/results?status=${status}`, { signal: AbortSignal.timeout(5000) });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeq検査結果詳細
-  app.get('/api/novasec/results/:resultId', async (req, res) => {
+  app.get('/api/novasec/results/:resultId', ensureAuthenticated, async (req, res) => {
     try {
-      const r = await fetch(`${NOVASEC_URL}/api/results/${req.params.resultId}`);
+      const resultId = validateId(req.params.resultId);
+      const r = await fetch(`${NOVASEC_URL}/api/results/${resultId}`, { signal: AbortSignal.timeout(5000) });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeq検査結果をLIMS受領済みマーク
-  app.post('/api/novasec/results/:resultId/deliver', async (req, res) => {
+  app.post('/api/novasec/results/:resultId/deliver', ensureAuthenticated, async (req, res) => {
     try {
-      const r = await fetch(`${NOVASEC_URL}/api/results/${req.params.resultId}/deliver`, { method: 'POST' });
+      const resultId = validateId(req.params.resultId);
+      const r = await fetch(`${NOVASEC_URL}/api/results/${resultId}/deliver`, { method: 'POST', signal: AbortSignal.timeout(5000) });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeqに検体を送付（LIMS → NovaSeq）
-  app.post('/api/novasec/specimens/submit', async (req, res) => {
+  app.post('/api/novasec/specimens/submit', ensureAuthenticated, async (req, res) => {
     try {
       const r = await fetch(`${NOVASEC_URL}/api/specimens/submit`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(req.body),
+        signal: AbortSignal.timeout(5000)
       });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeq検体キュー確認
-  app.get('/api/novasec/specimens', async (req, res) => {
+  app.get('/api/novasec/specimens', ensureAuthenticated, async (req, res) => {
     try {
-      const r = await fetch(`${NOVASEC_URL}/api/specimens`);
+      const r = await fetch(`${NOVASEC_URL}/api/specimens`, { signal: AbortSignal.timeout(5000) });
       res.json(await r.json());
-    } catch (err) { res.status(500).json({ error: `NovaSeq Pforce接続エラー: ${err.message}` }); }
+    } catch (err) { res.status(500).json({ error: 'NovaSeq connection failed' }); }
   });
 
-  // NovaSeqヘルスチェック
-  app.get('/api/novasec/health', async (req, res) => {
+  app.get('/api/novasec/health', ensureAuthenticated, async (req, res) => {
     try {
-      const r = await fetch(`${NOVASEC_URL}/health`);
+      const r = await fetch(`${NOVASEC_URL}/health`, { signal: AbortSignal.timeout(3000) });
       res.json(await r.json());
-    } catch (err) { res.json({ status: 'unreachable', error: err.message }); }
-  });
-
-  // Health check
-  app.get('/health', (req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    } catch (err) { res.json({ status: 'unreachable' }); }
   });
 }
 

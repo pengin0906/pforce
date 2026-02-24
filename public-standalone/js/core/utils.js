@@ -2,6 +2,22 @@
    Core Utilities & State
    ============================================ */
 
+// --- XSS Prevention: HTML entity escaping ---
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function escAttr(str) {
+  return escHtml(str).replace(/\\/g, '\\\\');
+}
+
+
+
 // --- Salesforce Key Prefix Map ---
 const SF_KEY_PREFIXES = {
   Account:'001',Contact:'003',Lead:'00Q',Opportunity:'006',
@@ -77,7 +93,9 @@ function genId(prefix) {
   const BASE62 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const CHECKSUM_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ012345';
   let random = '';
-  for (let i = 0; i < 12; i++) random += BASE62[Math.floor(Math.random() * 62)];
+  const arr = new Uint8Array(12);
+  crypto.getRandomValues(arr);
+  for (let i = 0; i < 12; i++) random += BASE62[arr[i] % 62];
   const id15 = (prefix || '000').substring(0, 3) + random;
   let checksum = '';
   for (let g = 0; g < 3; g++) {
