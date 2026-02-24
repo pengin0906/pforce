@@ -10,14 +10,14 @@ function renderPipeline() {
   phases.forEach(phase => {
     const items = pharma.filter(p => p.Phase__c === phase);
     const total = items.reduce((s,p) => s+(p.Amount__c||0), 0);
-    html += `<div class="kanban-col"><div class="kanban-col-header" style="border-bottom-color:${colors[phase]}"><span>${phase}</span><span class="cnt">${items.length}</span></div>`;
+    html += `<div class="kanban-col"><div class="kanban-col-header" style="border-bottom-color:${colors[phase]}"><span>${escHtml(phase)}</span><span class="cnt">${items.length}</span></div>`;
     html += `<div style="font-size:11px;color:#888;margin-bottom:8px">¥${(total/1000000).toFixed(0)}M</div>`;
     items.forEach(p => {
       html += `<div class="kanban-card" onclick="showDetail('Pharma_Opportunity__c','${p.id}')">
-        <div class="kc-title">${p.Name}</div>
-        <div class="kc-sub">${p.Pharma_Company__c} · ${getUserName(p.OwnerId)}</div>
+        <div class="kc-title">${escHtml(p.Name)}</div>
+        <div class="kc-sub">${escHtml(p.Pharma_Company__c)} · ${getUserName(p.OwnerId)}</div>
         <div class="kc-amount">¥${Number(p.Amount__c||0).toLocaleString()}</div>
-        <div style="font-size:10px;color:#888;margin-top:4px">${p.Close_Date__c||'-'} · ${p.Probability__c||0}%</div>
+        <div style="font-size:10px;color:#888;margin-top:4px">${escHtml(p.Close_Date__c||'-')} · ${p.Probability__c||0}%</div>
       </div>`;
     });
     html += `</div>`;
@@ -39,12 +39,12 @@ function renderKanbanView(apiName) {
   let html = `<div class="toolbar"><button class="btn btn-sm btn-secondary" onclick="navigate('obj','${apiName}')">一覧表示</button></div><div class="kanban">`;
   field.values.forEach(stage => {
     const items = data.filter(r => r[obj.kanbanField] === stage);
-    html += `<div class="kanban-col"><div class="kanban-col-header"><span>${stage}</span><span class="cnt">${items.length}</span></div>`;
+    html += `<div class="kanban-col"><div class="kanban-col-header"><span>${escHtml(stage)}</span><span class="cnt">${items.length}</span></div>`;
     items.forEach(rec => {
       const name = rec.Name || rec.Subject || rec.LastName || '-';
       const amount = rec.Amount || rec.Amount__c || rec.Budget__c;
       html += `<div class="kanban-card" onclick="showDetail('${apiName}','${rec.id}')">
-        <div class="kc-title">${name}</div>
+        <div class="kc-title">${escHtml(name)}</div>
         <div class="kc-sub">${rec.OwnerId ? getUserName(rec.OwnerId) : ''}</div>
         ${amount ? `<div class="kc-amount">¥${Number(amount).toLocaleString()}</div>` : ''}
       </div>`;

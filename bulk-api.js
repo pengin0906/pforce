@@ -673,12 +673,11 @@ function createBulkApiRoutes(app, config) {
 
         // Append CSV data (Salesforce allows multiple PUT calls)
         const body = typeof req.body === 'string' ? req.body : String(req.body);
-        job.csvData += body;
-        // Security: limit total CSV data per job to 10MB
-        if (job.csvData.length > 10 * 1024 * 1024) {
-          job.csvData = job.csvData.slice(0, 10 * 1024 * 1024);
+        // Security: reject if total would exceed 10MB (don't truncate)
+        if (job.csvData.length + body.length > 10 * 1024 * 1024) {
           return res.status(413).json({ message: "CSV data exceeds maximum size (10MB)", errorCode: "SIZE_LIMIT_EXCEEDED" });
         }
+        job.csvData += body;
 
         return res.status(201).send();
       } catch (err) {

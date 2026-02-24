@@ -46,7 +46,7 @@ function renderVisitMap() {
   html += `<div class="card"><div class="card-header"><h3>訪問履歴</h3></div><table><thead><tr><th>訪問番号</th><th>ドクター</th><th>医療機関</th><th>訪問日</th><th>目的</th><th>結果</th><th>位置精度</th></tr></thead><tbody>`;
   visits.sort((a,b) => (b.Visit_Date__c||'').localeCompare(a.Visit_Date__c||'')).forEach(v => {
     const cls = {良好:'s-green',継続検討:'s-blue',保留:'s-orange',次回アポ取得:'s-teal',不在:'s-gray'}[v.Result__c] || 's-gray';
-    html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')"><td><span class="cell-link">${v.Name}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td>${resolveRef(v.Institution__c,'Medical_Institution__c')}</td><td>${v.Visit_Date__c||'-'}</td><td>${v.Purpose__c||'-'}</td><td><span class="status ${cls}">${v.Result__c||'-'}</span></td><td>${v.Location_Accuracy__c||'-'}m</td></tr>`;
+    html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')"><td><span class="cell-link">${escHtml(v.Name)}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td>${resolveRef(v.Institution__c,'Medical_Institution__c')}</td><td>${escHtml(v.Visit_Date__c||'-')}</td><td>${escHtml(v.Purpose__c||'-')}</td><td><span class="status ${cls}">${escHtml(v.Result__c||'-')}</span></td><td>${v.Location_Accuracy__c||'-'}m</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -73,7 +73,7 @@ function renderVisitMap() {
       });
 
       const marker = L.marker([lat, lng], { icon }).addTo(map);
-      marker.bindPopup(`<b>${v.Name}</b><br>${v.Visit_Date__c}<br>👨‍⚕️ ${doc}<br>🏥 ${inst}<br>目的: ${v.Purpose__c||'-'}<br>結果: <b>${v.Result__c||'-'}</b><br>面談: ${v.Duration__c||'-'}分`);
+      marker.bindPopup(`<b>${escHtml(v.Name)}</b><br>${escHtml(v.Visit_Date__c)}<br>👨‍⚕️ ${doc}<br>🏥 ${inst}<br>目的: ${escHtml(v.Purpose__c||'-')}<br>結果: <b>${escHtml(v.Result__c||'-')}</b><br>面談: ${v.Duration__c||'-'}分`);
       coords.push([lat, lng]);
     });
 
@@ -131,7 +131,7 @@ function renderVisitReport() {
     const durs = vList.filter(v => v.Duration__c);
     const avg = durs.length ? Math.round(durs.reduce((s,v)=>s+v.Duration__c,0)/durs.length) : '-';
     const cls = {良好:'s-green',継続検討:'s-blue',保留:'s-orange',次回アポ取得:'s-teal',不在:'s-gray'}[lastResult] || 's-gray';
-    html += `<tr><td>${doc}</td><td>${inst}</td><td><strong>${vList.length}</strong></td><td>${lastDate}</td><td>${avg}分</td><td><span class="status ${cls}">${lastResult}</span></td></tr>`;
+    html += `<tr><td>${doc}</td><td>${inst}</td><td><strong>${vList.length}</strong></td><td>${escHtml(lastDate)}</td><td>${avg}分</td><td><span class="status ${cls}">${escHtml(lastResult)}</span></td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -230,13 +230,13 @@ function renderVisitCalendar(yearOvr, monthOvr) {
 
     dayVisits.forEach(v => {
       const cls = overdueVisits.includes(v) ? 'overdue' : 'visit';
-      html += `<div class="cal-event ${cls}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${v.id}')" title="訪問: ${resolveRef(v.Doctor__c,'Doctor__c')}">📝 ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`;
+      html += `<div class="cal-event ${cls}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${v.id}')">📝 ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`;
     });
     plannedVisits.forEach(v => {
       const isOverdue = dateStr < today;
       const cls = isOverdue ? 'overdue' : 'planned';
       const icon = isOverdue ? '⚠️' : '🔵';
-      html += `<div class="cal-event ${cls}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${v.id}')" title="予定: ${resolveRef(v.Doctor__c,'Doctor__c')}${isOverdue ? ' (期限超過)' : ''}">${icon} ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`;
+      html += `<div class="cal-event ${cls}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${v.id}')">${icon} ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`;
     });
     html += `</div>`;
   }
@@ -249,7 +249,7 @@ function renderVisitCalendar(yearOvr, monthOvr) {
   if (overdue.length) {
     html += `<div class="card" style="border-left:4px solid #c62828"><div class="card-header"><h3 style="color:#c62828">⚠️ 期限超過の訪問予定 (${overdue.length}件)</h3></div><table><thead><tr><th>訪問番号</th><th>ドクター</th><th>予定日</th><th>ネクストアクション</th><th>担当</th></tr></thead><tbody>`;
     overdue.forEach(v => {
-      html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')" style="background:#fff5f5"><td><span class="cell-link">${v.Name}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td style="color:#c62828;font-weight:600">${v.Next_Visit_Date__c}</td><td>${v.Next_Action__c||'-'}</td><td>${getUserName(v.OwnerId)}</td></tr>`;
+      html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')" style="background:#fff5f5"><td><span class="cell-link">${escHtml(v.Name)}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td style="color:#c62828;font-weight:600">${escHtml(v.Next_Visit_Date__c)}</td><td>${escHtml(v.Next_Action__c||'-')}</td><td>${getUserName(v.OwnerId)}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   }
@@ -257,7 +257,7 @@ function renderVisitCalendar(yearOvr, monthOvr) {
   if (upcoming.length) {
     html += `<div class="card"><div class="card-header"><h3>📅 今後の訪問予定 (${upcoming.length}件)</h3></div><table><thead><tr><th>訪問番号</th><th>ドクター</th><th>予定日</th><th>ネクストアクション</th><th>担当</th></tr></thead><tbody>`;
     upcoming.forEach(v => {
-      html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')"><td><span class="cell-link">${v.Name}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td>${v.Next_Visit_Date__c}</td><td>${v.Next_Action__c||'-'}</td><td>${getUserName(v.OwnerId)}</td></tr>`;
+      html += `<tr onclick="showDetail('Visit_Record__c','${v.id}')"><td><span class="cell-link">${escHtml(v.Name)}</span></td><td>${resolveRef(v.Doctor__c,'Doctor__c')}</td><td>${escHtml(v.Next_Visit_Date__c)}</td><td>${escHtml(v.Next_Action__c||'-')}</td><td>${getUserName(v.OwnerId)}</td></tr>`;
     });
     html += `</tbody></table></div>`;
   }

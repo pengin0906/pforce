@@ -38,7 +38,7 @@ function setupMiddleware(app, ctx) {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "cdnjs.cloudflare.com", "unpkg.com"],
         scriptSrcAttr: ["'none'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "unpkg.com"],
+        styleSrc: ["'self'", "cdnjs.cloudflare.com", "unpkg.com"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],

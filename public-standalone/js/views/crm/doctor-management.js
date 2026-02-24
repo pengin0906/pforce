@@ -13,25 +13,25 @@ function renderDoctor360(docId) {
   const maActivities = (store.MA_Activity__c||[]).filter(m => m.Doctor__c === doc.id);
   const research = (store.Joint_Research__c||[]).filter(j => j.PI__c === doc.id);
 
-  renderTopbar(`Doctor 360° - ${doc.Name}`, '👨‍⚕️', `<button class="btn btn-sm btn-secondary" onclick="navigate('doctor-360')">← ドクター選択</button> <button class="btn btn-sm btn-primary" onclick="showEditForm('Doctor__c','${doc.id}')">編集</button>`);
+  renderTopbar(`Doctor 360° - ${escHtml(doc.Name)}`, '👨‍⚕️', `<button class="btn btn-sm btn-secondary" onclick="navigate('doctor-360')">← ドクター選択</button> <button class="btn btn-sm btn-primary" onclick="showEditForm('Doctor__c','${doc.id}')">編集</button>`);
 
   let html = '';
 
   // プロファイルカード
   html += `<div class="doctor-profile-card">
     <div class="doctor-profile-header">
-      <div class="doctor-avatar">${doc.Name.charAt(0)}</div>
+      <div class="doctor-avatar">${escHtml(doc.Name.charAt(0))}</div>
       <div class="doctor-info">
-        <h2>${doc.Name}</h2>
-        <div class="doctor-meta">🏥 ${inst} | ${doc.Department__c||'-'} | ${doc.Title__c||'-'}</div>
-        <div class="doctor-meta">専門: ${doc.Cancer_Type__c||'-'} | KOLスコア: <strong>${doc.KOL_Score__c||0}</strong></div>
+        <h2>${escHtml(doc.Name)}</h2>
+        <div class="doctor-meta">🏥 ${inst} | ${escHtml(doc.Department__c||'-')} | ${escHtml(doc.Title__c||'-')}</div>
+        <div class="doctor-meta">専門: ${escHtml(doc.Cancer_Type__c||'-')} | KOLスコア: <strong>${doc.KOL_Score__c||0}</strong></div>
       </div>
       <div class="doctor-status-area">
-        <div class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[doc.Relationship_Level__c]||'s-gray'}">${doc.Relationship_Level__c||'-'}</div>
-        <div style="margin-top:8px">genmine関心度: <strong>${doc.Genomic_Interest__c||'不明'}</strong></div>
+        <div class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[doc.Relationship_Level__c]||'s-gray'}">${escHtml(doc.Relationship_Level__c||'-')}</div>
+        <div style="margin-top:8px">genmine関心度: <strong>${escHtml(doc.Genomic_Interest__c||'不明')}</strong></div>
       </div>
     </div>
-    ${doc.Note__c ? `<div class="doctor-note">${doc.Note__c}</div>` : ''}
+    ${doc.Note__c ? `<div class="doctor-note">${escHtml(doc.Note__c)}</div>` : ''}
   </div>`;
 
   // KPI行
@@ -46,9 +46,9 @@ function renderDoctor360(docId) {
 
   // タイムライン（訪問・MA・セミナーを統合）
   const timeline = [];
-  visits.forEach(v => timeline.push({date:v.Visit_Date__c, type:'訪問', icon:'📝', title:`${v.Purpose__c||'訪問'}`, detail:v.Detail__c||'', result:v.Result__c, id:v.id, obj:'Visit_Record__c'}));
+  visits.forEach(v => timeline.push({date:v.Visit_Date__c, type:'訪問', icon:'📝', title:v.Purpose__c||'訪問', detail:v.Detail__c||'', result:v.Result__c, id:v.id, obj:'Visit_Record__c'}));
   maActivities.forEach(m => timeline.push({date:m.Date__c, type:'MA活動', icon:'🎤', title:m.Name, detail:m.Outcome__c||'', result:m.Status__c, id:m.id, obj:'MA_Activity__c'}));
-  seminars.forEach(s => timeline.push({date:s.Date__c, type:'講演', icon:'📚', title:s.Name, detail:`${s.Format__c} - ${s.Venue__c||''}`, result:s.Status__c, id:s.id, obj:'Seminar__c'}));
+  seminars.forEach(s => timeline.push({date:s.Date__c, type:'講演', icon:'📚', title:s.Name, detail:(s.Format__c||'') + ' - ' + (s.Venue__c||''), result:s.Status__c, id:s.id, obj:'Seminar__c'}));
   timeline.sort((a,b) => (b.date||'').localeCompare(a.date||''));
 
   html += `<div class="card"><div class="card-header"><h3>活動タイムライン</h3></div><div class="timeline">`;
@@ -56,9 +56,9 @@ function renderDoctor360(docId) {
     html += `<div class="timeline-item" onclick="showDetail('${t.obj}','${t.id}')">
       <div class="timeline-dot">${t.icon}</div>
       <div class="timeline-content">
-        <div class="timeline-date">${t.date||'-'} <span class="timeline-type">${t.type}</span> ${t.result ? `<span class="status s-blue">${t.result}</span>` : ''}</div>
-        <div class="timeline-title">${t.title}</div>
-        ${t.detail ? `<div class="timeline-detail">${t.detail.substring(0,200)}${t.detail.length > 200 ? '...' : ''}</div>` : ''}
+        <div class="timeline-date">${escHtml(t.date||'-')} <span class="timeline-type">${escHtml(t.type)}</span> ${t.result ? `<span class="status s-blue">${escHtml(t.result)}</span>` : ''}</div>
+        <div class="timeline-title">${escHtml(t.title)}</div>
+        ${t.detail ? `<div class="timeline-detail">${escHtml(t.detail.substring(0,200))}${t.detail.length > 200 ? '...' : ''}</div>` : ''}
       </div>
     </div>`;
   });
@@ -69,7 +69,7 @@ function renderDoctor360(docId) {
     html += `<div class="card"><div class="card-header"><h3>紹介検体 (${specimens.length}件)</h3></div>`;
     html += `<div class="table-wrap"><table><thead><tr><th>検体ID</th><th>がん種</th><th>検体種別</th><th>ステータス</th><th>レビュー</th><th>TAT</th></tr></thead><tbody>`;
     specimens.forEach(s => {
-      html += `<tr onclick="showDetail('Specimen__c','${s.id}')"><td>${s.Name}</td><td>${s.Cancer_Type__c||'-'}</td><td>${s.Specimen_Type__c||'-'}</td><td><span class="status ${({受領待ち:'s-gray',受領済:'s-blue',QC中:'s-orange',解析中:'s-purple',レポート作成:'s-teal',レビュー中:'s-yellow',完了:'s-green',不適格:'s-red'})[s.Status__c]||'s-gray'}">${s.Status__c}</span></td><td>${s.Review_Status__c||'-'}</td><td>${s.TAT_Days__c||'-'}日</td></tr>`;
+      html += `<tr onclick="showDetail('Specimen__c','${s.id}')"><td>${escHtml(s.Name)}</td><td>${escHtml(s.Cancer_Type__c||'-')}</td><td>${escHtml(s.Specimen_Type__c||'-')}</td><td><span class="status ${({受領待ち:'s-gray',受領済:'s-blue',QC中:'s-orange',解析中:'s-purple',レポート作成:'s-teal',レビュー中:'s-yellow',完了:'s-green',不適格:'s-red'})[s.Status__c]||'s-gray'}">${escHtml(s.Status__c)}</span></td><td>${escHtml(s.Review_Status__c||'-')}</td><td>${s.TAT_Days__c||'-'}日</td></tr>`;
     });
     html += `</tbody></table></div></div>`;
   }
@@ -79,8 +79,8 @@ function renderDoctor360(docId) {
     html += `<div class="card"><div class="card-header"><h3>共同研究</h3></div>`;
     research.forEach(r => {
       html += `<div class="research-card" onclick="showDetail('Joint_Research__c','${r.id}')">
-        <strong>${r.Name}</strong> <span class="status s-blue">${r.Status__c}</span>
-        <div style="margin-top:6px;font-size:13px;color:#666">パートナー: ${r.Partner__c} | 期間: ${r.Start_Date__c}〜${r.End_Date__c} | 予算: ¥${(r.Budget__c/10000).toFixed(0)}万 | 投稿先: ${r.Publication_Plan__c||'-'}</div>
+        <strong>${escHtml(r.Name)}</strong> <span class="status s-blue">${escHtml(r.Status__c)}</span>
+        <div style="margin-top:6px;font-size:13px;color:#666">パートナー: ${escHtml(r.Partner__c)} | 期間: ${escHtml(r.Start_Date__c)}〜${escHtml(r.End_Date__c)} | 予算: ¥${(r.Budget__c/10000).toFixed(0)}万 | 投稿先: ${escHtml(r.Publication_Plan__c||'-')}</div>
       </div>`;
     });
     html += `</div>`;
@@ -99,12 +99,12 @@ function renderDoctor360Selector() {
     const inst = getInstitutionName(d.Institution__c);
     const cls = ({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[d.Relationship_Level__c]||'s-gray';
     html += `<div class="doctor-select-card" onclick="renderDoctor360('${d.id}')">
-      <div class="doctor-select-avatar">${d.Name.charAt(0)}</div>
+      <div class="doctor-select-avatar">${escHtml(d.Name.charAt(0))}</div>
       <div class="doctor-select-info">
-        <strong>${d.Name}</strong>
+        <strong>${escHtml(d.Name)}</strong>
         <div class="sub-text">🏥 ${inst}</div>
-        <div style="font-size:12px;color:#888">${d.Department__c||'-'} ${d.Title__c||'-'}</div>
-        <div style="margin-top:4px"><span class="status ${cls}">${d.Relationship_Level__c||'-'}</span> <span style="font-size:12px">KOL: ${d.KOL_Score__c||0}</span></div>
+        <div style="font-size:12px;color:#888">${escHtml(d.Department__c||'-')} ${escHtml(d.Title__c||'-')}</div>
+        <div style="margin-top:4px"><span class="status ${cls}">${escHtml(d.Relationship_Level__c||'-')}</span> <span style="font-size:12px">KOL: ${d.KOL_Score__c||0}</span></div>
       </div>
     </div>`;
   });
@@ -240,10 +240,10 @@ function renderAssignSection(doctors, salesMA) {
       <div class="territory-meta">${u.role} · 担当ドクター: ${myDocs.length}名</div>
       <table style="font-size:12px"><thead><tr><th>ドクター</th><th>施設</th><th>関係度</th><th>割当変更</th></tr></thead><tbody>`;
     myDocs.forEach(d => {
-      html += `<tr><td>${d.Name}</td><td>${getInstitutionName(d.Institution__c)}</td>
-        <td><span class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[d.Relationship_Level__c]||'s-gray'}">${d.Relationship_Level__c||'-'}</span></td>
+      html += `<tr><td>${escHtml(d.Name)}</td><td>${getInstitutionName(d.Institution__c)}</td>
+        <td><span class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[d.Relationship_Level__c]||'s-gray'}">${escHtml(d.Relationship_Level__c||'-')}</span></td>
         <td><select class="filter-select" style="font-size:11px" onchange="reassignDoctor('${d.id}',this.value)">
-          ${salesMA.map(su=>`<option value="${su.id}" ${su.id===u.id?'selected':''}>${su.name}</option>`).join('')}
+          ${salesMA.map(su=>`<option value="${escAttr(su.id)}" ${su.id===u.id?'selected':''}>${escHtml(su.name)}</option>`).join('')}
         </select></td></tr>`;
     });
     html += `</tbody></table></div>`;
@@ -256,9 +256,9 @@ function renderAssignSection(doctors, salesMA) {
     html += `<div class="card"><div class="card-header"><h3 style="color:#c62828">未割当ドクター（${unassigned.length}名）</h3></div>
       <table><thead><tr><th>ドクター</th><th>施設</th><th>診療科</th><th>割当先</th></tr></thead><tbody>`;
     unassigned.forEach(d => {
-      html += `<tr><td>${d.Name}</td><td>${getInstitutionName(d.Institution__c)}</td><td>${d.Specialty__c||'-'}</td>
+      html += `<tr><td>${escHtml(d.Name)}</td><td>${getInstitutionName(d.Institution__c)}</td><td>${escHtml(d.Specialty__c||'-')}</td>
         <td><select class="filter-select" onchange="reassignDoctor('${d.id}',this.value)"><option value="">-- 選択 --</option>
-          ${salesMA.map(u=>`<option value="${u.id}">${u.name}</option>`).join('')}</select></td></tr>`;
+          ${salesMA.map(u=>`<option value="${escAttr(u.id)}">${escHtml(u.name)}</option>`).join('')}</select></td></tr>`;
     });
     html += `</tbody></table></div>`;
   }
@@ -302,7 +302,7 @@ function previewHandover() {
   docs.forEach(d => {
     const vCnt = visits.filter(v=>v.Doctor__c===d.id).length;
     const pCnt = pharma.filter(p=>p.Doctor__c===d.id || p.Institution__c===d.Institution__c).length;
-    h += `<tr><td>${d.Name}</td><td>${getInstitutionName(d.Institution__c)}</td><td>${d.Relationship_Level__c||'-'}</td><td>${vCnt}</td><td>${pCnt}</td></tr>`;
+    h += `<tr><td>${escHtml(d.Name)}</td><td>${getInstitutionName(d.Institution__c)}</td><td>${escHtml(d.Relationship_Level__c||'-')}</td><td>${vCnt}</td><td>${pCnt}</td></tr>`;
   });
   h += `</tbody></table></div>`;
   previewEl.innerHTML = h;

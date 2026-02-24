@@ -25,9 +25,9 @@ function renderSeminarAttendees(seminarId) {
       const confirmed = sAtt.filter(a=>a.Attendance_Status__c==='参加確定'||a.Attendance_Status__c==='参加').length;
       const bentoCount = sAtt.filter(a=>a.Bento_Required__c).length;
       html += `<tr>
-        <td><span class="cell-link" onclick="renderSeminarAttendees('${s.id}')">${s.Name}</span></td>
-        <td>${s.Date__c||'-'}</td>
-        <td><span class="status s-blue">${s.Format__c||'-'}</span></td>
+        <td><span class="cell-link" onclick="renderSeminarAttendees('${s.id}')">${escHtml(s.Name)}</span></td>
+        <td>${escHtml(s.Date__c||'-')}</td>
+        <td><span class="status s-blue">${escHtml(s.Format__c||'-')}</span></td>
         <td>${s.Capacity__c||'-'}</td>
         <td><strong>${sAtt.length}</strong></td>
         <td>${confirmed}</td>
@@ -49,7 +49,7 @@ function renderSeminarAttendees(seminarId) {
   const bentoCount = semAttendees.filter(a=>a.Bento_Required__c).length;
   const cancelled = semAttendees.filter(a=>a.Attendance_Status__c==='キャンセル').length;
 
-  renderTopbar(`参加者管理: ${sem.Name}`, '👥',
+  renderTopbar(`参加者管理: ${escHtml(sem.Name)}`, '👥',
     `<button class="btn btn-sm btn-secondary" onclick="renderSeminarAttendees()">← セミナー一覧</button>`);
 
   let html = `<div class="kpi-row cols-6">
@@ -64,11 +64,11 @@ function renderSeminarAttendees(seminarId) {
   // セミナー情報
   html += `<div class="card"><div class="card-header"><h3>セミナー情報</h3></div>
     <div class="detail-grid">
-      <div class="detail-field"><div class="dl">日程</div><div class="dv">${sem.Date__c||'-'} ${sem.Time__c||''}</div></div>
-      <div class="detail-field"><div class="dl">形式</div><div class="dv">${sem.Format__c||'-'}</div></div>
-      <div class="detail-field"><div class="dl">会場</div><div class="dv">${sem.Venue__c||'-'}</div></div>
+      <div class="detail-field"><div class="dl">日程</div><div class="dv">${escHtml(sem.Date__c||'-')} ${escHtml(sem.Time__c||'')}</div></div>
+      <div class="detail-field"><div class="dl">形式</div><div class="dv">${escHtml(sem.Format__c||'-')}</div></div>
+      <div class="detail-field"><div class="dl">会場</div><div class="dv">${escHtml(sem.Venue__c||'-')}</div></div>
       <div class="detail-field"><div class="dl">講師</div><div class="dv">${resolveRef(sem.Speaker__c,'Doctor__c')}</div></div>
-      <div class="detail-field"><div class="dl">ステータス</div><div class="dv"><span class="status s-blue">${sem.Status__c||'-'}</span></div></div>
+      <div class="detail-field"><div class="dl">ステータス</div><div class="dv"><span class="status s-blue">${escHtml(sem.Status__c||'-')}</span></div></div>
       <div class="detail-field"><div class="dl">担当</div><div class="dv">${getUserName(sem.OwnerId)}</div></div>
     </div>
   </div>`;
@@ -81,12 +81,12 @@ function renderSeminarAttendees(seminarId) {
     const inst = getInstitutionName(a.Institution__c);
     const stCls = {登録済:'s-blue',参加確定:'s-green',参加:'s-green',欠席:'s-red',キャンセル:'s-gray'}[a.Attendance_Status__c]||'s-gray';
     html += `<tr onclick="showDetail('Seminar_Attendee__c','${a.id}')">
-      <td><span class="cell-link">${a.Name}</span></td>
+      <td><span class="cell-link">${escHtml(a.Name)}</span></td>
       <td>${inst}</td>
-      <td>${a.Registration_Date__c||'-'}</td>
-      <td><span class="status ${stCls}">${a.Attendance_Status__c||'-'}</span></td>
+      <td>${escHtml(a.Registration_Date__c||'-')}</td>
+      <td><span class="status ${stCls}">${escHtml(a.Attendance_Status__c||'-')}</span></td>
       <td>${a.Bento_Required__c ? '<span style="color:#e65100;font-weight:600">🍱 要</span>' : '<span style="color:#bbb">不要</span>'}</td>
-      <td>${a.Note__c||'-'}</td>
+      <td>${escHtml(a.Note__c||'-')}</td>
     </tr>`;
   });
   html += `</tbody></table></div>`;
@@ -97,12 +97,12 @@ function renderSeminarAttendees(seminarId) {
       <table><thead><tr><th>手配名</th><th>業者</th><th>メニュー</th><th>数量</th><th>単価</th><th>合計</th><th>配達時間</th><th>ステータス</th></tr></thead><tbody>`;
     semBentos.forEach(b => {
       html += `<tr onclick="showDetail('Bento_Order__c','${b.id}')">
-        <td><span class="cell-link">${b.Name}</span></td>
-        <td>${b.Vendor__c||'-'}</td><td>${b.Menu__c||'-'}</td>
+        <td><span class="cell-link">${escHtml(b.Name)}</span></td>
+        <td>${escHtml(b.Vendor__c||'-')}</td><td>${escHtml(b.Menu__c||'-')}</td>
         <td>${b.Quantity__c||0}</td><td>¥${Number(b.Unit_Price__c||0).toLocaleString()}</td>
         <td><strong>¥${Number(b.Total__c||0).toLocaleString()}</strong></td>
-        <td>${b.Delivery_Time__c||'-'}</td>
-        <td><span class="status ${({手配中:'s-orange',発注済:'s-blue',配達済:'s-green',キャンセル:'s-red'})[b.Status__c]||'s-gray'}">${b.Status__c||'-'}</span></td>
+        <td>${escHtml(b.Delivery_Time__c||'-')}</td>
+        <td><span class="status ${({手配中:'s-orange',発注済:'s-blue',配達済:'s-green',キャンセル:'s-red'})[b.Status__c]||'s-gray'}">${escHtml(b.Status__c||'-')}</span></td>
       </tr>`;
     });
     html += `</tbody></table></div>`;

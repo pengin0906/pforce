@@ -82,9 +82,9 @@ function toggleNotifPanel() {
       const cls = n.Is_Read__c ? 'notif-read' : 'notif-unread';
       const icon = n.Priority__c === '高' ? '🔴' : n.Priority__c === '中' ? '🟡' : '🔵';
       html += `<div class="notif-item ${cls}" onclick="markNotifRead('${n.id}');${n.Related_Object__c && n.Related_Record_Id__c ? `showDetail('${n.Related_Object__c}','${n.Related_Record_Id__c}')` : ''};document.getElementById('notif-panel').remove()">
-        <div>${icon} <strong>${n.Name}</strong></div>
-        <div style="font-size:12px;color:#555;margin-top:2px">${n.Message__c||''}</div>
-        <div style="font-size:11px;color:#999;margin-top:4px">${n.Due_Date__c||''} | ${n.Notification_Type__c||''}</div>
+        <div>${icon} <strong>${escHtml(n.Name)}</strong></div>
+        <div style="font-size:12px;color:#555;margin-top:2px">${escHtml(n.Message__c||'')}</div>
+        <div style="font-size:11px;color:#999;margin-top:4px">${escHtml(n.Due_Date__c||'')} | ${escHtml(n.Notification_Type__c||'')}</div>
       </div>`;
     });
   }

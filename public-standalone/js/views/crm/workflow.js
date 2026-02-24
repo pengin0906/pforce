@@ -32,7 +32,7 @@ function renderDailyReport() {
       html += `<div class="card"><div class="card-header"><h3>承認待ち日報（${pending.length}件）</h3></div>`;
       html += `<div class="table-wrap"><table><thead><tr><th>日付</th><th>報告者</th><th>種別</th><th>訪問件数</th><th>操作</th></tr></thead><tbody>`;
       pending.forEach(r => {
-        html += `<tr><td>${r.Report_Date__c}</td><td>${getUserName(r.OwnerId)}</td><td>${r.Report_Type__c||'-'}</td><td>${r.Visit_Summary__c||0}</td>
+        html += `<tr><td>${escHtml(r.Report_Date__c)}</td><td>${getUserName(r.OwnerId)}</td><td>${escHtml(r.Report_Type__c||'-')}</td><td>${r.Visit_Summary__c||0}</td>
           <td><button class="btn btn-sm btn-primary" onclick="approveReport('${r.id}')">承認</button> <button class="btn btn-sm btn-danger" onclick="rejectReport('${r.id}')">差戻し</button> <button class="btn btn-sm btn-secondary" onclick="showDetail('Daily_Report__c','${r.id}')">詳細</button></td></tr>`;
       });
       html += `</tbody></table></div></div>`;
@@ -48,16 +48,16 @@ function renderDailyReport() {
     const cls = {下書き:'s-gray',提出済:'s-blue',承認済:'s-green',差戻し:'s-red'}[r.Approval_Status__c] || 's-gray';
     html += `<div class="report-card" onclick="showDetail('Daily_Report__c','${r.id}')">
       <div class="report-header">
-        <span class="report-date">${r.Report_Date__c}</span>
+        <span class="report-date">${escHtml(r.Report_Date__c)}</span>
         <span>${getUserName(r.OwnerId)}</span>
-        <span class="status ${cls}">${r.Approval_Status__c||'下書き'}</span>
+        <span class="status ${cls}">${escHtml(r.Approval_Status__c||'下書き')}</span>
         <span>訪問 ${r.Visit_Summary__c||0}件</span>
       </div>
       <div class="report-body">
-        <div class="report-section"><strong>活動内容:</strong><br>${(r.Key_Activities__c||'-').substring(0,200)}${(r.Key_Activities__c||'').length > 200 ? '...' : ''}</div>
-        ${r.Key_Findings__c ? `<div class="report-section"><strong>気づき:</strong><br>${r.Key_Findings__c.substring(0,150)}${r.Key_Findings__c.length > 150 ? '...' : ''}</div>` : ''}
+        <div class="report-section"><strong>活動内容:</strong><br>${escHtml((r.Key_Activities__c||'-').substring(0,200))}${(r.Key_Activities__c||'').length > 200 ? '...' : ''}</div>
+        ${r.Key_Findings__c ? `<div class="report-section"><strong>気づき:</strong><br>${escHtml(r.Key_Findings__c.substring(0,150))}${r.Key_Findings__c.length > 150 ? '...' : ''}</div>` : ''}
       </div>
-      ${r.Approval_Comment__c ? `<div class="report-approval"><strong>承認者コメント (${getUserName(r.Approved_By__c)}):</strong> ${r.Approval_Comment__c}</div>` : ''}
+      ${r.Approval_Comment__c ? `<div class="report-approval"><strong>承認者コメント (${getUserName(r.Approved_By__c)}):</strong> ${escHtml(r.Approval_Comment__c)}</div>` : ''}
     </div>`;
   });
   html += `</div>`;
@@ -122,12 +122,12 @@ function renderApprovalQueue() {
       const prCls = {高:'s-red',中:'s-orange',低:'s-blue'}[r.Priority__c] || 's-gray';
       html += `<div class="approval-card">
         <div class="approval-header">
-          <span class="approval-type">${r.Request_Type__c}</span>
-          <strong>${r.Name}</strong>
-          <span class="status ${prCls}">${r.Priority__c||'中'}</span>
+          <span class="approval-type">${escHtml(r.Request_Type__c)}</span>
+          <strong>${escHtml(r.Name)}</strong>
+          <span class="status ${prCls}">${escHtml(r.Priority__c||'中')}</span>
           ${r.Amount__c ? `<span class="approval-amount">¥${Number(r.Amount__c).toLocaleString()}</span>` : ''}
         </div>
-        <div class="approval-body">${(r.Description__c||'').substring(0,300)}${(r.Description__c||'').length > 300 ? '...' : ''}</div>
+        <div class="approval-body">${escHtml((r.Description__c||'').substring(0,300))}${(r.Description__c||'').length > 300 ? '...' : ''}</div>
         <div class="approval-meta">申請者: ${getUserName(r.Requested_By__c)} | 申請日: ${r.Submitted_Date__c||'-'}</div>
         <div class="approval-actions">
           <button class="btn btn-sm btn-primary" onclick="approveRequest('${r.id}')">承認</button>
@@ -144,7 +144,7 @@ function renderApprovalQueue() {
   html += `<div class="table-wrap"><table><thead><tr><th>申請名</th><th>種別</th><th>金額</th><th>申請者</th><th>承認者</th><th>ステータス</th><th>申請日</th></tr></thead><tbody>`;
   recentAll.forEach(r => {
     const cls = {申請中:'s-blue',承認待ち:'s-orange',承認済:'s-green',差戻し:'s-red',却下:'s-red',取下げ:'s-gray'}[r.Status__c] || 's-gray';
-    html += `<tr onclick="showDetail('Approval_Request__c','${r.id}')"><td>${r.Name}</td><td>${r.Request_Type__c||'-'}</td><td>${r.Amount__c ? '¥'+Number(r.Amount__c).toLocaleString() : '-'}</td><td>${getUserName(r.Requested_By__c)}</td><td>${getUserName(r.Approver__c)}</td><td><span class="status ${cls}">${r.Status__c}</span></td><td>${r.Submitted_Date__c||'-'}</td></tr>`;
+    html += `<tr onclick="showDetail('Approval_Request__c','${r.id}')"><td>${escHtml(r.Name)}</td><td>${escHtml(r.Request_Type__c||'-')}</td><td>${r.Amount__c ? '¥'+Number(r.Amount__c).toLocaleString() : '-'}</td><td>${getUserName(r.Requested_By__c)}</td><td>${getUserName(r.Approver__c)}</td><td><span class="status ${cls}">${escHtml(r.Status__c)}</span></td><td>${escHtml(r.Submitted_Date__c||'-')}</td></tr>`;
   });
   html += `</tbody></table></div></div>`;
 
@@ -225,7 +225,7 @@ function renderWorkflowDashboard() {
     html += `<div class="wf-type-card" style="border-left:4px solid ${tpl.color}">
       <div class="wf-type-icon">${tpl.icon}</div>
       <div class="wf-type-info">
-        <div class="wf-type-name">${tpl.name}</div>
+        <div class="wf-type-name">${escHtml(tpl.name)}</div>
         <div class="wf-type-stats">進行中: <strong>${typeActive}</strong> / 完了: ${typeCompleted} / ステップ数: ${tpl.steps.length}</div>
       </div>
       <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();navigate('workflow-new','${type}')">起票</button>
@@ -275,11 +275,11 @@ function renderWfCard(wf, tpl, currentStep, isAction) {
     <div class="wf-card-header">
       <span class="wf-icon">${tpl.icon||'⚙️'}</span>
       <div class="wf-card-title">
-        <strong>${wf.Name}</strong>
+        <strong>${escHtml(wf.Name)}</strong>
         <div class="wf-card-meta">
-          <span class="status ${stCls}">${wf.Status__c}</span>
-          <span class="status ${priCls}">${wf.Priority__c}</span>
-          <span>${wf.Workflow_Type__c}</span>
+          <span class="status ${stCls}">${escHtml(wf.Status__c)}</span>
+          <span class="status ${priCls}">${escHtml(wf.Priority__c)}</span>
+          <span>${escHtml(wf.Workflow_Type__c)}</span>
           ${isOverdue ? '<span style="color:#c62828;font-weight:600">期限超過</span>' : ''}
         </div>
       </div>
@@ -295,7 +295,7 @@ function renderWfCard(wf, tpl, currentStep, isAction) {
     h += `<div class="wf-steps-mini">`;
     wf.steps.forEach((s,i) => {
       const sCls = s.status === '完了' ? 'wf-step-done' : (s.status === '進行中' || s.status === '承認待ち') ? 'wf-step-active' : 'wf-step-pending';
-      h += `<div class="wf-step-dot ${sCls}" title="${s.name}: ${s.status}"></div>`;
+      h += `<div class="wf-step-dot ${sCls}" title="${escAttr(s.name + ': ' + s.status)}"></div>`;
       if (i < wf.steps.length - 1) h += `<div class="wf-step-line ${s.status==='完了'?'wf-line-done':''}"></div>`;
     });
     h += `</div>`;
@@ -304,10 +304,10 @@ function renderWfCard(wf, tpl, currentStep, isAction) {
   // 現在ステップ詳細
   if (currentStep) {
     h += `<div class="wf-current-step">
-      <span style="font-size:11px;color:#666">現在:</span> <strong>${currentStep.name}</strong>
+      <span style="font-size:11px;color:#666">現在:</span> <strong>${escHtml(currentStep.name)}</strong>
       <span style="color:#888">担当: ${getUserName(currentStep.assignee)}</span>
-      ${currentStep.dueDate ? `<span style="color:${currentStep.dueDate < new Date().toISOString().split('T')[0] ? '#c62828' : '#666'}">期限: ${currentStep.dueDate}</span>` : ''}
-      ${currentStep.comment ? `<span style="color:#555">${currentStep.comment.substring(0,60)}${currentStep.comment.length>60?'...':''}</span>` : ''}
+      ${currentStep.dueDate ? `<span style="color:${currentStep.dueDate < new Date().toISOString().split('T')[0] ? '#c62828' : '#666'}">期限: ${escHtml(currentStep.dueDate)}</span>` : ''}
+      ${currentStep.comment ? `<span style="color:#555">${escHtml(currentStep.comment.substring(0,60))}${currentStep.comment.length>60?'...':''}</span>` : ''}
     </div>`;
   }
 
@@ -327,7 +327,7 @@ function renderWorkflowDetail(wfId) {
   const tpl = WORKFLOW_TEMPLATES[wf.Workflow_Type__c] || {};
   const uid = window.currentUser?.id || 'U002';
 
-  renderTopbar(`${tpl.icon||'⚙️'} ${wf.Name}`, '', `<button class="btn btn-secondary btn-sm" onclick="navigate('workflow')">一覧に戻る</button>`);
+  renderTopbar(`${tpl.icon||'⚙️'} ${escHtml(wf.Name)}`, '', `<button class="btn btn-secondary btn-sm" onclick="navigate('workflow')">一覧に戻る</button>`);
 
   let html = '';
 
@@ -337,13 +337,13 @@ function renderWorkflowDetail(wfId) {
 
   html += `<div class="wf-detail-header" style="border-left:4px solid ${tpl.color||'#1565c0'}">
     <div class="wf-detail-info">
-      <h2>${tpl.icon||'⚙️'} ${wf.Name}</h2>
+      <h2>${tpl.icon||'⚙️'} ${escHtml(wf.Name)}</h2>
       <div style="display:flex;gap:8px;align-items:center;margin:8px 0">
-        <span class="status ${stCls}">${wf.Status__c}</span>
-        <span class="status ${({緊急:'s-red',高:'s-orange',中:'s-blue',低:'s-gray'})[wf.Priority__c]||'s-gray'}">${wf.Priority__c}</span>
-        <span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:12px">${wf.Workflow_Type__c}</span>
+        <span class="status ${stCls}">${escHtml(wf.Status__c)}</span>
+        <span class="status ${({緊急:'s-red',高:'s-orange',中:'s-blue',低:'s-gray'})[wf.Priority__c]||'s-gray'}">${escHtml(wf.Priority__c)}</span>
+        <span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:12px">${escHtml(wf.Workflow_Type__c)}</span>
       </div>
-      <p style="color:#555;margin:8px 0">${wf.Description__c || ''}</p>
+      <p style="color:#555;margin:8px 0">${escHtml(wf.Description__c || '')}</p>
       <div style="display:flex;gap:24px;font-size:13px;color:#666;flex-wrap:wrap">
         <span>起票者: <strong>${getUserName(wf.Requested_By__c)}</strong></span>
         <span>責任者: <strong>${getUserName(wf.OwnerId)}</strong></span>
@@ -399,15 +399,15 @@ function renderWorkflowDetail(wfId) {
         </div>
         <div class="wf-tl-content">
           <div class="wf-tl-header">
-            <strong>Step ${step.no}: ${step.name}</strong>
-            <span class="status ${isDone?'s-green':isActive?(step.status==='承認待ち'?'s-orange':'s-blue'):'s-gray'}">${step.status}</span>
+            <strong>Step ${step.no}: ${escHtml(step.name)}</strong>
+            <span class="status ${isDone?'s-green':isActive?(step.status==='承認待ち'?'s-orange':'s-blue'):'s-gray'}">${escHtml(step.status)}</span>
           </div>
           <div class="wf-tl-meta">
             <span>担当: ${getUserName(step.assignee)}</span>
             ${step.completed ? `<span>完了: ${step.completed}</span>` : ''}
             ${step.dueDate && !isDone ? `<span style="color:${isOverdue?'#c62828':'#666'}">期限: ${step.dueDate} ${isOverdue?'(超過)':''}</span>` : ''}
           </div>
-          ${step.comment ? `<div class="wf-tl-comment">${step.comment}</div>` : ''}
+          ${step.comment ? `<div class="wf-tl-comment">${escHtml(step.comment)}</div>` : ''}
         </div>
       </div>`;
     });
@@ -417,7 +417,7 @@ function renderWorkflowDetail(wfId) {
   // 関連レコード
   if (wf.Related_Record__c) {
     html += `<div class="card"><div class="card-header"><h3>関連レコード</h3></div>
-      <p style="padding:8px 0">ID: <code>${wf.Related_Record__c}</code></p>
+      <p style="padding:8px 0">ID: <code>${escHtml(wf.Related_Record__c)}</code></p>
     </div>`;
   }
 
@@ -481,14 +481,14 @@ function wfTypeChanged() {
     <h4 style="margin-bottom:12px">${tpl.icon} ステッププレビュー（${tpl.steps.length}ステップ、SLA: ${tpl.sla}日）</h4>
     <div class="wf-steps-mini" style="margin-bottom:12px">`;
   tpl.steps.forEach((s,i) => {
-    h += `<div class="wf-step-dot wf-step-pending" title="${s}"></div>`;
+    h += `<div class="wf-step-dot wf-step-pending" title="${escAttr(s)}"></div>`;
     if (i < tpl.steps.length - 1) h += `<div class="wf-step-line"></div>`;
   });
   h += `</div><table style="font-size:12px"><thead><tr><th>Step</th><th>ステップ名</th><th>デフォルト担当</th></tr></thead><tbody>`;
   tpl.steps.forEach((s,i) => {
     const assignee = tpl.defaultAssignees[i];
     const assigneeName = assignee === 'requester' ? '起票者' : assignee === 'manager' ? 'マネージャー' : getUserName(assignee);
-    h += `<tr><td>${i+1}</td><td>${s}</td><td>${assigneeName}</td></tr>`;
+    h += `<tr><td>${i+1}</td><td>${escHtml(s)}</td><td>${escHtml(assigneeName)}</td></tr>`;
   });
   h += `</tbody></table></div>`;
   const el = document.getElementById('wf-steps-preview');

@@ -27,7 +27,7 @@ function renderMapView() {
   (store.Medical_Institution__c||[]).forEach(inst => {
     const docCount = (store.Doctor__c||[]).filter(d=>d.Institution__c===inst.id).length;
     const cls = getObjDef('Medical_Institution__c').statusMap[inst.Adapter_Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Medical_Institution__c','${inst.id}')"><td><span class="cell-link">${inst.Name}</span></td><td>${inst.Facility_Type__c||'-'}</td><td>${inst.Prefecture__c||'-'}</td><td><span class="status ${cls}">${inst.Adapter_Status__c}</span></td><td>${docCount}</td>`;
+    html += `<tr onclick="showDetail('Medical_Institution__c','${inst.id}')"><td><span class="cell-link">${escHtml(inst.Name)}</span></td><td>${escHtml(inst.Facility_Type__c||'-')}</td><td>${escHtml(inst.Prefecture__c||'-')}</td><td><span class="status ${cls}">${escHtml(inst.Adapter_Status__c)}</span></td><td>${docCount}</td>`;
     if (mapEditMode) {
       html += `<td onclick="event.stopPropagation()"><button class="btn btn-sm btn-primary" onclick="showEditForm('Medical_Institution__c','${inst.id}')">編集</button> <button class="btn btn-sm btn-danger" onclick="deleteRecordFromMap('Medical_Institution__c','${inst.id}')">削除</button></td>`;
     }
@@ -92,11 +92,11 @@ function addMapMarkers() {
 }
 
 function buildMarkerPopup(apiName, id, icon, rec, docCount) {
-  let html = `<b>${icon} ${rec.Name}</b><br>`;
+  let html = `<b>${icon} ${escHtml(rec.Name)}</b><br>`;
   if (apiName === 'Medical_Institution__c') {
-    html += `${rec.Facility_Type__c||'-'}<br>genmine: ${rec.Adapter_Status__c||'-'}<br>ドクター: ${docCount||0}名`;
+    html += `${escHtml(rec.Facility_Type__c||'-')}<br>genmine: ${escHtml(rec.Adapter_Status__c||'-')}<br>ドクター: ${docCount||0}名`;
   } else {
-    html += `${rec.Venue__c||'-'}<br>${rec.Date__c||'日程未定'}<br>ステータス: ${rec.Status__c||'-'}`;
+    html += `${escHtml(rec.Venue__c||'-')}<br>${escHtml(rec.Date__c||'日程未定')}<br>ステータス: ${escHtml(rec.Status__c||'-')}`;
   }
   html += `<br><small style="color:#888">📍 ${Number(rec.Latitude__c).toFixed(4)}, ${Number(rec.Longitude__c).toFixed(4)}</small>`;
 
@@ -124,7 +124,7 @@ function onMarkerDragEnd(apiName, id, e) {
     ? (store.Doctor__c||[]).filter(d=>d.Institution__c===id).length : null;
 
   e.target.setPopupContent(buildMarkerPopup(apiName, id, icon, rec, docCount));
-  toast(`${rec.Name} の位置を更新しました (${rec.Latitude__c}, ${rec.Longitude__c})`);
+  toast(`${escHtml(rec.Name)} の位置を更新しました (${rec.Latitude__c}, ${rec.Longitude__c})`);
 }
 
 function onMapClickToAdd(e) {

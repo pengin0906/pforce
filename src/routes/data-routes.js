@@ -243,10 +243,23 @@ function createDataRoutes(app, ctx) {
     if (!lookupField) {
       return res.status(400).json({ error: 'Missing lookupField parameter' });
     }
+    // Validate lookupField name (prevent injection via field names)
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(lookupField)) {
+      return res.status(400).json({ error: 'Invalid lookupField parameter' });
+    }
+    // Check access on BOTH parent and child objects
+    if (!canUserAccessObject(req.user, objectName, 'read')) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     if (!canUserAccessObject(req.user, childObject, 'read')) {
       return res.status(403).json({ error: 'Access denied' });
     }
     try {
+      // Verify the parent record exists and user can access it
+      const parentRecord = await pgService.getById(fsCollection(objectName), id);
+      if (!parentRecord) {
+        return res.status(404).json({ error: 'Parent record not found' });
+      }
       const page = parseInt(req.query.page) || 1;
       const pageSize = Math.min(200, Math.max(1, parseInt(req.query.pageSize) || 25));
       const { records, totalSize } = await pgService.queryWithCount(

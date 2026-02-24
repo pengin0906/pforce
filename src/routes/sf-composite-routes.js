@@ -22,7 +22,19 @@ function createSfCompositeRoutes(app, ctx) {
     return parser.parse();
   }
 
+  // Access control helper for sub-requests
+  function checkAccess(user, objName, action) {
+    if (!canUserAccessObject(user, objName, action)) {
+      return { statusCode: 403, body: [{ message: `Access denied: ${action} on ${objName}`, errorCode: 'INSUFFICIENT_ACCESS' }] };
+    }
+    return null;
+  }
+
   async function executeSubRequest(method, urlPath, body, user) {
+    if (!user) {
+      return { statusCode: 401, body: [{ message: 'Authentication required', errorCode: 'INVALID_SESSION_ID' }] };
+    }
+
     const vp = `/services/data/v${SF_API_VERSION}`;
     const vpEsc = vp.replace(/\./g, '\\.');
     try {
@@ -31,6 +43,9 @@ function createSfCompositeRoutes(app, ctx) {
       if (qm && method.toUpperCase() === 'GET') {
         const q = decodeURIComponent(qm[1].replace(/\+/g, ' '));
         const parsed = parseSOQL(q);
+        // Check read access on queried object
+        const denied = checkAccess(user, parsed.from, 'read');
+        if (denied) return denied;
         const translated = translateSOQL(parsed, DB_PREFIX);
         if (parsed.isCount) {
           const rows = await pgService.rawQuery(translated.sql, translated.params);
@@ -53,6 +68,8 @@ function createSfCompositeRoutes(app, ctx) {
       const dm = urlPath.match(new RegExp(`^${vpEsc}/sobjects/(\\w+)/describe/?$`));
       if (dm && method.toUpperCase() === 'GET') {
         const objName = dm[1];
+        const denied = checkAccess(user, objName, 'read');
+        if (denied) return denied;
         const objDef = findObjectDef(objName);
         if (!objDef) return { statusCode: 404, body: [{ message: `Object not found: ${objName}`, errorCode: 'NOT_FOUND' }] };
         return { statusCode: 200, body: { name: objName, label: objDef.label || objName, fields: (objDef.fields || []).map(f => ({ name: f.apiName, label: f.label || f.apiName, type: f.type || 'string' })) } };
@@ -61,6 +78,8 @@ function createSfCompositeRoutes(app, ctx) {
       const upsertMatch = urlPath.match(new RegExp(`^${vpEsc}/sobjects/(\\w+)/(\\w+)/(.+)$`));
       if (upsertMatch && method.toUpperCase() === 'PATCH') {
         const [, objName, extField, extValue] = upsertMatch;
+        const denied = checkAccess(user, objName, 'edit');
+        if (denied) return denied;
         const records = await pgService.query(fsCollection(objName), {
           where: [{ field: extField, op: '==', value: String(extValue) }],
           limit: 1
@@ -70,6 +89,8 @@ function createSfCompositeRoutes(app, ctx) {
           await pgService.update(fsCollection(objName), existing.Id, body);
           return { statusCode: 200, body: { id: existing.Id, success: true, errors: [], created: false } };
         } else {
+          const createDenied = checkAccess(user, objName, 'create');
+          if (createDenied) return createDenied;
           const created = await pgService.create(fsCollection(objName), { ...body, [extField]: extValue });
           return { statusCode: 201, body: { id: created.Id, success: true, errors: [], created: true } };
         }
@@ -80,20 +101,28 @@ function createSfCompositeRoutes(app, ctx) {
         const objName = sm[1], recId = sm[2];
         const M = method.toUpperCase();
         if (M === 'GET' && recId) {
+          const denied = checkAccess(user, objName, 'read');
+          if (denied) return denied;
           const rec = await pgService.getById(fsCollection(objName), recId);
           if (!rec) return { statusCode: 404, body: [{ message: 'Not found', errorCode: 'NOT_FOUND' }] };
           rec.attributes = { type: objName };
           return { statusCode: 200, body: rec };
         }
         if (M === 'POST' && !recId) {
+          const denied = checkAccess(user, objName, 'create');
+          if (denied) return denied;
           const created = await pgService.create(fsCollection(objName), body);
           return { statusCode: 201, body: { id: created.Id, success: true, errors: [] } };
         }
         if (M === 'PATCH' && recId) {
+          const denied = checkAccess(user, objName, 'edit');
+          if (denied) return denied;
           await pgService.update(fsCollection(objName), recId, body);
           return { statusCode: 204, body: null };
         }
         if (M === 'DELETE' && recId) {
+          const denied = checkAccess(user, objName, 'delete');
+          if (denied) return denied;
           await pgService.remove(fsCollection(objName), recId);
           return { statusCode: 204, body: null };
         }

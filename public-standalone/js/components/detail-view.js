@@ -7,12 +7,12 @@ function showDetail(apiName, id) {
   if (!obj || !rec) return;
 
   const name = rec.Name || rec.Subject || (`${rec.LastName||''} ${rec.FirstName||''}`).trim() || id;
-  renderTopbar(name, obj.icon, `<div class="btn-group"><button class="btn btn-sm btn-primary" onclick="showEditForm('${apiName}','${id}')">編集</button><button class="btn btn-sm btn-danger" onclick="deleteRecord('${apiName}','${id}')">削除</button><button class="btn btn-sm btn-secondary" onclick="navigate('obj','${apiName}')">← 戻る</button></div>`);
+  renderTopbar(name, obj.icon, `<div class="btn-group"><button class="btn btn-sm btn-primary" onclick="showEditForm('${escAttr(apiName)}','${escAttr(id)}')">編集</button><button class="btn btn-sm btn-danger" onclick="deleteRecord('${escAttr(apiName)}','${escAttr(id)}')">削除</button><button class="btn btn-sm btn-secondary" onclick="navigate('obj','${escAttr(apiName)}')">← 戻る</button></div>`);
 
-  let html = `<div class="card"><div class="card-header"><h3>${obj.label}の詳細</h3>`;
+  let html = `<div class="card"><div class="card-header"><h3>${escHtml(obj.label)}の詳細</h3>`;
   if (obj.statusField && rec[obj.statusField]) {
     const cls = obj.statusMap?.[rec[obj.statusField]] || 's-gray';
-    html += `<span class="status ${cls}">${rec[obj.statusField]}</span>`;
+    html += `<span class="status ${escAttr(cls)}">${escHtml(rec[obj.statusField])}</span>`;
   }
   html += `</div>`;
 
@@ -66,7 +66,7 @@ function renderRelatedLists(parentObj, parentId) {
             let val = rec[col];
             if (fi && fi.type === 'Lookup') val = col === 'OwnerId' ? getUserName(val) : resolveRef(val, fi.ref);
             else val = fmt(val, fi?.type);
-            if (col === obj.statusField && obj.statusMap) val = `<span class="status ${obj.statusMap[rec[col]]||'s-gray'}">${rec[col]||'-'}</span>`;
+            if (col === obj.statusField && obj.statusMap) val = `<span class="status ${obj.statusMap[rec[col]]||'s-gray'}">${escHtml(rec[col]||'-')}</span>`;
             if (i === 0) val = `<span class="cell-link">${val}</span>`;
             html += `<td>${val}</td>`;
           });

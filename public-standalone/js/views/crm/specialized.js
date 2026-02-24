@@ -32,9 +32,9 @@ function renderKOLMap() {
     const barColor = score >= 80 ? '#c62828' : score >= 50 ? '#e65100' : score >= 20 ? '#1565c0' : '#9e9e9e';
 
     html += `<tr onclick="renderDoctor360('${d.id}')" style="cursor:pointer">
-      <td><strong>${d.Name}</strong></td><td>${inst}</td><td>${d.Cancer_Type__c||'-'}</td>
+      <td><strong>${escHtml(d.Name)}</strong></td><td>${inst}</td><td>${escHtml(d.Cancer_Type__c||'-')}</td>
       <td><div style="display:flex;align-items:center;gap:8px"><div style="width:60px;height:8px;background:#eee;border-radius:4px"><div style="width:${score}%;height:100%;background:${barColor};border-radius:4px"></div></div><strong>${score}</strong></div></td>
-      <td><span class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[d.Relationship_Level__c]||'s-gray'}">${d.Relationship_Level__c||'-'}</span></td>
+      <td><span class="status ${({未接触:'s-gray',初回面談済:'s-blue',関心あり:'s-orange',検討中:'s-purple',推進者:'s-teal','ファン（KOL）':'s-green'})[d.Relationship_Level__c]||'s-gray'}">${escHtml(d.Relationship_Level__c||'-')}</span></td>
       <td>${d.Visit_Count__c||0}</td><td>${seminars}</td><td>${research}</td><td>${specs}</td></tr>`;
   });
   html += `</tbody></table></div></div>`;
@@ -43,10 +43,10 @@ function renderKOLMap() {
   html += `<div class="card"><div class="card-header"><h3>がん種別 KOL分布</h3></div><div class="cancer-kol-grid">`;
   cancerTypes.forEach(ct => {
     const drs = doctors.filter(d => d.Cancer_Type__c === ct).sort((a,b) => (b.KOL_Score__c||0)-(a.KOL_Score__c||0));
-    html += `<div class="cancer-kol-section"><h4>${ct}（${drs.length}名）</h4>`;
+    html += `<div class="cancer-kol-section"><h4>${escHtml(ct)}（${drs.length}名）</h4>`;
     drs.forEach(d => {
       const inst = getInstitutionName(d.Institution__c);
-      html += `<div class="kol-chip" onclick="renderDoctor360('${d.id}')" title="${inst} ${d.Title__c||''}">${d.Name} <small>${d.KOL_Score__c||0}</small></div>`;
+      html += `<div class="kol-chip" onclick="renderDoctor360('${d.id}')" title="${escAttr((inst||'') + ' ' + (d.Title__c||''))}">${escHtml(d.Name)} <small>${d.KOL_Score__c||0}</small></div>`;
     });
     html += `</div>`;
   });
@@ -71,7 +71,7 @@ function renderCompetitiveIntel() {
   html += `<div class="kpi-card"><div class="kpi-value" style="color:#c62828">${intels.filter(i => i.Impact__c === '高').length}</div><div class="kpi-label">高影響度</div></div>`;
   competitors.forEach(c => {
     const cnt = intels.filter(i => i.Competitor__c === c).length;
-    html += `<div class="kpi-card"><div class="kpi-value">${cnt}</div><div class="kpi-label">${c.split('（')[0]}</div></div>`;
+    html += `<div class="kpi-card"><div class="kpi-value">${cnt}</div><div class="kpi-label">${escHtml(c.split('（')[0])}</div></div>`;
   });
   html += `</div>`;
 
@@ -82,14 +82,14 @@ function renderCompetitiveIntel() {
     html += `<div class="intel-card" onclick="showDetail('Competitive_Intel__c','${i.id}')">
       <div class="intel-header">
         <span class="intel-date">${i.Date__c||'-'}</span>
-        <span class="intel-competitor">${i.Competitor__c||'-'}</span>
-        <span class="intel-type">${i.Intel_Type__c||'-'}</span>
-        <span class="status ${impactCls}">影響度: ${i.Impact__c||'-'}</span>
+        <span class="intel-competitor">${escHtml(i.Competitor__c||'-')}</span>
+        <span class="intel-type">${escHtml(i.Intel_Type__c||'-')}</span>
+        <span class="status ${impactCls}">影響度: ${escHtml(i.Impact__c||'-')}</span>
       </div>
-      <div class="intel-title"><strong>${i.Name}</strong></div>
-      <div class="intel-summary">${(i.Summary__c||'').substring(0,300)}${(i.Summary__c||'').length > 300 ? '...' : ''}</div>
-      ${i.Action_Required__c ? `<div class="intel-action">📌 要アクション: ${i.Action_Required__c}</div>` : ''}
-      <div class="intel-source">情報源: ${i.Source__c||'-'} | 報告: ${getUserName(i.OwnerId)}</div>
+      <div class="intel-title"><strong>${escHtml(i.Name)}</strong></div>
+      <div class="intel-summary">${escHtml((i.Summary__c||'').substring(0,300))}${(i.Summary__c||'').length > 300 ? '...' : ''}</div>
+      ${i.Action_Required__c ? `<div class="intel-action">📌 要アクション: ${escHtml(i.Action_Required__c)}</div>` : ''}
+      <div class="intel-source">情報源: ${escHtml(i.Source__c||'-')} | 報告: ${getUserName(i.OwnerId)}</div>
     </div>`;
   });
   html += `</div>`;
@@ -144,7 +144,7 @@ function renderComplianceDashboard() {
   html += `<div class="table-wrap"><table><thead><tr><th>案件名</th><th>種別</th><th>金額</th><th>ステータス</th><th>申請者</th><th>承認者</th></tr></thead><tbody>`;
   highValue.forEach(a => {
     const cls = {承認済:'s-green',承認待ち:'s-orange',申請中:'s-blue',差戻し:'s-red'}[a.Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Approval_Request__c','${a.id}')"><td>${a.Name}</td><td>${a.Request_Type__c||'-'}</td><td>¥${Number(a.Amount__c).toLocaleString()}</td><td><span class="status ${cls}">${a.Status__c}</span></td><td>${getUserName(a.Requested_By__c)}</td><td>${getUserName(a.Approver__c)}</td></tr>`;
+    html += `<tr onclick="showDetail('Approval_Request__c','${a.id}')"><td>${escHtml(a.Name)}</td><td>${escHtml(a.Request_Type__c||'-')}</td><td>¥${Number(a.Amount__c).toLocaleString()}</td><td><span class="status ${cls}">${escHtml(a.Status__c)}</span></td><td>${getUserName(a.Requested_By__c)}</td><td>${getUserName(a.Approver__c)}</td></tr>`;
   });
   html += `</tbody></table></div></div>`;
 
@@ -177,7 +177,7 @@ function renderExpenseReport() {
   myExpenses.forEach(e => { byType[e.Expense_Type__c] = (byType[e.Expense_Type__c]||0) + (e.Amount__c||0); });
   html += `<div class="card"><div class="card-header"><h3>経費種別内訳</h3></div><div class="expense-breakdown">`;
   Object.entries(byType).sort((a,b) => b[1]-a[1]).forEach(([type, amount]) => {
-    html += `<div class="expense-type-row"><span class="expense-type-label">${type}</span><div class="expense-type-bar-wrap"><div class="expense-type-bar" style="width:${Math.round(amount/Math.max(...Object.values(byType))*100)}%"></div></div><span class="expense-type-amount">¥${amount.toLocaleString()}</span></div>`;
+    html += `<div class="expense-type-row"><span class="expense-type-label">${escHtml(type)}</span><div class="expense-type-bar-wrap"><div class="expense-type-bar" style="width:${Math.round(amount/Math.max(...Object.values(byType))*100)}%"></div></div><span class="expense-type-amount">¥${amount.toLocaleString()}</span></div>`;
   });
   html += `</div></div>`;
 
@@ -186,7 +186,7 @@ function renderExpenseReport() {
   html += `<div class="table-wrap"><table><thead><tr><th>番号</th><th>日付</th><th>種別</th><th>金額</th><th>内容</th><th>領収書</th><th>ステータス</th></tr></thead><tbody>`;
   myExpenses.sort((a,b) => (b.Report_Date__c||'').localeCompare(a.Report_Date__c||'')).forEach(e => {
     const cls = {下書き:'s-gray',申請中:'s-blue',承認済:'s-green',差戻し:'s-red',支払済:'s-teal'}[e.Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Expense_Report__c','${e.id}')"><td>${e.Name}</td><td>${e.Report_Date__c||'-'}</td><td>${e.Expense_Type__c||'-'}</td><td>¥${(e.Amount__c||0).toLocaleString()}</td><td>${e.Description__c||'-'}</td><td>${e.Receipt_Attached__c ? '✅' : '❌'}</td><td><span class="status ${cls}">${e.Status__c||'-'}</span></td></tr>`;
+    html += `<tr onclick="showDetail('Expense_Report__c','${e.id}')"><td>${escHtml(e.Name)}</td><td>${escHtml(e.Report_Date__c||'-')}</td><td>${escHtml(e.Expense_Type__c||'-')}</td><td>¥${(e.Amount__c||0).toLocaleString()}</td><td>${escHtml(e.Description__c||'-')}</td><td>${e.Receipt_Attached__c ? '✅' : '❌'}</td><td><span class="status ${cls}">${escHtml(e.Status__c||'-')}</span></td></tr>`;
   });
   html += `</tbody></table></div></div>`;
 
@@ -229,7 +229,7 @@ function renderTerritory() {
   Object.entries(byPref).sort((a,b) => b[1].institutions - a[1].institutions).forEach(([pref, data]) => {
     const coverRate = data.institutions > 0 ? Math.round(data.adopted/data.institutions*100) : 0;
     const barColor = coverRate >= 75 ? '#4caf50' : coverRate >= 50 ? '#ff9800' : '#f44336';
-    html += `<tr><td><strong>${pref}</strong></td><td>${data.institutions}</td><td>${data.adopted}</td><td>${data.doctors}</td><td>${data.visits}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:8px;background:#eee;border-radius:4px"><div style="width:${coverRate}%;height:100%;background:${barColor};border-radius:4px"></div></div>${coverRate}%</div></td></tr>`;
+    html += `<tr><td><strong>${escHtml(pref)}</strong></td><td>${data.institutions}</td><td>${data.adopted}</td><td>${data.doctors}</td><td>${data.visits}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="width:80px;height:8px;background:#eee;border-radius:4px"><div style="width:${coverRate}%;height:100%;background:${barColor};border-radius:4px"></div></div>${coverRate}%</div></td></tr>`;
   });
   html += `</tbody></table></div></div>`;
 
@@ -246,7 +246,7 @@ function renderTerritory() {
       <div class="mr-doctor-list">`;
     myDocs.forEach(d => {
       const inst = getInstitutionName(d.Institution__c);
-      html += `<div class="mr-doctor-chip" onclick="renderDoctor360('${d.id}')">${d.Name}<small>${inst}</small></div>`;
+      html += `<div class="mr-doctor-chip" onclick="renderDoctor360('${d.id}')">${escHtml(d.Name)}<small>${inst}</small></div>`;
     });
     html += `</div></div>`;
   });
@@ -291,20 +291,20 @@ function renderSpecimenTracker() {
 
     html += `<div class="specimen-card" onclick="showDetail('Specimen__c','${sp.id}')">
       <div class="specimen-header">
-        <strong>${sp.Name}</strong>
-        <span>${sp.Cancer_Type__c||'-'}</span>
-        <span>${sp.Specimen_Type__c||'-'}</span>
-        <span class="status ${({受領待ち:'s-gray',受領済:'s-blue',QC中:'s-orange',解析中:'s-purple',レポート作成:'s-teal',レビュー中:'s-yellow',完了:'s-green',不適格:'s-red'})[sp.Status__c]||'s-gray'}">${sp.Status__c}</span>
+        <strong>${escHtml(sp.Name)}</strong>
+        <span>${escHtml(sp.Cancer_Type__c||'-')}</span>
+        <span>${escHtml(sp.Specimen_Type__c||'-')}</span>
+        <span class="status ${({受領待ち:'s-gray',受領済:'s-blue',QC中:'s-orange',解析中:'s-purple',レポート作成:'s-teal',レビュー中:'s-yellow',完了:'s-green',不適格:'s-red'})[sp.Status__c]||'s-gray'}">${escHtml(sp.Status__c)}</span>
         <span style="color:${tatColor};font-weight:600">TAT ${sp.TAT_Days__c||0}日</span>
       </div>
       <div class="specimen-progress"><div class="specimen-progress-bar" style="width:${progress}%"></div></div>
       <div class="specimen-meta">
         <span>🏥 ${inst}</span>
-        <span>👨‍⚕️ ${doc ? doc.Name : '-'}</span>
-        <span>患者: ${sp.Patient_ID__c||'-'}</span>
-        <span>QC: ${sp.QC_Status__c||'未実施'}</span>
-        <span>レビュー: ${sp.Review_Status__c||'-'}</span>
-        ${sp.Report_Date__c ? `<span>レポート: ${sp.Report_Date__c}</span>` : ''}
+        <span>👨‍⚕️ ${doc ? escHtml(doc.Name) : '-'}</span>
+        <span>患者: ${escHtml(sp.Patient_ID__c||'-')}</span>
+        <span>QC: ${escHtml(sp.QC_Status__c||'未実施')}</span>
+        <span>レビュー: ${escHtml(sp.Review_Status__c||'-')}</span>
+        ${sp.Report_Date__c ? `<span>レポート: ${escHtml(sp.Report_Date__c)}</span>` : ''}
       </div>
     </div>`;
   });

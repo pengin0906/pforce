@@ -35,7 +35,7 @@ function renderMADashboard() {
   html += `<div class="card"><div class="card-header"><h3>直近のMA活動</h3></div><table><thead><tr><th>活動名</th><th>種別</th><th>ドクター</th><th>実施日</th><th>ステータス</th></tr></thead><tbody>`;
   acts.sort((a,b)=>(b.Date__c||'').localeCompare(a.Date__c||'')).forEach(a => {
     const cls = getObjDef('MA_Activity__c').statusMap[a.Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('MA_Activity__c','${a.id}')"><td><span class="cell-link">${a.Name}</span></td><td>${a.Activity_Type__c||'-'}</td><td>${resolveRef(a.Doctor__c,'Doctor__c')}</td><td>${a.Date__c||'-'}</td><td><span class="status ${cls}">${a.Status__c}</span></td></tr>`;
+    html += `<tr onclick="showDetail('MA_Activity__c','${a.id}')"><td><span class="cell-link">${escHtml(a.Name)}</span></td><td>${escHtml(a.Activity_Type__c||'-')}</td><td>${resolveRef(a.Doctor__c,'Doctor__c')}</td><td>${escHtml(a.Date__c||'-')}</td><td><span class="status ${cls}">${escHtml(a.Status__c)}</span></td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -79,7 +79,7 @@ function renderSeminarDashboard() {
   seminars.sort((a,b)=>(a.Date__c||'').localeCompare(b.Date__c||'')).forEach(s => {
     const cls = getObjDef('Seminar__c').statusMap[s.Status__c]||'s-gray';
     const speaker = resolveRef(s.Speaker__c,'Doctor__c');
-    html += `<tr onclick="showDetail('Seminar__c','${s.id}')"><td><span class="cell-link">${s.Name}</span></td><td>${s.Format__c||'-'}</td><td>${speaker}</td><td>${s.Date__c||'-'}</td><td>${s.Venue__c||'-'}</td><td><span class="status ${cls}">${s.Status__c}</span></td><td>${s.Attendees__c||0}/${s.Capacity__c||0}</td></tr>`;
+    html += `<tr onclick="showDetail('Seminar__c','${s.id}')"><td><span class="cell-link">${escHtml(s.Name)}</span></td><td>${escHtml(s.Format__c||'-')}</td><td>${speaker}</td><td>${escHtml(s.Date__c||'-')}</td><td>${escHtml(s.Venue__c||'-')}</td><td><span class="status ${cls}">${escHtml(s.Status__c)}</span></td><td>${s.Attendees__c||0}/${s.Capacity__c||0}</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -87,7 +87,7 @@ function renderSeminarDashboard() {
   html += `<div class="card"><div class="card-header"><h3>🍱 弁当手配状況</h3></div><table><thead><tr><th>手配名</th><th>関連セミナー</th><th>業者</th><th>数量</th><th>合計</th><th>ステータス</th><th>配達日</th></tr></thead><tbody>`;
   bentos.forEach(b => {
     const cls = getObjDef('Bento_Order__c').statusMap[b.Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Bento_Order__c','${b.id}')"><td><span class="cell-link">${b.Name}</span></td><td>${resolveRef(b.Seminar__c,'Seminar__c')}</td><td>${b.Vendor__c||'-'}</td><td>${b.Quantity__c||0}</td><td>${fmt(b.Total__c,'Currency')}</td><td><span class="status ${cls}">${b.Status__c}</span></td><td>${b.Delivery_Date__c||'-'}</td></tr>`;
+    html += `<tr onclick="showDetail('Bento_Order__c','${b.id}')"><td><span class="cell-link">${escHtml(b.Name)}</span></td><td>${resolveRef(b.Seminar__c,'Seminar__c')}</td><td>${escHtml(b.Vendor__c||'-')}</td><td>${b.Quantity__c||0}</td><td>${fmt(b.Total__c,'Currency')}</td><td><span class="status ${cls}">${escHtml(b.Status__c)}</span></td><td>${escHtml(b.Delivery_Date__c||'-')}</td></tr>`;
   });
   html += `</tbody></table></div>`;
 

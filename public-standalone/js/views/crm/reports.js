@@ -21,7 +21,7 @@ function renderTestingReport() {
     const active = instOrders.filter(o=>!['完了','キャンセル'].includes(o.Status__c)).length;
     const avgT = instOrders.filter(o=>o.TAT_Days__c).length?Math.round(instOrders.filter(o=>o.TAT_Days__c).reduce((s,o)=>s+o.TAT_Days__c,0)/instOrders.filter(o=>o.TAT_Days__c).length*10)/10:'-';
     if (instOrders.length===0) return;
-    html += `<tr><td>${inst.Name}</td><td>${instOrders.length}</td><td>${done}</td><td>${active}</td><td>${avgT}日</td></tr>`;
+    html += `<tr><td>${escHtml(inst.Name)}</td><td>${instOrders.length}</td><td>${done}</td><td>${active}</td><td>${avgT}日</td></tr>`;
   });
   html += `</tbody></table></div>`;
 

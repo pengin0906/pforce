@@ -8,11 +8,18 @@ const crypto = require('crypto');
 const tokenStore = new Map();
 const TOKEN_TTL = 2 * 60 * 60 * 1000; // 2 hours
 
+// In-memory authorization code store: Map<code, { redirectUri, clientId, expiresAt }>
+const authCodeStore = new Map();
+const AUTH_CODE_TTL = 10 * 60 * 1000; // 10 minutes
+
 // Periodic cleanup every 30 minutes
 setInterval(() => {
   const now = Date.now();
   for (const [token, entry] of tokenStore) {
     if (now > entry.expiresAt) tokenStore.delete(token);
+  }
+  for (const [code, entry] of authCodeStore) {
+    if (now > entry.expiresAt) authCodeStore.delete(code);
   }
 }, 30 * 60 * 1000);
 
@@ -99,7 +106,8 @@ function validateClientCredentials(clientId, clientSecret) {
  * Register all authentication routes on the Express app
  */
 function createAuthRoutes(app, config) {
-  const { accessControlConfig, SF_API_VERSION, firestoreService, fsCollection } = config;
+  const { accessControlConfig, SF_API_VERSION, firestoreService, fsCollection, sessionSecret } = config;
+  const hmacKey = process.env.PFORCE_HMAC_SECRET || sessionSecret || ORG_ID;
 
   // -----------------------------------------------------------------------
   // POST /services/oauth2/token — OAuth2 token endpoint
@@ -145,7 +153,7 @@ function createAuthRoutes(app, config) {
           id: `${instanceUrl}/services/oauth2/userinfo`,
           token_type: 'Bearer',
           issued_at: issuedAt,
-          signature: crypto.createHmac('sha256', ORG_ID).update(token).digest('base64').slice(0, 28)
+          signature: crypto.createHmac('sha256', hmacKey).update(token).digest('base64').slice(0, 28)
         });
       } catch (e) {
         return res.status(400).json({ error: 'invalid_grant', error_description: 'Invalid username' });
@@ -176,7 +184,7 @@ function createAuthRoutes(app, config) {
           id: `${instanceUrl}/services/oauth2/userinfo`,
           token_type: 'Bearer',
           issued_at: issuedAt,
-          signature: crypto.createHmac('sha256', ORG_ID).update(token).digest('base64').slice(0, 28)
+          signature: crypto.createHmac('sha256', hmacKey).update(token).digest('base64').slice(0, 28)
         });
       } catch (e) {
         return res.status(400).json({ error: 'invalid_grant', error_description: 'Authentication failed' });
@@ -210,7 +218,7 @@ function createAuthRoutes(app, config) {
         id: `${instanceUrl}/services/oauth2/userinfo`,
         token_type: 'Bearer',
         issued_at: issuedAt,
-        signature: crypto.createHmac('sha256', ORG_ID).update(token).digest('base64').slice(0, 28)
+        signature: crypto.createHmac('sha256', hmacKey).update(token).digest('base64').slice(0, 28)
       });
     }
 
@@ -219,6 +227,7 @@ function createAuthRoutes(app, config) {
       const code = req.body.code;
       const clientId = req.body.client_id;
       const clientSecret = req.body.client_secret;
+      const redirectUri = req.body.redirect_uri;
 
       if (!code) {
         return res.status(400).json({
@@ -233,10 +242,36 @@ function createAuthRoutes(app, config) {
         });
       }
 
-      // In production, you'd validate the authorization code against a code store
-      // For now, use the service email (not admin)
+      // Validate the authorization code against the code store
+      const codeEntry = authCodeStore.get(code);
+      if (!codeEntry) {
+        return res.status(400).json({
+          error: 'invalid_grant',
+          error_description: 'Invalid or expired authorization code'
+        });
+      }
+      // Single-use: delete immediately
+      authCodeStore.delete(code);
+
+      // Verify code hasn't expired
+      if (Date.now() > codeEntry.expiresAt) {
+        return res.status(400).json({
+          error: 'invalid_grant',
+          error_description: 'Authorization code has expired'
+        });
+      }
+
+      // Verify redirect_uri matches (if provided)
+      if (redirectUri && redirectUri !== codeEntry.redirectUri) {
+        return res.status(400).json({
+          error: 'invalid_grant',
+          error_description: 'redirect_uri mismatch'
+        });
+      }
+
       const serviceEmail = process.env.PFORCE_SERVICE_EMAIL || 'service@pforce.local';
       try {
+        const hmacKey = process.env.PFORCE_HMAC_SECRET || sessionSecret || ORG_ID;
         const user = buildUserFromEmail(serviceEmail, accessControlConfig);
         const { token, issuedAt } = issueToken(user);
         const instanceUrl = `${req.protocol}://${req.get('host')}`;
@@ -247,7 +282,7 @@ function createAuthRoutes(app, config) {
           id: `${instanceUrl}/services/oauth2/userinfo`,
           token_type: 'Bearer',
           issued_at: issuedAt,
-          signature: crypto.createHmac('sha256', ORG_ID).update(token).digest('base64').slice(0, 28)
+          signature: crypto.createHmac('sha256', hmacKey).update(token).digest('base64').slice(0, 28)
         });
       } catch (e) {
         return res.status(400).json({ error: 'invalid_grant', error_description: 'Authentication failed' });
@@ -299,6 +334,12 @@ function createAuthRoutes(app, config) {
     }
 
     const code = crypto.randomBytes(32).toString('hex');
+    // Store the authorization code with metadata for validation
+    authCodeStore.set(code, {
+      redirectUri,
+      clientId: req.query.client_id || '',
+      expiresAt: Date.now() + AUTH_CODE_TTL
+    });
     const separator = redirectUri.includes('?') ? '&' : '?';
     return res.redirect(`${redirectUri}${separator}code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`);
   });

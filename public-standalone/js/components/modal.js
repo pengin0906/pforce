@@ -22,33 +22,33 @@ function showFormModal(apiName, rec, defaults) {
     const req = f.required ? '<span class="req">*</span>' : '';
     const fullClass = f.type === 'LongTextArea' ? ' full' : '';
 
-    html += `<div class="form-group${fullClass}"><label>${f.label}${req}</label>`;
+    html += `<div class="form-group${fullClass}"><label>${escHtml(f.label)}${req}</label>`;
     if (f.type === 'Picklist' && f.values) {
-      html += `<select name="${f.apiName}" class="form-control"><option value="">-- 選択 --</option>`;
-      f.values.forEach(v => html += `<option value="${v}" ${v===val?'selected':''}>${v}</option>`);
+      html += `<select name="${escAttr(f.apiName)}" class="form-control"><option value="">-- 選択 --</option>`;
+      f.values.forEach(v => html += `<option value="${escAttr(v)}" ${v===val?'selected':''}>${escHtml(v)}</option>`);
       html += `</select>`;
     } else if (f.type === 'LongTextArea') {
-      html += `<textarea name="${f.apiName}" class="form-control">${val}</textarea>`;
+      html += `<textarea name="${escAttr(f.apiName)}" class="form-control">${escHtml(val)}</textarea>`;
     } else if (f.type === 'Checkbox') {
-      html += `<input type="checkbox" name="${f.apiName}" ${val?'checked':''}>`;
+      html += `<input type="checkbox" name="${escAttr(f.apiName)}" ${val?'checked':''}>`;
     } else if (f.type === 'Lookup' && (f.apiName === 'OwnerId' || f.apiName === 'Reviewer__c')) {
-      html += `<select name="${f.apiName}" class="form-control"><option value="">-- 選択 --</option>`;
-      USERS.forEach(u => html += `<option value="${u.id}" ${u.id===val?'selected':''}>${u.name} (${u.role})</option>`);
+      html += `<select name="${escAttr(f.apiName)}" class="form-control"><option value="">-- 選択 --</option>`;
+      USERS.forEach(u => html += `<option value="${escAttr(u.id)}" ${u.id===val?'selected':''}>${escHtml(u.name)} (${escHtml(u.role)})</option>`);
       html += `</select>`;
     } else if (f.type === 'Lookup' && f.ref) {
       const refData = store[f.ref] || [];
-      html += `<select name="${f.apiName}" class="form-control"><option value="">-- 選択 --</option>`;
+      html += `<select name="${escAttr(f.apiName)}" class="form-control"><option value="">-- 選択 --</option>`;
       refData.forEach(r => {
         const rName = r.Name || r.LastName || r.Subject || r.id;
-        html += `<option value="${r.id}" ${r.id===val?'selected':''}>${rName}</option>`;
+        html += `<option value="${escAttr(r.id)}" ${r.id===val?'selected':''}>${escHtml(rName)}</option>`;
       });
       html += `</select>`;
     } else if (f.type === 'Date') {
-      html += `<input type="date" name="${f.apiName}" class="form-control" value="${val}">`;
+      html += `<input type="date" name="${escAttr(f.apiName)}" class="form-control" value="${escAttr(val)}">`;
     } else if (f.type === 'Number' || f.type === 'Currency' || f.type === 'Percent') {
-      html += `<input type="number" name="${f.apiName}" class="form-control" value="${val}">`;
+      html += `<input type="number" name="${escAttr(f.apiName)}" class="form-control" value="${escAttr(val)}">`;
     } else {
-      html += `<input type="text" name="${f.apiName}" class="form-control" value="${val}">`;
+      html += `<input type="text" name="${escAttr(f.apiName)}" class="form-control" value="${escAttr(val)}">`;
     }
     html += `</div>`;
   });

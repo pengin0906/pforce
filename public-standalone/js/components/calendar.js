@@ -33,10 +33,10 @@ function renderCalendar() {
     const dayVisits = visits.filter(v => v.Visit_Date__c === dateStr);
     const daySeminars = seminars.filter(s => (s.Event_Date__c || s.Date__c) === dateStr);
     html += `<div class="cal-day" onclick="showFormModal('Visit_Record__c',null,{Visit_Date__c:'${dateStr}'})"><div class="day-num">${d}</div>`;
-    dayEvents.forEach(e => html += `<div class="cal-event" title="${e.Subject}" onclick="event.stopPropagation();showDetail('Event','${e.id}')" style="cursor:pointer">📅 ${e.Subject}</div>`);
-    dayVisits.forEach(v => html += `<div class="cal-event visit" title="訪問: ${resolveRef(v.Doctor__c,'Doctor__c')}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${v.id}')" style="cursor:pointer">📝 ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`);
-    daySeminars.forEach(s => html += `<div class="cal-event seminar" title="${s.Name}" onclick="event.stopPropagation();showDetail('Seminar__c','${s.id}')" style="cursor:pointer">📚 ${s.Name}</div>`);
-    dayTasks.forEach(t => html += `<div class="cal-event task" title="${t.Subject}" onclick="event.stopPropagation();showDetail('Task','${t.id}')" style="cursor:pointer">✅ ${t.Subject}</div>`);
+    dayEvents.forEach(e => html += `<div class="cal-event" title="${escAttr(e.Subject)}" onclick="event.stopPropagation();showDetail('Event','${escAttr(e.id)}')" style="cursor:pointer">📅 ${escHtml(e.Subject)}</div>`);
+    dayVisits.forEach(v => html += `<div class="cal-event visit" title="訪問: ${resolveRef(v.Doctor__c,'Doctor__c')}" onclick="event.stopPropagation();showDetail('Visit_Record__c','${escAttr(v.id)}')" style="cursor:pointer">📝 ${resolveRef(v.Doctor__c,'Doctor__c')}</div>`);
+    daySeminars.forEach(s => html += `<div class="cal-event seminar" title="${escAttr(s.Name)}" onclick="event.stopPropagation();showDetail('Seminar__c','${escAttr(s.id)}')" style="cursor:pointer">📚 ${escHtml(s.Name)}</div>`);
+    dayTasks.forEach(t => html += `<div class="cal-event task" title="${escAttr(t.Subject)}" onclick="event.stopPropagation();showDetail('Task','${escAttr(t.id)}')" style="cursor:pointer">✅ ${escHtml(t.Subject)}</div>`);
     html += `</div>`;
   }
   html += `</div></div>`;
@@ -49,7 +49,7 @@ function renderCalendar() {
     ...seminars.map(s=>({type:'📚 勉強会',name:s.Name,date:s.Date__c,loc:s.Venue__c,owner:s.OwnerId,id:s.id,obj:'Seminar__c'}))
   ].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   allEvents.forEach(e => {
-    html += `<tr onclick="showDetail('${e.obj}','${e.id}')"><td>${e.type}</td><td><span class="cell-link">${e.name}</span></td><td>${e.date||'-'}</td><td>${e.loc||'-'}</td><td>${getUserName(e.owner)}</td></tr>`;
+    html += `<tr onclick="showDetail('${escAttr(e.obj)}','${escAttr(e.id)}')"><td>${escHtml(e.type)}</td><td><span class="cell-link">${escHtml(e.name)}</span></td><td>${escHtml(e.date||'-')}</td><td>${escHtml(e.loc||'-')}</td><td>${getUserName(e.owner)}</td></tr>`;
   });
   html += `</tbody></table></div>`;
 

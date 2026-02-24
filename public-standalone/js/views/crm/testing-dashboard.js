@@ -44,7 +44,7 @@ function renderTestingDashboard() {
   orders.sort((a,b)=>(b.Order_Date__c||'').localeCompare(a.Order_Date__c||'')).forEach(o => {
     const cls = getObjDef('Testing_Order__c').statusMap[o.Status__c]||'s-gray';
     const usCls = {未送信:'s-gray',US審査中:'s-orange',US承認:'s-green',US差戻し:'s-red'}[o.US_Review_Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Testing_Order__c','${o.id}')"><td><span class="cell-link">${o.Name}</span></td><td>${resolveRef(o.Doctor__c,'Doctor__c')}</td><td>${resolveRef(o.Institution__c,'Medical_Institution__c')}</td><td>${o.Order_Date__c||'-'}</td><td><span class="status ${cls}">${o.Status__c}</span></td><td><span class="status ${usCls}">${o.US_Review_Status__c||'-'}</span></td><td>${o.TAT_Days__c||0}日</td></tr>`;
+    html += `<tr onclick="showDetail('Testing_Order__c','${o.id}')"><td><span class="cell-link">${escHtml(o.Name)}</span></td><td>${resolveRef(o.Doctor__c,'Doctor__c')}</td><td>${resolveRef(o.Institution__c,'Medical_Institution__c')}</td><td>${escHtml(o.Order_Date__c||'-')}</td><td><span class="status ${cls}">${escHtml(o.Status__c)}</span></td><td><span class="status ${usCls}">${escHtml(o.US_Review_Status__c||'-')}</span></td><td>${o.TAT_Days__c||0}日</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -109,7 +109,7 @@ function renderPMDADashboard() {
       const color = days < 30 ? '#ef5350' : days < 90 ? '#ffa726' : '#66bb6a';
       html += `<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #eee">
         <div style="font-size:28px;font-weight:700;color:${color};min-width:80px;text-align:center">${days}日</div>
-        <div><div style="font-weight:600">${s.Name}</div><div style="font-size:12px;color:#888">承認予定: ${s.Expected_Approval__c}</div></div>
+        <div><div style="font-weight:600">${escHtml(s.Name)}</div><div style="font-size:12px;color:#888">承認予定: ${escHtml(s.Expected_Approval__c)}</div></div>
       </div>`;
     }
   });
@@ -119,7 +119,7 @@ function renderPMDADashboard() {
   html += `<div class="card"><div class="card-header"><h3>PMDA申請一覧</h3></div><table><thead><tr><th>申請名</th><th>種別</th><th>ステータス</th><th>申請日</th><th>承認予定</th><th>照会</th></tr></thead><tbody>`;
   subs.forEach(s => {
     const cls = getObjDef('PMDA_Submission__c').statusMap[s.Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('PMDA_Submission__c','${s.id}')"><td><span class="cell-link">${s.Name}</span></td><td>${s.Submission_Type__c||'-'}</td><td><span class="status ${cls}">${s.Status__c}</span></td><td>${s.Submission_Date__c||'-'}</td><td>${s.Expected_Approval__c||'-'}</td><td>${s.Inquiry_Resolved__c||0}/${s.Inquiry_Count__c||0}</td></tr>`;
+    html += `<tr onclick="showDetail('PMDA_Submission__c','${s.id}')"><td><span class="cell-link">${escHtml(s.Name)}</span></td><td>${escHtml(s.Submission_Type__c||'-')}</td><td><span class="status ${cls}">${escHtml(s.Status__c)}</span></td><td>${escHtml(s.Submission_Date__c||'-')}</td><td>${escHtml(s.Expected_Approval__c||'-')}</td><td>${s.Inquiry_Resolved__c||0}/${s.Inquiry_Count__c||0}</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -154,7 +154,7 @@ function renderPathologyReview() {
   html += `<div class="card"><div class="card-header"><h3>👨‍🏫 東大チーム（油谷先生）レビューキュー</h3></div><table><thead><tr><th>検体ID</th><th>患者ID</th><th>施設</th><th>がん種</th><th>レビュー状況</th><th>TAT</th></tr></thead><tbody>`;
   [...utReview,...unreviewed].forEach(s => {
     const cls = {未レビュー:'s-gray',東大レビュー中:'s-blue',USレビュー中:'s-orange',レビュー完了:'s-green'}[s.Review_Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Specimen__c','${s.id}')"><td><span class="cell-link">${s.Name}</span></td><td>${s.Patient_ID__c||'-'}</td><td>${resolveRef(s.Institution__c,'Medical_Institution__c')}</td><td>${s.Cancer_Type__c||'-'}</td><td><span class="status ${cls}">${s.Review_Status__c}</span></td><td>${s.TAT_Days__c||0}日</td></tr>`;
+    html += `<tr onclick="showDetail('Specimen__c','${s.id}')"><td><span class="cell-link">${escHtml(s.Name)}</span></td><td>${escHtml(s.Patient_ID__c||'-')}</td><td>${resolveRef(s.Institution__c,'Medical_Institution__c')}</td><td>${escHtml(s.Cancer_Type__c||'-')}</td><td><span class="status ${cls}">${escHtml(s.Review_Status__c)}</span></td><td>${s.TAT_Days__c||0}日</td></tr>`;
   });
   html += `</tbody></table></div>`;
 
@@ -162,7 +162,7 @@ function renderPathologyReview() {
   html += `<div class="card"><div class="card-header"><h3>🌐 US Tempus レビューキュー</h3></div><table><thead><tr><th>オーダー番号</th><th>検体</th><th>施設</th><th>USレビュー</th><th>TAT</th></tr></thead><tbody>`;
   orders.filter(o=>o.US_Review_Status__c==='US審査中'||o.US_Review_Status__c==='US差戻し').forEach(o => {
     const usCls = {US審査中:'s-orange',US差戻し:'s-red'}[o.US_Review_Status__c]||'s-gray';
-    html += `<tr onclick="showDetail('Testing_Order__c','${o.id}')"><td><span class="cell-link">${o.Name}</span></td><td>${resolveRef(o.Specimen__c,'Specimen__c')}</td><td>${resolveRef(o.Institution__c,'Medical_Institution__c')}</td><td><span class="status ${usCls}">${o.US_Review_Status__c}</span></td><td>${o.TAT_Days__c||0}日</td></tr>`;
+    html += `<tr onclick="showDetail('Testing_Order__c','${o.id}')"><td><span class="cell-link">${escHtml(o.Name)}</span></td><td>${resolveRef(o.Specimen__c,'Specimen__c')}</td><td>${resolveRef(o.Institution__c,'Medical_Institution__c')}</td><td><span class="status ${usCls}">${escHtml(o.US_Review_Status__c)}</span></td><td>${o.TAT_Days__c||0}日</td></tr>`;
   });
   html += `</tbody></table></div>`;
 

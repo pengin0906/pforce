@@ -142,7 +142,7 @@ const ctx = {
 // ============================================================================
 
 // Bearer/OAuth2/SOAP auth routes (must come before other SF routes)
-createBearerAuthRoutes(app, { accessControlConfig, SF_API_VERSION, firestoreService: pgService, fsCollection });
+createBearerAuthRoutes(app, { accessControlConfig, SF_API_VERSION, firestoreService: pgService, fsCollection, sessionSecret });
 
 // All application routes (auth, data, SF API, static, etc.)
 mountRoutes(app, ctx);
@@ -176,7 +176,11 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, _next) => {
-  console.error('[ERROR]', err);
+  if (NODE_ENV === 'production') {
+    console.error('[ERROR]', err.message);
+  } else {
+    console.error('[ERROR]', err);
+  }
   res.status(500).json({ error: 'Internal server error' });
 });
 

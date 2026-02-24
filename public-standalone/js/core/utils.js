@@ -57,12 +57,12 @@ function fmt(v, type) {
   if (v == null || v === '') return '-';
   switch(type) {
     case 'Currency': return '¥' + Number(v).toLocaleString();
-    case 'Percent': return v + '%';
+    case 'Percent': return escHtml(v) + '%';
     case 'Number': return Number(v).toLocaleString();
     case 'Checkbox': return v ? '✓' : '✗';
-    case 'Date': return v;
-    case 'DateTime': return v;
-    default: return String(v);
+    case 'Date': return escHtml(v);
+    case 'DateTime': return escHtml(v);
+    default: return escHtml(String(v));
   }
 }
 
@@ -70,8 +70,8 @@ function resolveRef(val, refObj) {
   if (!val) return '-';
   const data = store[refObj] || [];
   const rec = data.find(r => r.id === val);
-  if (!rec) return val;
-  return rec.Name || rec.LastName || val;
+  if (!rec) return escHtml(val);
+  return escHtml(rec.Name || rec.LastName || val);
 }
 
 function getObjDef(apiName) {
@@ -80,12 +80,12 @@ function getObjDef(apiName) {
 
 function getUserName(uid) {
   const u = USERS.find(u => u.id === uid);
-  return u ? u.name : uid || '-';
+  return u ? escHtml(u.name) : escHtml(uid || '-');
 }
 
 function getInstitutionName(instId) {
   const inst = (store.Medical_Institution__c || []).find(i => i.id === instId);
-  return inst ? inst.Name : '-';
+  return inst ? escHtml(inst.Name) : '-';
 }
 
 // Salesforce-compatible 18-char ID generator

@@ -382,6 +382,11 @@ async function executeSearch(parsed, config) {
   // Strip wildcard characters (* and ?) for substring matching
   const cleanedTerm = searchTermLower.replace(/[*?]/g, '');
 
+  // Prevent wildcard-only or empty search terms (DoS protection)
+  if (!cleanedTerm || cleanedTerm.length < 2) {
+    return [];
+  }
+
   let allResults = [];
 
   for (const spec of objectSpecs) {
